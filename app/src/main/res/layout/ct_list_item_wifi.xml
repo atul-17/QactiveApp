@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    android:id="@+id/ll_ssid"
+    android:foreground="?attr/selectableItemBackground"
+    tools:background="@color/screen_bg">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_ssid_name"
+        android:padding="16dp"
+        app:fontFamily="sans-serif-light"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        tools:text="Cumulations3" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tv_ssid_security"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/app_text_color_disabled"
+        tools:text="WEP/PSK" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/button_enabled" />
+
+</LinearLayout>

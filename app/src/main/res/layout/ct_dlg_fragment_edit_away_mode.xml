@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/appbar_bg"
+    android:padding="24dp"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_network_name"
+        android:hint="@string/network_name"
+        android:focusable="true"
+        android:theme="@style/AppTextInputLayoutTheme"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_network_name"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textSize="14sp"
+            tools:text = "RivaaConcert"
+            android:textColor="@color/app_text_color_enabled"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/til_pwd"
+        android:layout_marginTop="8dp"
+        android:hint="@string/password"
+        android:theme="@style/AppTextInputLayoutTheme"
+        app:passwordToggleEnabled="true"
+        app:passwordToggleTint="@color/app_text_color_enabled"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/et_pwd"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:textSize="14sp"
+            tools:text = "12345678"
+            android:textColor="@color/app_text_color_enabled"
+            android:background="@android:color/transparent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.TextInputLayout>
+
+    <LinearLayout
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_cancel"
+            android:enabled="true"
+            android:textSize="14sp"
+            android:text="@string/cancel"
+            android:background="@drawable/app_btn_selector"
+            android:textColor="@color/white"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_ok"
+            style="@style/GradientAppButtonStyle"
+            android:layout_marginLeft="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="@string/ok"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</LinearLayout>

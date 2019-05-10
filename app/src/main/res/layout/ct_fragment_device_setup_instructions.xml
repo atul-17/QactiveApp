@@ -1,0 +1,173 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/screen_bg">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarLayout"
+        android:background="@color/screen_bg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <android.support.v7.widget.AppCompatTextView
+                    android:layout_centerInParent="true"
+                    android:layout_marginLeft="?attr/actionBarSize"
+                    android:layout_marginRight="?attr/actionBarSize"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:text="@string/app_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <android.support.v7.widget.AppCompatImageView
+                    android:id="@+id/iv_back"
+                    android:padding="16dp"
+                    android:visibility="invisible"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/ic_arrow_back_white"
+                    android:layout_width="?attr/actionBarSize"
+                    android:layout_height="?attr/actionBarSize" />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
+    </android.support.design.widget.AppBarLayout>
+
+    <LinearLayout
+        android:paddingBottom="?attr/actionBarSize"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <android.support.v7.widget.AppCompatTextView
+            android:textColor="@color/app_text_color_enabled"
+            android:layout_marginTop="24dp"
+            android:textSize="16sp"
+            app:fontFamily="sans-serif-medium"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/setup_instructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                android:background="@drawable/circle_outline_grey"
+                android:text="@string/one"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/app_text_color_enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/white"
+                android:text="@string/power_on_libre_device"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="24dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                android:background="@drawable/circle_outline_grey"
+                android:text="@string/two"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/app_text_color_enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/white"
+                android:text="@string/go_to_wifi_settings"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <android.support.v7.widget.AppCompatImageView
+            app:srcCompat="@drawable/ls_configure_xxxxxx"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="?attr/actionBarSize"
+            android:layout_marginRight="?attr/actionBarSize"
+            android:scaleType="fitCenter"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <LinearLayout
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v7.widget.AppCompatTextView
+                android:background="@drawable/circle_outline_grey"
+                android:text="@string/three"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:textColor="@color/app_text_color_enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.AppCompatTextView
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:textColor="@color/white"
+                android:text="@string/after_connecting_to_libre_device"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_wifi_settings"
+            android:text="@string/wifi_settings"
+            android:layout_marginTop="32dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="200dp"
+            android:textSize="16sp"
+            android:enabled="true"
+            android:textColor="@color/app_btn_textcolor_selector"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:background="@drawable/app_btn_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btn_next"
+            android:text="@string/next"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal"
+            android:minWidth="200dp"
+            android:textSize="16sp"
+            android:enabled="false"
+            android:textColor="@color/app_btn_textcolor_selector"
+            android:background="@drawable/app_btn_selector"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+    </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>

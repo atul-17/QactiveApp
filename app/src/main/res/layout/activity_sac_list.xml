@@ -1,0 +1,93 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+
+    android:background="@color/black"
+    tools:context=".Network.NewSacActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:titleTextColor="@color/dark_grey"
+
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.Toolbar>
+    <!--<ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ssid_list"
+        android:layout_weight="1" />-->
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brand_dark_grey"
+        android:text="@string/lsdp_device_title"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:textColor="#FFFFFF"
+        android:paddingLeft="24dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textSize="17dp"
+        android:gravity="center_vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="0dp"
+        android:layout_alignParentTop="true" />
+
+    <ExpandableListView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/sac_listview"
+
+        android:dividerHeight="1dp"
+        android:childDivider="@color/brand_dark_grey"
+        android:divider="@color/black"
+        android:paddingBottom="24dp"
+        />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:visibility="invisible"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <include
+                layout="@layout/list_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sac_listview"
+                android:id="@+id/sac_group_title"
+                />
+            <TextView
+                android:id="@+id/addMoreSpeakers"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="17dip"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="10dp"
+                android:textColor="#FFFFFF"
+                android:text="Add more speakers"
+                android:paddingLeft="20dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@+id/imageView"
+                android:layout_toEndOf="@+id/imageView"
+                android:drawableRight="@drawable/right_arrow1" />
+        </LinearLayout>
+    </ScrollView>
+
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/activity_sac_list_footer"
+        android:layout_gravity="center_horizontal"
+        />
+</LinearLayout>

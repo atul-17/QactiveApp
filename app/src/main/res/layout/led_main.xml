@@ -1,0 +1,44 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/ambilwarna_viewContainer"
+    android:paddingRight="@dimen/ambilwarna_spacer"
+    android:paddingLeft="@dimen/ambilwarna_spacer"
+    android:clipToPadding="false"
+    android:layout_gravity="center"
+    >
+
+
+    <com.libre.led.AmbilWarnaKotak
+        android:id="@+id/ambilwarna_viewSatBri"
+        android:layout_width="@dimen/ambilwarna_hsvWidth"
+        android:layout_height="@dimen/ambilwarna_hsvHeight"
+        android:layout_marginRight="20dp"
+        />
+    <ImageView
+        android:id="@+id/ambilwarna_viewHue"
+        android:layout_width="@dimen/ambilwarna_hueWidth"
+        android:layout_height="@dimen/ambilwarna_hsvHeight"
+        android:layout_toRightOf="@+id/ambilwarna_viewSatBri"
+        android:src="@drawable/ambilwarna_hue"
+        android:scaleType="fitXY"
+        />
+    <ImageView
+        android:id="@+id/ambilwarna_cursor"
+        android:layout_width="9dp"
+        android:layout_height="9dp"
+        android:src="@drawable/ambilwarna_cursor"
+        android:visibility="gone"
+        android:scaleType="matrix"
+        />
+    <ImageView
+        android:id="@+id/ambilwarna_target"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:src="@drawable/ambilwarna_target"
+        android:scaleType="matrix"
+        />
+
+
+</RelativeLayout>

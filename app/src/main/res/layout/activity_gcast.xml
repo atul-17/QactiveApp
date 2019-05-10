@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/scene_title"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:text="Google Cast Settings"
+            android:textSize="22sp"
+            android:visibility="gone"
+            android:textColor="@android:color/black"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/versionDetails"
+                android:layout_below="@+id/toolbar"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Information"
+                    android:textStyle="bold"
+                    android:paddingBottom="5dp"
+                    android:textSize="16sp"
+                    android:paddingTop="@dimen/activity_horizontal_margin"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:textColor="@color/brand_orange"
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/activity_vertical_margin"
+                        android:textColor="@color/white"
+                        android:text="Version number:"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/version_number"
+                        android:paddingLeft="@dimen/activity_vertical_margin"
+                        android:textColor="@color/white"
+                        android:text="1.2.3"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="@dimen/activity_vertical_margin"
+                        android:textColor="@color/white"
+                        android:text="@string/ipAddress"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/ipaddress"
+                        android:paddingLeft="@dimen/activity_vertical_margin"
+                        android:textColor="@color/white"
+                        android:text="192.168.1.123"/>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@color/white"/>
+
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/privacy_text"
+                android:layout_below="@id/versionDetails"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Privacy"
+                android:textStyle="bold"
+                android:paddingBottom="5dp"
+                android:textSize="16sp"
+                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:textColor="@color/brand_orange"
+                />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/usageDetails"
+                android:layout_below="@+id/privacy_text">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Share usage data "
+                    android:paddingBottom="@dimen/activity_horizontal_margin"
+                    android:paddingLeft="@dimen/activity_vertical_margin"
+                    android:textColor="@color/white"
+                    android:layout_weight="1"/>
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/usage"
+                    android:buttonTint="@color/brand_orange"
+                    android:layout_marginRight="@dimen/activity_vertical_margin"
+                    android:checked="true"
+                    />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/white"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usageDetails"
+                android:id="@+id/timeformat"
+                android:text="Time Zone"
+                android:textSize="16sp"
+                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:paddingBottom="5dp"
+                android:textColor="@color/brand_orange"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"
+                />
+            <Spinner
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:id="@+id/timezonespinner"
+                android:layout_below="@+id/timeformat"
+                android:background="@drawable/rounded_corner_edittext"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                style="@style/MySpinnerLook"
+                android:layout_marginBottom="5dp"
+                >
+            </Spinner>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/white"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/usageDetails"
+                android:text="Learn"
+                android:textSize="16sp"
+                android:paddingTop="@dimen/activity_horizontal_margin"
+                android:paddingLeft="@dimen/activity_vertical_margin"
+                android:textColor="@color/brand_orange"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"
+                />
+
+
+
+            <Button
+                android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/learn_how"
+                android:layout_gravity="left"
+                android:textSize="12dp"
+                android:id="@+id/how_cast"
+                android:layout_below="@+id/learn_how_to_cast"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:capitalize="none"/>
+
+            <Button
+                android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Learn cast groups"
+                android:layout_gravity="left"
+                android:textSize="12dp"
+                android:id="@+id/gcast_group"
+                android:layout_below="@+id/learn_how_to_cast"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:capitalize="none"/>
+
+            <Button
+                android:layout_marginTop="@dimen/abc_action_bar_content_inset_material"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Learn about Google Cast privacy"
+                android:layout_gravity="left"
+                android:textSize="12dp"
+                android:id="@+id/learn_gcast_privacy"
+                android:layout_below="@+id/gcast_group"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:capitalize="none"/>
+
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/license"
+                android:autoLink="web"
+                android:visibility="gone"
+                android:textStyle="italic"
+                android:linksClickable="true"
+                android:textColor="@color/brand_orange"
+                android:layout_alignParentBottom="true"
+                android:gravity="center"
+                android:id="@+id/legalDocText"
+                />
+        </LinearLayout>
+
+    </ScrollView>
+
+
+</RelativeLayout>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/remote_action_play"
+        android:enabled="true"
+        android:menuCategory="system"
+        app:showAsAction="ifRoom"
+        android:title="Play"
+        android:visible="true">
+    </item>
+
+    <item
+        android:id="@+id/remote_action_home"
+        android:enabled="true"
+        android:menuCategory="system"
+        android:title="Home"
+        app:showAsAction="ifRoom"
+        android:visible="true">
+    </item>
+
+    <item
+        android:id="@+id/now_playing"
+        android:enabled="true"
+        android:menuCategory="system"
+        android:title="Main"
+        android:icon="@drawable/ic_launcher"
+        app:showAsAction="ifRoom"
+        android:visible="true">
+    </item>
+
+</menu>

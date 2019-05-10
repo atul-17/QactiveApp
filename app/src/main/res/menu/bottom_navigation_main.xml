@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_discover"
+        android:enabled="true"
+        android:icon="@drawable/ic_discover_unselected"
+        android:title="@string/discovery"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_add"
+        android:enabled="true"
+        android:icon="@drawable/add_device_unselected"
+        android:title="@string/add"
+        app:showAsAction="ifRoom" />
+    <!--For empty icon gap-->
+    <!--<item
+        android:enabled="false"
+        android:title=""
+        app:showAsAction="ifRoom" />-->
+    <item
+        android:id="@+id/action_tutorial"
+        android:enabled="true"
+        android:icon="@drawable/tutorials_unselected"
+        android:title="@string/tutorials"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:icon="@drawable/settings_unselected"
+        android:title="@string/Settings"
+        app:showAsAction="ifRoom" />
+</menu>

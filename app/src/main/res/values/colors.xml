@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="toolbar_background">#404142</color>
+    <color name="toolbar_items">#CBCBCB</color>
+    <color name="alert">#AC1600</color>
+    <color name="success">#37A51C</color>
+    <color name="button_default">#329AD6</color>
+    <color name="informative_message">#329AD6</color>
+    <color name="button_pressed">#2A5C91</color>
+    <color name="text_border_default">#303232</color>
+    <color name="text_border_selected">#4EA9DC</color>
+    <color name="warning">#E94700</color>
+    <color name="grey_100">#F5F7F7</color>
+    <color name="grey_300">#8D9496</color>
+    <color name="grey_400">#5A5D5E</color>
+    <color name="grey_500">#404142</color>
+    <color name="grey_600">#303232</color>
+    <color name="grey_700">#1D1E1E</color>
+
+    //alexa app colors
+    <color name="faint_grey" type="color">#F5F5F5</color>
+    <color name="dark_grey" type="color">#4D4D4D</color>
+    <color name="deep_grey" type="color">#2D2D2D</color>
+    <color name="almost_black" type="color">#0F0F0F</color>
+
+
+    <color name="brand_yellow" type="color">#E9842C</color>
+    <color name="brand_red" type="color">#DA372A</color>
+    <color name="brand_purple" type="color">#788294</color>
+
+
+
+    <color name="brand_dark_grey" type="color">#5c5c5c</color>
+    <color name="brand_light_grey" type="color">#292929</color>
+    <color name="brand_white" type="color">#cdcdcd</color>
+    <color name="brand_orange" type="color">#f26522</color>
+    <color name="light_grey" type="color">#c0bebe</color>
+    <color name="mid_grey" type="color">#878585</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="dark_gray">#808080</color>
+    <color name="light_gray">#C0C0C0</color>
+    <color name="medium_gray">#C0C0C0</color>
+
+    <color name="purple">#800080</color>
+    <color name="background_gradient_start">#000000</color>
+    <color name="background_gradient_end">#DDDDDD</color>
+    <color name="fastlane_background">#0096a6</color>
+    <color name="search_opaque">#ffaa3f</color>
+    <color name="detail_background">#0096a6</color>
+    <color name="soft_opaque">#30000000</color>
+    <color name="img_soft_opaque">#30FF0000</color>
+    <color name="img_full_opaque">#00000000</color>
+    <color name="black_opaque">#AA000000</color>
+    <color name="orange_transparent">#AAFADCA7</color>
+    <color name="orange">#FADCA7</color>
+    <color name="yellow">#EEFF41</color>
+    <color name="default_background">#3d3d3d</color>
+    <color name="list_item_background">#101316</color>
+    <color name="slave_selection">#09232f</color>
+    <color name="footer_background_manage_devices">#838a95</color>
+    <color name="footer_background">#c0bebe</color>
+
+    <color name="grundigBgColor">#131e29</color>
+
+
+
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="alexaBlue">#00A5CF</color>
+    <color name="text_color">#818F90</color>
+    <color name="alexaMicBlue">#1E86D0</color>
+
+    <color name="grey_400_half_transparency">#9f5A5D5E</color>
+    <color name="riva_black">#101010</color>
+
+    <color name="screen_bg">#1E1E1E</color>
+    <color name="appbar_bg">#2C2C2C</color>
+    <color name="btn_app_orange">#EF6330</color>
+    <color name="btn_app_dark_pink">#B63070</color>
+    <color name="btn_app_mid_pink">#D44A4F</color>
+
+    <color name="app_text_color_enabled">#FF6A00</color>
+    <color name="app_text_color_disabled">#A1A1A1</color>
+    <color name="button_enabled">#444444</color>
+    <color name="button_disabled">#303030</color>
+    <color name="app_text_color_slight_white">#C4C4C4</color>
+    <color name="screen_bg_light">#252525</color>
+    <color name="app_orange_light">#7FEF6330</color>
+    <color name="app_dark_pink_light">#7FB63070</color>
+    <color name="app_mid_pink_light">#7FD44A4F</color>
+
+    <color name="touch_hover">#77ffffff</color>
+
+</resources>

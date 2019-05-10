@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/brand_white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <Button
+        android:id="@+id/imgBtnfav"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="Setup \n Room Group"
+        android:clickable="false"
+        android:layout_weight="1"
+        android:textColor="@color/dark_grey"
+        android:layout_alignTop="@+id/btnConfig"
+        android:visibility="gone"/>
+
+    <Button
+        android:id="@+id/btnConfig"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:text="Setup \n Home Theater Group"
+        android:textColor="@color/dark_grey"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/imgBtnfav"
+        android:layout_toEndOf="@+id/imgBtnfav"
+        android:layout_weight="1"
+        android:visibility="gone"/>
+</LinearLayout>

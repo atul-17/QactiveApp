@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:minHeight="?attr/actionBarSize"></android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="50dp">
+
+        <RelativeLayout
+            android:id="@+id/main_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <include
+                android:id="@+id/sceneNameLayout"
+                layout="@layout/scene_name_layout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/audio_preset_textview"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/sceneNameLayout"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="@string/audio_preset"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:visibility="gone" />
+
+            <Spinner
+                android:id="@+id/audio_preset_spinner"
+                style="@style/MySpinnerLook"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/audio_preset_textview"
+                android:background="@color/white"
+                android:spinnerMode="dropdown"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/title_home_network_settings"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/audio_preset_spinner"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="@string/tvAudioTitle"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+            <Spinner
+                android:id="@+id/ssidSpinner"
+                style="@style/MySpinnerLook"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/title_home_network_settings"
+                android:background="@color/white"
+                android:spinnerMode="dropdown" />
+
+            <TextView
+                android:id="@+id/ipAddress"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ssidSpinner"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="IP  Address : "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+            <TextView
+                android:id="@+id/firmwareVersion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/ipAddress"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="System Firmware : "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+            <TextView
+                android:id="@+id/hostVersion"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/firmwareVersion"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="Host Firmware : "
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+
+            <RelativeLayout
+                android:id="@+id/led_control_layout"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/hostVersion"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="12dp"
+                    android:text="Led Controller"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvNetworkSettings"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/led_control_layout"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:paddingBottom="10dp"
+                android:paddingLeft="20dp"
+                android:paddingTop="10dp"
+                android:text="@string/network_settings"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material" />
+
+            <Button
+                android:id="@+id/btnNetworkSettings"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvNetworkSettings"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:text="Network  Configuration"
+                android:textColor="@color/white" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnNetworkSettings"
+                android:gravity="center"
+                android:padding="5dp">
+
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/speechSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="10dp"
+                    android:textOff="OFF"
+                    android:textOn="ON" />
+
+
+                <TextView
+                    android:id="@+id/textView15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginTop="5dp"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:text="@string/speechVolume"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_button_material" />
+
+                <LinearLayout
+                    android:id="@+id/speech_seekbarLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/speechSwitch"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10dp"
+                    android:weightSum="1">
+
+                    <SeekBar
+                        android:id="@+id/speech_seekbar"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.9"
+                        android:max="100"
+                        android:maxHeight="6dip"
+                        android:minHeight="6dip"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/progressbar"
+                        android:thumb="@drawable/thumb_white"
+                        android:thumbOffset="5dp"
+                        tools:ignore="NotSibling" />
+
+                    <TextView
+                        android:id="@+id/seekbar_value"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/speech_seekbar"
+                        android:layout_weight="0.1"
+                        android:gravity="bottom"
+                        android:layout_marginLeft="2dp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/abc_text_size_button_material" />
+
+                </LinearLayout>
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/btnAlexaAddContact"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnNetworkSettings"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:text="Alexa Contacts"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnLink"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnAlexaAddContact"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:text="Link"
+                android:textColor="@color/white"
+                android:visibility="invisible" />
+
+            <LinearLayout
+                android:id="@+id/btnAlexaLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/btnAlexaAddContact"
+                android:layout_marginTop="5dp"
+                android:background="@color/brand_dark_grey"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="invisible">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/ic_alexa_small" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Amazon Alexa"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnAdvanceSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnAlexaLogin"
+                android:layout_centerHorizontal="true"
+                android:text="Google Cast Settings"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnOpenSettingsInCast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/btnAdvanceSettings"
+                android:layout_centerHorizontal="true"
+                android:text="Open settings in google cast app"
+                android:visibility="gone" />
+
+
+        </RelativeLayout>
+
+
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnSaveNetworkSettings"
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/brand_white"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:textSize="24sp" />
+
+    <!-- <Button
+         android:id="@+id/btnAlexaLogin"
+         android:layout_width="wrap_content"
+
+         android:layout_height="wrap_content"
+         android:layout_above="@+id/btnSaveNetworkSettings"
+         android:layout_centerHorizontal="true"
+         android:background="@drawable/btn_alexa_drkgry"
+         android:visibility="visible" />-->
+</RelativeLayout>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/light_grey"
+    android:orientation="horizontal"
+    >
+
+    <TextView
+        android:id="@+id/favorites_icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/play_cast"
+        android:drawableTop="@mipmap/ic_cast_black_24dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone"/>
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/deep_grey"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/playnew_icon"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Play new"
+        android:drawableTop="@mipmap/ic_play"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"
+        android:paddingTop="10dp"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="match_parent"
+        android:background="@color/deep_grey"
+        android:visibility="gone"/>
+    <TextView
+        android:id="@+id/config_item"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Configure"
+        android:drawableTop="@mipmap/ic_config"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:padding="10dp"/>
+
+</LinearLayout>
+</LinearLayout>

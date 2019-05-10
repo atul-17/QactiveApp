@@ -1,0 +1,176 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowSoftInputMode">stateHidden|adjustPan</item>
+
+        <!-- Active thumb color & Active track color(30% transparency) -->
+        <item name="colorControlActivated">@color/app_text_color_enabled</item>
+        <!-- Inactive thumb color -->
+        <item name="colorSwitchThumbNormal">@color/brand_dark_grey</item>
+        <!-- Inactive track color(30% transparency) -->
+        <!--<item name="android:colorForeground">@color/brand_dark_grey</item>-->
+        <item name="android:textColor">@color/white</item>
+        <item name="colorAccent">@color/app_text_color_enabled</item>
+        <item name="colorPrimary">@color/app_text_color_enabled</item>
+
+    </style>
+
+        <style name="MySpinnerLook">
+            <item name="android:textSize">22sp</item>
+            <item name="android:textColor">@color/white</item>
+            <item name="android:background">?android:selectableItemBackground</item>
+            <item name="android:dropDownSelector">?android:selectableItemBackground</item>
+            <item name="android:divider">@null</item>
+
+        </style>
+
+    <style name="SwitchButtonStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+
+    </style>
+
+    <style name="ToolBarStyle"
+        parent="AppTheme">
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textColorSecondary">@color/black</item>
+        <item name="actionMenuTextColor">@color/black</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">20sp</item>
+        <!-- <item name="android:itemBackground">@color/sirena_red</item>-->
+
+    </style>
+
+    <style name="Theme.SirenaRadioBtn" parent="AppTheme">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="radiobutton" parent="Theme.SirenaRadioBtn">
+        <!--<item name="android:layout_marginRight">8dp</item>-->
+        <item name="android:gravity">center</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textColor">@color/radio_button_text_color</item>
+        <item name="android:button">@null</item>
+        <item name="android:background">@drawable/radio_btn_bg</item>
+    </style>
+
+    <style name="alexaBtn" parent="Theme.SirenaRadioBtn">
+        <item name="android:textColor">@color/alexa_btn_textcolor</item>
+        <item name="android:background">@drawable/alexa_btn_bg</item>
+    </style>
+
+    <style name="AWSCognitoTheme" parent="AppTheme">
+        <item name="android:colorBackground">@color/toolbar_background</item>
+        <item name="android:textColor">@color/toolbar_items</item>
+    </style>
+
+    <style name="AppActionBar">
+        <item name="colorPrimary">@color/toolbar_background</item>
+        <item name="colorPrimaryDark">@color/toolbar_background</item>
+        <item name="colorAccent">@color/toolbar_items</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppNavigationBar">
+        <item name="android:colorBackground">@color/toolbar_background</item>
+        <item name="android:textColor">@color/toolbar_items</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="TextViewMessage">
+        <item name="android:textColor">@color/alert</item>
+        <item name="android:textSize">@dimen/activity_text_padding</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="TextViewLabel">
+        <item name="android:textSize">@dimen/activity_text_size_small</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:textAppearanceSmall</item>
+        <item name="android:layout_centerHorizontal">true</item>
+    </style>
+
+    <style name="SplashTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorControlActivated">@color/brand_orange</item>
+    </style>
+
+    <style name="GradientAppButtonStyle">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/btn_app_gradient_bg</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">36dp</item>
+        <item name="android:paddingRight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="GradientAppButtonStyleRotated">
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="android:background">@drawable/btn_app_gradient_bg_rotated</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:paddingLeft">36dp</item>
+        <item name="android:paddingRight">36dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="AppTextInputLayoutTheme" parent="Widget.Design.TextInputLayout">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="android:textSize">14sp</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="colorAccent">@android:color/white</item>
+        <item name="colorControlNormal">@color/white</item>
+        <item name="colorControlActivated">@color/app_text_color_enabled</item>
+    </style>
+
+    <style name="GradientProgressBarStyle" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
+        <item name="android:indeterminateDrawable">@drawable/gradient_progress_drawable</item>
+        <item name="android:indeterminate">true</item>
+        <!--<item name="android:indeterminateTint" tools:targetApi="lollipop">@color/btn_app_dark_pink</item>-->
+        <!--<item name="android:indeterminateTintMode" tools:targetApi="lollipop">src_in</item>-->
+        <!--<item name="colorAccent">@color/btn_app_orange</item>-->
+        <item name="android:maxHeight">3dp</item>
+        <item name="android:minHeight">3dp</item>
+    </style>
+
+    <style name="StyledDialogTheme" parent="AppTheme">
+        <item name="android:layout_margin">12dp</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowAnimationStyle">@style/StyledDialogTheme.windowAnimation</item>
+    </style>
+
+    <style name="StyledDialogTheme.windowAnimation">
+        <item name="android:windowEnterAnimation">@anim/slide_up</item>
+        <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+
+</resources>

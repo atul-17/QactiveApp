@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:minHeight="?attr/actionBarSize">
+
+        <ImageButton
+            android:id="@+id/back"
+            android:layout_width="@dimen/norBtnSize"
+            android:layout_height="@dimen/norBtnSize"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/norEdgeMargin"
+            android:background="@mipmap/ic_keyboard_arrow_left_black" />
+
+
+        <TextView
+            android:id="@+id/choosesong"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="Music Server"
+            android:textColor="@color/black"
+            android:textSize="21sp"
+            android:textStyle="bold" />
+
+        <ImageButton
+            android:id="@+id/nowplaying"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="right"
+            android:layout_marginRight="20dp"
+            android:background="@mipmap/ic_home_black" />
+
+    </android.support.v7.widget.Toolbar>
+    -->
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchList"
+        android:textColor="@color/white"
+        android:textColorHint="@color/light_grey"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:imeOptions="actionDone"
+        android:hint="@string/searchList"
+        />
+    <ListView
+        android:id="@+id/lv_ServerContent"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_below="@id/choosesong"
+        android:layout_marginBottom="10dp"
+        android:layout_weight="1"
+        android:divider="@color/brand_orange"
+        android:dividerHeight="1dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"></ListView>
+
+
+</LinearLayout>

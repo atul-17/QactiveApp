@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/managedeviceLayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/app_rounded_corners_list_item"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+
+    <LinearLayout
+        android:id="@+id/main_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:id="@+id/tvDeviceName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:padding="4dp"
+            android:paddingBottom="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="4dp"
+            android:singleLine="true"
+            android:text="DName"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@color/white"
+            android:textSize="20dp" />
+
+        <LinearLayout
+            android:id="@+id/device_state_change"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="horizontal">
+
+            <ProgressBar
+                android:id="@+id/progress_loader"
+                style="@android:style/Widget.ProgressBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:visibility="visible"></ProgressBar>
+            <ImageView
+                android:id="@+id/state_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:src="@drawable/device_state_success"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tvDeviceName"
+            android:layout_toLeftOf="@+id/imgView_arrow"
+            android:layout_toStartOf="@+id/imgView_arrow"
+            android:orientation="vertical"
+            android:layout_marginRight="3dp"
+            >
+
+
+            <TextView
+                android:id="@+id/tvMasterSlave"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/tvDeviceName"
+                android:layout_toLeftOf="@+id/imgView_arrow"
+                android:layout_toStartOf="@+id/imgView_arrow"
+                android:text="Slave"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white"
+                android:layout_gravity="right"/>
+
+            <TextView
+                android:id="@+id/tvSpeakerType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvMasterSlave"
+                android:layout_alignStart="@+id/tvMasterSlave"
+                android:layout_centerVertical="true"
+                android:text="Master"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@color/white"
+                android:layout_gravity="right"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="2GHz"
+                android:id="@+id/tvWifiBand"
+                android:textColor="@color/white" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="3dp"
+        >
+
+    <include
+        android:id="@+id/muteseekbarlayout"
+        layout="@layout/manage_device_mute_seekbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/main_layout"
+        android:layout_toLeftOf="@+id/imgView_arrow"
+        android:layout_toStartOf="@+id/imgView_arrow"
+        android:layout_weight="1"
+        android:background="@android:color/transparent" />
+
+
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+ <RelativeLayout
+     android:layout_width="wrap_content"
+     android:layout_height="match_parent"
+     >
+
+    <ImageButton
+        android:id="@+id/imgView_arrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:clickable="true"
+        android:src="@drawable/arrow_next"
+        android:padding="6dp"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>
+
+</LinearLayout>
+

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/brand_orange" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:id="@+id/row_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:clickable="true">
+
+
+            <!-- icon -->
+            <ImageView
+                android:id="@+id/item_icon"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:clickable="true"
+                android:focusable="false"
+                android:src="@mipmap/folder"
+                android:scaleType="fitXY"
+                android:adjustViewBounds="true"
+
+                />
+
+            <!-- title -->
+            <TextView
+                android:id="@+id/item_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/item_icon"
+                android:background="@drawable/bkg"
+                android:clickable="false"
+                android:lines="1"
+                android:padding="10dp"
+                android:paddingTop="17dp"
+                android:singleLine="true"
+                android:focusable="false"
+                android:text="MyPhone"
+                android:textColor="@color/white"
+                android:textSize="19sp" />
+
+
+        </RelativeLayout>
+        <!-- icon -->
+        <LinearLayout
+            android:id="@+id/item_fav_button_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="10dp">
+
+            <ImageView
+                android:id="@+id/item_fav_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:focusable="false"
+                android:padding="5dp"
+                android:src="@mipmap/ic_remote_not_favorite"
+
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

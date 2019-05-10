@@ -1,0 +1,86 @@
+<!--
+  ~ /*********************************************************************************************
+  ~  *
+  ~  * Copyright (C) 2014 Libre Wireless Technology
+  ~  *
+  ~  * "Libre Sync" Project
+  ~  *
+  ~  * Libre Sync Android App
+  ~  * Author: Android App Team
+  ~  *
+  ~  ***********************************************************************************************/
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.libre.ActiveScenesListActivity">
+
+<!--Menu items are set to be hidden for now-->
+    <item
+        android:id="@+id/numberOfMaster"
+        android:orderInCategory="100"
+
+        android:title="M:"
+        app:showAsAction="always"
+        android:visible="false"/>
+    <item
+        android:id="@+id/numberOfSlave"
+        android:orderInCategory="100"
+
+        android:title="S:"
+        app:showAsAction="always"
+        android:visible="false"/>
+    <item
+        android:id="@+id/numberOfFree"
+        android:orderInCategory="100"
+
+        android:title="F:"
+        app:showAsAction="always"
+        android:visible="false"/>
+    />
+
+    <item
+        android:id="@+id/ReleaseScene"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Release This Scene"
+        app:showAsAction="never" />
+
+    <!--<item-->
+    <!--android:id="@+id/DropThisScene"-->
+    <!--android:icon="@mipmap/hamberg"-->
+    <!--android:orderInCategory="100"-->
+    <!--android:title="Drop This Scene"-->
+    <!--app:showAsAction="never" />-->
+
+
+    <item
+        android:id="@+id/JoinAllToThisScene"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Join All Free Speakers"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/FreeAll"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Free All From this Scene"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/JoinAll"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Join All"
+        app:showAsAction="never" />
+
+
+    <!--<item android:id="@+id/DefaultVolume" android:title="Make it as Default Volume"-->
+    <!--android:icon="@mipmap/hamberg"-->
+    <!--android:orderInCategory="100" app:showAsAction="never" />-->
+
+
+</menu>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/rounded_white_bg"
+    android:gravity="center"
+    android:padding="5dp"
+    android:orientation="vertical">
+    <android.support.v7.widget.AppCompatTextView
+        android:layout_marginTop="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/select_locale"
+        app:fontFamily="sans-serif"
+        android:textStyle="bold"
+        android:textColor="@color/black"/>
+
+    <RadioGroup
+        android:layout_marginTop="8dp"
+        android:id="@+id/rg_select_locale"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:text="@string/engUSLang"
+            android:id="@+id/rb_en_us"
+            android:button="@null"
+            android:textSize="16sp"
+            android:textColor="@color/rb_locale_textcolor_selector"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <RadioButton
+            android:id="@+id/rb_en_uk"
+            android:textSize="16sp"
+            android:text="@string/engUKLang"
+            android:button="@null"
+            android:textColor="@color/rb_locale_textcolor_selector"
+            app:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <RadioButton
+            android:button="@null"
+            android:textSize="16sp"
+            android:textColor="@color/rb_locale_textcolor_selector"
+            android:gravity="center"
+            android:id="@+id/rb_deu"
+            android:text="@string/deutschLang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+</LinearLayout>

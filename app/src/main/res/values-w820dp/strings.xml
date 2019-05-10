@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="help">Help</string>
+    <string name="home_network_subtitle">Home Network :</string>
+    <string name="home_network_password">Password :</string>
+    <string name="audio_output">Audio Output (Assigned):</string>
+    <string name="network_settings">Network Settings</string>
+</resources>

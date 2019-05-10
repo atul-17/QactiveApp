@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/parentlayout"
+    android:background="@color/grundigBgColor">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:minHeight="?attr/actionBarSize"
+        android:background="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/speaker_setup_title"
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:padding="10dp"
+                android:id="@+id/choosesong"
+                android:gravity="left"
+                android:textColor="@color/dark_grey"
+                android:layout_weight="2"/>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbar"
+        android:paddingBottom="50dp"
+        android:id="@+id/scrollView">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/header"
+                android:paddingLeft="16dp"
+                android:paddingRight="5dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+
+                android:visibility="gone" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/header"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/relativelayout1">
+                <include
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    layout="@layout/scene_name_layout"
+                    android:id="@+id/sceneNameLayout"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/relativelayout1"
+                android:id="@+id/relativeLayout2"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:background="@color/brand_dark_grey"
+                android:layout_marginTop="4dp"
+                android:visibility="visible">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/help"
+                    android:id="@+id/btnhelpHomeNetwork"
+                    android:visibility="gone"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@android:drawable/ic_menu_help" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/title_home_network_settings"
+                    android:id="@+id/title_home_network_settings"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
+            </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/manualCheckBoxLayout"
+                android:layout_below="@+id/relativeLayout2"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                >
+                <CheckBox
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/isManualCheckBox"
+                    android:button="@drawable/checkbox_ssid_manual_settings"
+                    android:buttonTint="@color/white"
+                    android:checked="false"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Manual Settings"
+                    android:paddingLeft="10dp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manualCheckBoxLayout"
+                android:id="@+id/wifiScan"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/home_network_subtitle"
+                    android:id="@+id/tvhome_network_subtitle"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_marginTop="4dp"
+
+                    />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:paddingLeft="10dp">
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:id="@+id/reload"
+                        android:background="@drawable/icon_dark_refresh"
+                        />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <Spinner
+                android:layout_width="fill_parent"
+                android:layout_height="50dp"
+                android:id="@+id/ssidSpinner"
+                android:layout_below="@+id/wifiScan"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="4dp"
+                android:spinnerMode="dropdown"
+                style="@style/MySpinnerLook"
+                android:background="@color/white" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/manualSettingsLayout"
+                android:layout_below="@+id/ssidSpinner"
+                android:visibility="gone"
+                >
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:id="@+id/manualSSID"
+                    android:textColorHint="@color/faint_grey"
+                    android:background="@color/white"
+                    android:singleLine="true"
+                    android:paddingLeft="20dp"
+                    android:imeOptions="actionNext"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="Home Network Type"
+                    android:id="@+id/networkTypeHeader"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_below="@+id/manualSSID"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_marginTop="4dp" />
+
+                <Spinner
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/networkType"
+                    android:layout_below="@+id/networkTypeHeader"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginTop="4dp"
+                    android:spinnerMode="dropdown"
+                    style="@style/MySpinnerLook"
+                    android:background="@color/white" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_below="@+id/manualSettingsLayout"
+                android:id="@+id/passwordLyt">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/home_network_password"
+                    android:id="@+id/home_network_password"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_marginTop="4dp" />
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:id="@+id/sac_setup_password"
+                    android:textColorHint="@color/light_grey"
+                    android:background="@color/white"
+                    android:singleLine="true"
+                    android:imeOptions="actionNext"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:textColor="@color/black"
+                    android:drawableRight="@drawable/password_visible"
+                    android:drawablePadding="10dp"
+                    android:paddingRight="10dp"
+                    android:tag="hidden"
+                    android:password="true"
+                    />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/passwordLyt"
+                android:orientation="vertical"
+                android:id="@+id/keyIndex">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/wepKeyIndex"
+                    android:id="@+id/wepKeyIndexTitle"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_marginStart="51dp"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin"
+                    android:layout_above="@+id/mWepKeyIdSpinner"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+                <Spinner
+                    style="@style/MySpinnerLook"
+                    android:layout_width="fill_parent"
+                    android:layout_height="50dp"
+                    android:id="@+id/mWepKeyIdSpinner"
+                    android:spinnerMode="dropdown"
+                    android:background="@color/white"
+                    android:layout_above="@+id/btnSaveNetworkSettings"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sac_setup_password"
+
+                android:background="@color/brand_dark_grey"
+
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:id="@+id/relativeLayout3"
+                android:layout_marginTop="8dp"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/help"
+                    android:id="@+id/btnhelpSelectedNetwork"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:src="@android:drawable/ic_menu_help" />
+
+                <TextView
+                    android:id="@+id/tvtitle_outdoor_network"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="@string/title_outdoor_network"
+
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/abc_text_size_medium_material"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="@dimen/activity_vertical_margin" />
+            </RelativeLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/title_name_your_network"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:id="@+id/tVoutdoorNetwork"
+                android:layout_below="@+id/relativeLayout3"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:visibility="gone"
+
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:imeOptions="actionNext"
+                android:id="@+id/eToutdoorNetworkName"
+                android:layout_below="@+id/tVoutdoorNetwork"
+                android:layout_alignParentLeft="true"
+                android:background="@color/white"
+                android:textColor="@color/black"
+                android:singleLine="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:visibility="gone"
+                />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/home_network_password"
+                android:id="@+id/tvOutdoorNetworkPassword"
+                android:layout_below="@+id/eToutdoorNetworkName"
+                android:textColor="@color/white"
+                android:textSize="@dimen/abc_text_size_medium_material"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:visibility="gone"
+                />
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:id="@+id/outdoor_hn_passphrase"
+                android:background="@color/white"
+                android:textColor="@color/black"
+                android:singleLine="true"
+                android:imeOptions="actionGo"
+                android:layout_below="@+id/tvOutdoorNetworkPassword"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:visibility="gone"
+                />
+
+
+        </RelativeLayout>
+    </ScrollView>
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textSize="24sp"
+        android:textColor="@color/white"
+        android:textAllCaps="false"
+        android:background="@color/brand_white"
+        android:id="@+id/btnSaveNetworkSettings"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+
+</RelativeLayout>

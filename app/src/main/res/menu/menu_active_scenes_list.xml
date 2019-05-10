@@ -1,0 +1,28 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.libre.ActiveScenesListActivity">
+<!--    <item
+        android:id="@+id/ReleaseScene"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Release This Scene"
+        app:showAsAction="never" />-->
+
+   <!-- <item
+        android:id="@+id/DropThisScene"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Drop This Scene"
+        app:showAsAction="never" />-->
+
+
+<!--    <item
+        android:id="@+id/JoinAllToThisScene"
+        android:icon="@mipmap/hamberg"
+        android:orderInCategory="100"
+        android:title="Join All To This Scene"
+        app:showAsAction="never" />-->
+
+</menu>

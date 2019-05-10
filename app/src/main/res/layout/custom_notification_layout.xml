@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:background="@color/brand_light_grey"
+    >
+
+    <ImageView android:id="@+id/image"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_alignParentLeft="true"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/ic_app_launchericon"/>
+
+    <TextView android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/image"
+        style="Custom Notification Title"
+        android:text="Libre"
+        android:textSize="14sp"
+        android:textColor="@color/white"/>
+    />
+
+    <TextView android:id="@+id/text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/image"
+        android:layout_below="@id/title"
+        style="Custom Notification Text"
+        android:text="Multiroom Audio Systems"
+        android:textColor="@color/light_gray"
+        android:textSize="12sp"
+        />/>
+
+    <ImageView android:id="@+id/two_image"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_alignBaseline="@id/image"
+        android:src="@drawable/cancwel"
+        android:padding="4dp"/>
+</RelativeLayout>

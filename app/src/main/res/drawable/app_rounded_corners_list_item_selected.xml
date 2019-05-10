@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+    <solid android:color="@color/slave_selection" android:width="6dip"  />
+    <stroke
+        android:width="4dp"
+        android:color="@color/slave_selection" />
+    <corners android:radius="12dip" />
+
+
+    <!-- Make sure bottom and top padding match corner radius -->
+    <padding
+        android:bottom="10dip"
+        android:left="6dip"
+        android:right="6dip"
+        android:top="10dip" />
+</shape>

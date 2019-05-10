@@ -1,0 +1,328 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brand_dark_grey"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginLeft="10dp"
+            android:drawableLeft="@mipmap/quick_link"
+            android:drawablePadding="10dp"
+            android:gravity="center"
+            android:text="@string/quick_play"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+
+            />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:id="@+id/chromecast_services"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:src="@mipmap/ic_cast_white_24dp_2x" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@string/cast"
+                android:textColor="@color/white"
+                android:textSize="19sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginStart="38dp">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/tunein_logo1"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/gcast_tunein_img" />
+
+            <TextView
+                android:id="@+id/gcast_tunein"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Tune in"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="19sp"
+
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginStart="38dp">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/deezer_logo"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/deezer_ok_button_img" />
+
+            <TextView
+                android:id="@+id/gcast_deezer"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Deezer"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="19sp"
+
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginStart="38dp">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/gplay_logo"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/google_play_img" />
+
+            <TextView
+                android:id="@+id/gcast_google_play"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Google Play"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="19sp"
+
+
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginStart="38dp">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/pandora_logo"
+                android:layout_marginLeft="10dp"
+                android:id="@+id/Pandora_img" />
+
+            <TextView
+                android:id="@+id/gcast_pandora"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Pandora"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="19sp"
+                />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginStart="38dp">
+
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/spotify"
+                android:layout_marginLeft="10dp"
+                />
+
+            <TextView
+                android:id="@+id/gcast_spotify"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="Spotify"
+                android:textColor="@color/white"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:textSize="19sp"
+                />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/moreapps"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="48dp"
+            android:layout_marginStart="38dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Google Cast­enabled apps"
+            android:textColor="@color/brand_orange"
+            android:gravity="center_vertical"
+            android:textSize="19sp"
+            android:textStyle="italic"
+            android:textColorHighlight="@color/brand_orange"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/local"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/local" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="1dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/local"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            />
+
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/favourite_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="5dp"
+            android:src="@mipmap/ic_remote_favorite"
+ />
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="@string/favorite_button"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+
+
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:id="@+id/musicServices"
+        android:paddingTop="10dp">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginLeft="10dp"
+            android:src="@mipmap/icon_streaming_services"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Music Services"
+            android:textColor="@color/white"
+            android:textSize="19sp"
+            android:textStyle="bold"
+
+            />
+    </LinearLayout>
+
+</LinearLayout>

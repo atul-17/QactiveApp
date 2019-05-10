@@ -1,0 +1,111 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'io.fabric'
+
+android {
+    signingConfigs {
+        release {
+            storeFile file("genericlibre.jks")
+            storePassword "libre1234"
+            keyAlias "MyLibreKey"
+            keyPassword "libre1234"
+        }
+        genericlibre {
+            keyAlias 'libre1234'
+            keyPassword 'libre1234'
+            storePassword 'libre1234'
+        }
+    }
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.libre"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 2
+        versionName "2.01-voice"
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+    }
+    aaptOptions {
+        cruncherEnabled = false
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+        checkAllWarnings false
+        ignoreWarnings true       // false by default
+        quiet true
+    }
+
+    buildTypes {
+        release {
+            debuggable true
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    packagingOptions {
+        exclude 'META-INF/beans.xml'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+    }
+
+    dexOptions {
+        javaMaxHeapSize '4g'
+    }
+}
+String apiKeyLocation = "./src/main/assets/GenericLibre.txt"
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'testfairy:testfairy-android-sdk:1.+@aar'
+    implementation 'org.eclipse.jetty:jetty-server:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-servlet:8.1.12.v20130726'
+    implementation 'org.eclipse.jetty:jetty-client:8.1.12.v20130726'
+    implementation 'org.slf4j:slf4j-jdk14:1.7.5'
+    implementation 'com.squareup:otto:1.3.8'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation files('libs/netty.jar')
+    implementation files('libs/cling-support-2.1.1.jar')
+    implementation files('libs/cling-core-2.1.1.jar')
+    implementation files('libs/seamless-http-1.1.1.jar')
+    implementation files('libs/seamless-util-1.1.1.jar')
+    implementation files('libs/seamless-xml-1.1.1.jar')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:support-v4:26.1.0'
+    implementation 'com.android.support:recyclerview-v7:26.1.0'
+    implementation 'com.android.support:cardview-v7:26.1.0'
+    implementation 'com.android.support:palette-v7:26.1.0'
+    implementation 'com.android.support:design:26.1.0'
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'org.apache.commons:commons-lang3:3.4'
+    implementation files('libs/login-with-amazon-sdk.jar')
+    implementation 'com.orhanobut:dialogplus:1.10'
+    implementation 'com.kyleduo.switchbutton:library:1.2.9'
+    implementation 'com.squareup.retrofit:retrofit:1.9.0'
+    implementation 'com.squareup.okhttp:logging-interceptor:2.6.0'
+    //    implementation project(':cutekit')
+    implementation 'com.github.johnpersano:supertoasts:1.3.4@aar'
+    implementation 'com.android.support:multidex:1.0.1'
+//alexa cognito libraries
+    implementation 'com.amazonaws:aws-android-sdk-cognitoidentityprovider:2.3.2'
+    implementation 'com.amazonaws:aws-android-sdk-core:2.2.+'
+    implementation 'com.amazonaws:aws-android-sdk-s3:2.2.+'
+    implementation 'com.amazonaws:aws-android-sdk-ddb:2.2.+'
+    implementation 'com.amazonaws:aws-android-sdk-ddb-mapper:2.2.+'
+    implementation files('libs/TarsosDSP-Android-2.0.jar')
+
+    //noinspection DuplicatePlatformClasses
+    implementation "com.android.support:support-annotations:$annotation_version"
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.9@aar') {
+        transitive = true
+    }
+}
+apply plugin: 'com.google.gms.google-services'

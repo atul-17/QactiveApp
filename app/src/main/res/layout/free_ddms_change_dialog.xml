@@ -1,0 +1,47 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:gravity="center"
+        android:layout_height="0dp"
+        android:id="@+id/relativeLayout7"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true">
+    </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=" Join All"
+        android:id="@+id/btnJoinAll"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/relativeLayout7"
+        android:layout_toStartOf="@+id/relativeLayout7" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Join"
+        android:id="@+id/btnSetSlave"
+        android:layout_gravity="center_horizontal"
+        android:layout_alignTop="@+id/btnJoinAll"
+        android:layout_toRightOf="@+id/relativeLayout7"
+        android:layout_toEndOf="@+id/relativeLayout7" />
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Question"
+        android:id="@+id/tvTitleQues"
+
+        android:layout_marginBottom="81dp"
+        android:layout_above="@+id/btnJoinAll"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

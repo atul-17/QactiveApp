@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item type="integer" name="rightTargetMargin">4</item>
+    <item type="integer" name="topTargetMargin">4</item>
+    <item type="integer" name="viewTargetRightPadding">7</item>
+    <item type="integer" name="viewTargetTopPadding">7</item>
+</resources>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main"
+    android:background="@color/black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/Rl_header_main"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:text="@string/back"
+            android:textColor="@color/black"
+            android:visibility="visible" />
+
+        <TextView
+            android:id="@+id/Tv_headerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/things_try"
+            android:textColor="@color/black"
+            android:textSize="@dimen/medium_text" />
+
+        <TextView
+            android:id="@+id/text_done"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:gravity="center"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:text="@string/done"
+            android:textColor="@color/black" />
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/logoHeader"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Rl_header_main"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/alexa_signin_logo"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="@string/screen2_tv1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/medium_text" />
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_below="@+id/logoHeader"
+        android:layout_above="@+id/btnLayout"
+        android:layout_marginTop="25dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <include
+            android:id="@+id/sceneNameLayout"
+            layout="@layout/chat_alexa" />
+    </RelativeLayout>
+    <LinearLayout
+        android:id="@+id/btnLayout"
+        android:layout_above="@+id/divider"
+        android:layout_centerHorizontal="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/changeLangBtn"
+            style="@style/alexaBtn"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:minWidth="150dp"
+            android:text="Change Language" />
+
+        <Button
+            android:id="@+id/signOutBtn"
+            style="@style/alexaBtn"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="10dp"
+            android:minWidth="150dp"
+            android:text="@string/SignOut" />
+    </LinearLayout>
+    <View
+        android:id="@+id/divider"
+        android:layout_above="@+id/Rl_sign_in"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="@dimen/top_margin_large"
+        android:background="@color/text_color"
+        android:orientation="vertical"/>
+
+    <LinearLayout
+        android:id="@+id/Rl_sign_in"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/learn_more1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/small_text" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/learn_more2"
+                android:textColor="@color/white"
+                android:textSize="@dimen/small_text" />
+
+            <TextView
+                android:id="@+id/tv3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:text="@string/learn_more3"
+                android:textColor="@color/brand_orange"
+                android:textSize="@dimen/small_text" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
