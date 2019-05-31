@@ -120,10 +120,15 @@ object AppUtils {
         oldSceneObject?.repeatState = window.getInt("Repeat")
         oldSceneObject?.album_name = window.getString("Album")
         oldSceneObject?.artist_name = window.getString("Artist")
+        oldSceneObject?.genre = window.getString("Genre")
         oldSceneObject?.totalTimeOfTheTrack = window.getLong("TotalTime")
         oldSceneObject?.currentSource = window.getInt("Current Source")
-        if (oldSceneObject?.currentSource == 14) {
+        if (oldSceneObject?.currentSource == Constants.AUX_SOURCE) {
             oldSceneObject?.artist_name = "Aux Playing"
+        }
+
+        if (oldSceneObject?.currentSource == Constants.BT_SOURCE) {
+            oldSceneObject?.artist_name = "Bluetooth Playing"
         }
         parseControlJsonForAlexa(window,oldSceneObject)
 
@@ -134,7 +139,7 @@ object AppUtils {
         try {
 
             val controlJson = window.getString("ControlsJson")
-            if (controlJson == null || controlJson.isEmpty())
+            if (controlJson == null || controlJson.isEmpty() || controlJson.equals("null",true))
                 return
 
             val controlsJsonArr = JSONArray(controlJson)

@@ -23,15 +23,15 @@ class SharedPreferenceHelper(val context: Context) {
         }
     }
 
-    fun alexaLoginAlertDontAsk(dontAsk:Boolean){
+    fun alexaLoginAlertDontAsk(ipAddress:String, dontAsk:Boolean){
         sharePreference.edit().apply {
-            putBoolean(ALEXA_ALERT_DONT_ASK, dontAsk)
+            putBoolean("${ALEXA_ALERT_DONT_ASK}_$ipAddress", dontAsk)
         }.apply()
     }
 
-    fun isAlexaLoginAlertDontAskChecked():Boolean{
+    fun isAlexaLoginAlertDontAskChecked(ipAddress:String):Boolean{
         sharePreference.apply {
-            return getBoolean(ALEXA_ALERT_DONT_ASK,false)
+            return getBoolean("${ALEXA_ALERT_DONT_ASK}_$ipAddress",false)
         }
     }
 }

@@ -183,20 +183,6 @@ public class AlexaLangUpdateActivity extends CTDeviceDiscoveryActivity implement
         luciControl.SendCommand(MIDCONST.ALEXA_COMMAND, "DEVICE_METADATA_REQUEST", LSSDPCONST.LUCI_SET);
     }
 
-    private void showloader() {
-        if (progressDialog!=null && progressDialog.isShowing())
-            progressDialog.dismiss();
-        progressDialog = new ProgressDialog(AlexaLangUpdateActivity.this);
-        progressDialog.setCancelable(false);
-        progressDialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        /*If you happen to get the error : "requestFeature() must be called before adding content",
-        the solution is to call progressDialog.show() BEFORE you call progressDialog.setContentView(R.layout.progressdialog)*/
-        progressDialog.show();
-        progressDialog.setContentView(R.layout.progress_loader);
-        mHandler.sendEmptyMessageDelayed(Constants.ALEXA_CHECK_TIMEOUT,Constants.INTERNET_PLAY_TIMEOUT);
-    }
-
     @Override
     public void deviceDiscoveryAfterClearingTheCacheStarted() {
 

@@ -17,6 +17,7 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.activity.CTDeviceSettingsActivity
 import com.cumulations.libreV2.activity.CTMediaSourcesActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
+import com.cumulations.libreV2.activity.CTNowPlayingActivity
 import com.cumulations.libreV2.fragments.CTActiveDevicesFragment
 import com.libre.*
 import com.libre.LErrorHandeling.LibreError
@@ -37,6 +38,7 @@ import com.libre.netty.BusProvider
 import com.libre.util.LibreLogger
 import com.libre.util.PicassoTrustCertificates
 import com.squareup.picasso.MemoryPolicy
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.ct_list_item_speakers.view.*
 import kotlinx.android.synthetic.main.music_playing_widget.view.*
 import java.util.concurrent.ConcurrentMap
@@ -77,7 +79,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
     inner class SceneObjectItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private var currentTrackName: String? = "-1"
-        private var previousSourceIndex: Int = 0
+//        private var previousSourceIndex: Int = 0
 
         fun bindSceneObject(sceneObject: SceneObject?, position: Int) {
             
@@ -88,20 +90,16 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 LibreLogger.d(this, "Scene Name " + sceneObject?.sceneName)
 
                 /* Fix by KK , When Album art is not updating properly */
-                if (currentTrackName == null)
-                    currentTrackName = ""
-
-                if (!itemView.tv_device_name?.isSelected!!)
-                    itemView.tv_device_name?.isSelected = true
-                if (!itemView.tv_album_name?.isSelected!!)
-                    itemView.tv_album_name?.isSelected = true
-                if (!itemView.tv_track_name?.isSelected!!)
-                    itemView.tv_track_name?.isSelected = true
+//                if (currentTrackName == null)
+//                    currentTrackName = ""
 
                 /* if (sceneObject.getCurrentSource() != 14) {*/ /* Karuna Commenting For the Single Function to Update the UI*/
                 if (sceneObject != null) {
                     if (!sceneObject.sceneName.isNullOrEmpty() && !sceneObject!!.sceneName.equals("NULL", ignoreCase = true)) {
-                        itemView.tv_device_name.text = sceneObject!!.sceneName
+                        if (itemView.tv_device_name.text != sceneObject.sceneName) {
+                            itemView.tv_device_name.text = sceneObject!!.sceneName
+                            itemView.tv_device_name.isSelected = true
+                        }
                     }
 
                     if (!sceneObject.trackName.isNullOrEmpty() && !sceneObject!!.trackName.equals("NULL", ignoreCase = true)) {
@@ -114,72 +112,61 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                         if (trackname.contains(Constants.DEZER_SONGSKIP))
                             trackname = trackname.replace(Constants.DEZER_SONGSKIP, "")
 
-                        itemView.tv_track_name.text = trackname
+                        if (itemView.tv_track_name.text != trackname) {
+                            itemView.tv_track_name.text = trackname
+                            itemView.tv_track_name.isSelected = true
+                        }
                     }
 
                     if (!sceneObject.artist_name.isNullOrEmpty() && !sceneObject!!.album_name.equals("null", ignoreCase = true)) {
-                        itemView.tv_album_name.text = sceneObject!!.artist_name
+                        if (itemView.tv_album_name.text != sceneObject!!.artist_name) {
+                            itemView.tv_album_name.text = sceneObject!!.artist_name
+                            itemView.tv_album_name.isSelected = true
+                        }
                     } else if (!sceneObject.album_name.isNullOrEmpty() && !sceneObject!!.album_name.equals("null", ignoreCase = true)) {
-                        itemView.tv_album_name.text = sceneObject!!.album_name
+                        if (itemView.tv_album_name.text != sceneObject!!.album_name) {
+                            itemView.tv_album_name.text = sceneObject!!.album_name
+                            itemView.tv_album_name.isSelected = true
+                        }
                     }
 
                     /*this is to show loading dialog while we are preparing to play*/
-                    if ((sceneObject!!.currentSource != Constants.AUX_SOURCE
-                                    && sceneObject!!.currentSource != Constants.BT_SOURCE
-                                    && sceneObject!!.currentSource != Constants.GCAST_SOURCE) && (currentTrackName != null
-                                    && sceneObject!!.trackName != null
-                                    && (!currentTrackName.equals(sceneObject!!.trackName, ignoreCase = true) 
-                                    || previousSourceIndex != sceneObject!!.currentSource))) {
+                    if (sceneObject!!.currentSource != Constants.AUX_SOURCE
+                            && sceneObject!!.currentSource != Constants.BT_SOURCE
+                            && sceneObject!!.currentSource != Constants.GCAST_SOURCE) {
 
-                        /* Added to handle the case where trackname is empty string"*/
-                        //                        if (sceneObject.getTrackName().trim().length() > 0)
-                        //                            holder.currentTrackName = sceneObject.getTrackName();
-                        currentTrackName = sceneObject!!.trackName
                         /*Album Art For All other Sources Except */
-                        if (!sceneObject!!.album_art.isNullOrEmpty()) {
-                            if (sceneObject!!.album_art.equals("coverart.jpg", ignoreCase = true)) {
-                                val albumUrl = "http://" + sceneObject!!.ipAddress + "/" + "coverart.jpg"
-                                /* If Track Name is Different just Invalidate the Path And if we are resuming the Screen(Screen OFF and Screen ON) , it will not re-download it */
+                        if (!sceneObject!!.album_art.isNullOrEmpty() && sceneObject!!.album_art.equals("coverart.jpg", ignoreCase = true)) {
+                            val albumUrl = "http://" + sceneObject!!.ipAddress + "/" + "coverart.jpg"
+                            /* If Track Name is Different just Invalidate the Path And if we are resuming the Screen(Screen OFF and Screen ON) , it will not re-download it */
+
+                            if (sceneObject!!.trackName != null
+                                    && !currentTrackName.equals(sceneObject!!.trackName, ignoreCase = true)) {
+                                currentTrackName = sceneObject?.trackName!!
                                 val mInvalidated = mInvalidateTheAlbumArt(sceneObject!!, albumUrl)
                                 LibreLogger.d(this, "Invalidated the URL $albumUrl Status $mInvalidated")
+                            }
 
-                                PicassoTrustCertificates.getInstance(context).load(albumUrl)
-                                        /*.memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)*/
-                                        .placeholder(R.mipmap.album_art)
-                                        .error(R.mipmap.album_art)
-                                        .into(itemView.iv_album_art)
-                            } else {
-                                val mInvalidated = mInvalidateTheAlbumArt(sceneObject!!, sceneObject.album_art)
-                                LibreLogger.d(this, "Invalidated the URL ${sceneObject.album_art} Status $mInvalidated")
-                                    PicassoTrustCertificates.getInstance(context).load(sceneObject?.album_art)
+                            PicassoTrustCertificates.getInstance(context).load(albumUrl)
+                                    /*.memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)*/
+                                    .placeholder(R.mipmap.album_art)
+                                    .error(R.mipmap.album_art)
+                                    .into(itemView.iv_album_art)
+                        } else {
+                            when {
+                                !sceneObject.album_art.isNullOrEmpty() -> {
+                                    /*PicassoTrustCertificates.getInstance(context)*/
+                                    Picasso.with(context)
+                                            .load(sceneObject?.album_art)
                                             /*   .memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)*/
                                             .placeholder(R.mipmap.album_art)
                                             .error(R.mipmap.album_art)
                                             .into(itemView.iv_album_art)
-                            }
-                        } else if (sceneObject!!.currentSource == Constants.ALEXA_SOURCE/*alexa*/) {
-                            itemView.iv_album_art.setImageDrawable(context.resources.getDrawable(R.drawable.amazonlogo_playing))
-                        } else {
-                            PicassoTrustCertificates.getInstance(context).load(R.mipmap.album_art)
-                                    .into(itemView.iv_album_art)
-                        }
-                    } else {
-                        when {
-                            !sceneObject.album_art.isNullOrEmpty() -> {
-                                PicassoTrustCertificates.getInstance(context).load(sceneObject!!.album_art)
-                                        /*   .memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)*/
-                                        .placeholder(R.mipmap.album_art)
-                                        .error(R.mipmap.album_art)
-                                        .into(itemView.iv_album_art)
-                            }
-                            
-                            sceneObject!!.currentSource == Constants.ALEXA_SOURCE -> {
-                                itemView.iv_album_art.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.amazonlogo_playing))
-                            }
-                            
-                            else -> {
-                                PicassoTrustCertificates.getInstance(context).load(R.mipmap.album_art)
-                                        .into(itemView.iv_album_art)
+                                }
+
+                                else -> {
+                                    itemView.iv_album_art!!.setImageResource(R.mipmap.album_art)
+                                }
                             }
                         }
                     }
@@ -211,10 +198,14 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                             itemView.seek_bar_volume.progress = sceneObject!!.volumeValueInPercentage
                     }
 
-                    /* This line should always be here do not move this line above the ip-else loop where we check the current Source*/
-                    previousSourceIndex = sceneObject!!.currentSource
+                    if (itemView.seek_bar_volume.progress==0){
+                        itemView?.iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+                    } else itemView?.iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
-                    toggleAVSViews(sceneObject?.isAlexaBtnLongPressed)
+                    /* This line should always be here do not move this line above the ip-else loop where we check the current Source*/
+//                    previousSourceIndex = sceneObject!!.currentSource
+
+//                    toggleAVSViews(sceneObject?.isAlexaBtnLongPressed)
 
                     updateViews(sceneObject)
                     updatePlayPause(sceneObject)
@@ -239,6 +230,12 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 }
             }
 
+            itemView?.iv_album_art?.setOnClickListener {
+                context.startActivity(Intent(context,CTNowPlayingActivity::class.java).apply {
+                    putExtra(Constants.CURRENT_DEVICE_IP,sceneObject?.ipAddress)
+                })
+            }
+
             itemView.iv_play_pause.setOnClickListener {
 
                 val mScanHandler = ScanningHandler.getInstance()
@@ -251,7 +248,8 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                         || sceneObject!!.currentSource == Constants.GCAST_SOURCE
                         || sceneObject!!.currentSource == Constants.VTUNER_SOURCE
                         || sceneObject!!.currentSource == Constants.TUNEIN_SOURCE
-                        || sceneObject!!.currentSource == Constants.BT_SOURCE && (mNodeWeGotForControl.getgCastVerision() == null
+                        || sceneObject!!.currentSource == Constants.BT_SOURCE
+                        && (mNodeWeGotForControl.getgCastVerision() == null
                                 && (mNodeWeGotForControl.bT_CONTROLLER == SceneObject.CURRENTLY_NOTPLAYING || mNodeWeGotForControl.bT_CONTROLLER == SceneObject.CURRENTLY_PLAYING)
                                 || (mNodeWeGotForControl.getgCastVerision() != null && mNodeWeGotForControl.bT_CONTROLLER < SceneObject.CURRENTLY_PAUSED))) {
                     val error = LibreError("", Constants.PLAY_PAUSE_NOT_ALLOWED, 1)//TimeoutValue !=0 means ,its VERYSHORT
@@ -278,7 +276,6 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 if (sceneObject!!.playstatus == SceneObject.CURRENTLY_PLAYING) {
                     LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, CommandType.SET, sceneObject.ipAddress)
                     itemView.iv_play_pause.setImageResource(R.drawable.play_orange)
-                    itemView.iv_volume_mute.setImageResource(R.drawable.ic_volume_mute)
                 } else {
                     if (sceneObject!!.currentSource == Constants.BT_SOURCE) { /* Change Done By Karuna, Because for BT Source there is no RESUME*/
                         LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, CommandType.SET, sceneObject.ipAddress)
@@ -286,7 +283,6 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                         LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, CommandType.SET, sceneObject.ipAddress)
                     }
                     itemView.iv_play_pause.setImageResource(R.drawable.pause_orange)
-//                    itemView.iv_volume_mute.setImageResource(R.drawable.ic_volume_up)
                 }
             }
 
@@ -303,11 +299,12 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
 
                     LibreLogger.d("onStopTracking", "" + position)
-                    if (sceneObject!!.currentSource != Constants.AIRPLAY_SOURCE) {
-                        LUCIControl.SendCommandWithIp(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject.ipAddress)
-                    } else {
-                        LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject.ipAddress)
-                    }
+
+                    if (seekBar.progress==0){
+                        itemView?.iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+                    } else itemView?.iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
+                    LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject?.ipAddress)
 
                     sceneObject!!.volumeValueInPercentage = seekBar.progress
                     ScanningHandler.getInstance().sceneObjectFromCentralRepo[sceneObject.ipAddress] = sceneObject
@@ -323,8 +320,6 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
                 val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject?.ipAddress)
                 if (lssdpNodes == null || lssdpNodes.alexaRefreshToken.isNullOrEmpty()) {
-//                    (context as CTDeviceDiscoveryActivity).showToast("Login into Amazon")
-                    sceneObject?.isAlexaBtnLongPressed = false
                     toggleAVSViews(false)
                     (context as CTDeviceDiscoveryActivity).showLoginWithAmazonAlert(sceneObject?.ipAddress!!)
                     return@setOnLongClickListener true
@@ -336,11 +331,9 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     Log.d("OnLongClick", "phone ip: " + phoneIp + "port: " + MicTcpServer.MIC_TCP_SERVER_PORT)
                     LUCIControl(sceneObject?.ipAddress).SendCommand(MIDCONST.MID_MIC, Constants.START_MIC + phoneIp + "," + MicTcpServer.MIC_TCP_SERVER_PORT, LSSDPCONST.LUCI_SET)
 
-                    sceneObject?.isAlexaBtnLongPressed = true
                     toggleAVSViews(true)
                     audioRecordUtil?.startRecording(this@CTDeviceListAdapter)
                 } else {
-                    sceneObject?.isAlexaBtnLongPressed = false
                     toggleAVSViews(showListening = false)
                     (context as CTDeviceDiscoveryActivity).showToast( "Ip not available")
                 }
@@ -350,13 +343,9 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
             itemView.ib_alexa_avs_btn?.setOnTouchListener { view, motionEvent ->
                 Log.d("AlexaBtn","motionEvent = "+motionEvent.action)
-                if (motionEvent.action == MotionEvent.ACTION_UP) {
+                if (motionEvent.action == MotionEvent.ACTION_UP || motionEvent.action == MotionEvent.ACTION_CANCEL) {
+                /*if (motionEvent.action != MotionEvent.ACTION_DOWN) {*/
                     Log.d("AlexaBtn","long press release, sceneObject isLongPressed = "+sceneObject?.isAlexaBtnLongPressed)
-                    /*if (sceneObject?.isAlexaBtnLongPressed!!) {
-                        sceneObject?.isAlexaBtnLongPressed = false
-                        toggleAVSViews(false)
-                    }*/
-                    sceneObject?.isAlexaBtnLongPressed = false
                     toggleAVSViews(false)
                 }
                 return@setOnTouchListener false
@@ -400,29 +389,16 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
         }
 
         private fun updateViews(sceneObject: SceneObject?) {
+            Log.d("updateViews","current source = ${sceneObject?.currentSource}")
 
+            itemView?.iv_current_source?.visibility = View.GONE
             when (sceneObject?.currentSource) {
 
                 Constants.NO_SOURCE,
                 Constants.DDMSSLAVE_SOURCE -> {
                     itemView.iv_play_pause.isClickable = false
                     if (sceneObject?.currentSource == Constants.NO_SOURCE){
-                        itemView?.seek_bar_song?.visibility = View.GONE
-                        itemView?.iv_album_art?.visibility = View.GONE
-                        itemView?.iv_play_pause?.visibility = View.GONE
-                        itemView?.tv_track_name?.text = context.getText(R.string.libre_voice)
-
-                        val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject?.ipAddress)
-                        if (node?.alexaRefreshToken.isNullOrEmpty()){
-                            itemView?.tv_track_name?.visibility = View.VISIBLE
-                            itemView?.tv_track_name?.text = context.getText(R.string.login_to_enable_cmds)
-                            itemView?.tv_album_name?.visibility = View.GONE
-                        } else {
-                            itemView?.tv_album_name?.visibility = View.VISIBLE
-                            itemView?.tv_track_name?.visibility = View.VISIBLE
-                            itemView?.tv_track_name?.text = context.getText(R.string.app_name)
-                            itemView?.tv_album_name?.text = context.getText(R.string.speaker_ready_for_cmds)
-                        }
+                        handleAlexaViews(sceneObject)
                     }
                 }
 
@@ -441,20 +417,16 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     itemView.seek_bar_song.isEnabled = false
 
                     itemView.tv_track_name.text = context.getText(R.string.aux)
-                    PicassoTrustCertificates.getInstance(context).load(R.mipmap.album_art).memoryPolicy(MemoryPolicy.NO_STORE)
-                            .placeholder(R.mipmap.album_art)
-                            .into(itemView.iv_album_art)
+                    itemView.tv_album_name.visibility = View.GONE
+                    itemView.iv_album_art.visibility = View.GONE
                 }
 
                 Constants.BT_SOURCE -> {
                     itemView.tv_track_name.text = context.getText(R.string.bluetooth)
+                    itemView.tv_album_name.visibility = View.GONE
+                    itemView.iv_album_art.visibility = View.GONE
                     itemView.seek_bar_song.progress = 0
                     itemView.seek_bar_song.isEnabled = false
-
-                    PicassoTrustCertificates.getInstance(context).load(R.mipmap.album_art)
-                            .memoryPolicy(MemoryPolicy.NO_STORE)
-                            .placeholder(R.mipmap.album_art)
-                            .into(itemView.iv_album_art)
 
                     val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject.ipAddress)
                             ?: return
@@ -476,7 +448,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     itemView.seek_bar_song.isEnabled = false
                 }
 
-                Constants.ALEXA_SOURCE, Constants.DMR_SOURCE,Constants.DMP_SOURCE -> {
+                Constants.ALEXA_SOURCE, Constants.DMR_SOURCE,Constants.DMP_SOURCE,Constants.SPOTIFY_SOURCE -> {
                     if (!sceneObject?.trackName.isNullOrEmpty()){
                         itemView?.iv_play_pause?.visibility = View.VISIBLE
                         itemView?.tv_track_name?.visibility = View.VISIBLE
@@ -493,7 +465,31 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                             itemView?.seek_bar_song?.isEnabled = true
                         }
                     }
+
+                    if (sceneObject?.currentSource == Constants.SPOTIFY_SOURCE)
+                        itemView?.iv_current_source?.visibility = View.VISIBLE
                 }
+
+                else -> handleAlexaViews(sceneObject)
+            }
+        }
+
+        private fun handleAlexaViews(sceneObject: SceneObject?){
+            itemView?.seek_bar_song?.visibility = View.GONE
+            itemView?.iv_album_art?.visibility = View.GONE
+            itemView?.iv_play_pause?.visibility = View.GONE
+            itemView?.tv_track_name?.text = context.getText(R.string.libre_voice)
+
+            val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject?.ipAddress)
+            if (node?.alexaRefreshToken.isNullOrEmpty()){
+                itemView?.tv_track_name?.visibility = View.VISIBLE
+                itemView?.tv_track_name?.text = context.getText(R.string.login_to_enable_cmds)
+                itemView?.tv_album_name?.visibility = View.GONE
+            } else {
+                itemView?.tv_album_name?.visibility = View.VISIBLE
+                itemView?.tv_track_name?.visibility = View.VISIBLE
+                itemView?.tv_track_name?.text = context.getText(R.string.app_name)
+                itemView?.tv_album_name?.text = context.getText(R.string.speaker_ready_for_cmds)
             }
         }
 
@@ -541,7 +537,12 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
     fun addDeviceToList(sceneObject: SceneObject?) {
         Log.d("addDevice","ip ${sceneObject?.ipAddress} scene ${sceneObject?.trackName}")
         sceneObjectMap[sceneObject?.ipAddress!!] = sceneObject
-        notifyDataSetChanged()
+//        notifyDataSetChanged()
+
+        /*To update particular item only*/
+        val pos = ArrayList<SceneObject>(sceneObjectMap.values).indexOf(sceneObject)
+        Log.d("addDeviceToList","pos = $pos, ${sceneObject.sceneName}")
+        notifyItemChanged(pos,sceneObject)
     }
 
     fun getDeviceSceneFromAdapter(deviceIp:String):SceneObject? {

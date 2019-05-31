@@ -5,11 +5,13 @@ import android.view.View
 import com.cumulations.libreV2.launchTheApp
 import com.libre.R
 import com.libre.Scanning.Constants
+import com.libre.alexa_signin.AlexaUtils
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
 import com.libre.luci.LSSDPNodeDB
 import com.libre.luci.LUCIControl
+import com.libre.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_alexa_things_to_try.*
 
 
@@ -34,16 +36,27 @@ class CTAlexaThingsToTryActivity : CTDeviceDiscoveryActivity(), View.OnClickList
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ct_activity_alexa_things_to_try)
 
-        LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(deviceIp).apply {
+        /*LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(deviceIp).apply {
             if (this.alexaRefreshToken.isNullOrEmpty()){
                 tv_done?.text = getText(R.string.done)
             } else tv_done?.text = getText(R.string.logout)
-        }
+        }*/
+
+        LibreLogger.d(this,"from = $fromActivity")
+
+        if (!fromActivity.isNullOrEmpty() && fromActivity?.equals(CTConnectingToMainNetwork::class.java.simpleName)!!){
+            tv_done?.text = getText(R.string.done)
+        } else tv_done?.text = getText(R.string.logout)
 
         iv_back.setOnClickListener(this)
         tv_done.setOnClickListener(this)
         ll_alexa_app.setOnClickListener(this)
         tv_alexa_app.setOnClickListener(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        AlexaUtils.sendAlexaRefreshTokenRequest(deviceIp)
     }
 
     override fun onClick(v: View) {
@@ -79,26 +92,6 @@ class CTAlexaThingsToTryActivity : CTDeviceDiscoveryActivity(), View.OnClickList
     }
 
     private fun handleBackPress(){
-        /*if (!fromActivity.isNullOrEmpty()) {
-            if (fromActivity == CTAmazonLoginActivity::class.java.simpleName
-                    || fromActivity == CTAlexaThingsToTryActivity::class.java.simpleName) {
-
-                *//*startActivity(Intent(this@CTAlexaThingsToTryActivity, SourcesOptionActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    putExtra(Constants.CURRENT_DEVICE_IP, deviceIp)
-                })
-                finish()*//*
-            } else if (fromActivity == CTConnectingToMainNetwork::class.java.simpleName) {
-                intentToHome(this)
-            } else if (fromActivity == CTDeviceSettingsActivity::class.java.simpleName) {
-                startActivity(Intent(this@CTAlexaThingsToTryActivity, CTDeviceSettingsActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                    putExtra(Constants.CURRENT_DEVICE_IP, deviceIp)
-                })
-                finish()
-            }
-        }*/
-
         if (!fromActivity.isNullOrEmpty() && fromActivity == CTConnectingToMainNetwork::class.java.simpleName) {
             intentToHome(this)
         } else onBackPressed()

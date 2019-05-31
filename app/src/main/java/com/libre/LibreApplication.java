@@ -210,10 +210,6 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
         }
     }
 
-    public void closeScanThread(){
-        wt.close();
-    }
-
     public ScanThread getScanThread() {
         return wt;
     }
@@ -278,8 +274,10 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
     @Override
     public void micTcpServerException(Exception e) {
         LibreLogger.d(this,"micTcpServerException = "+e.getMessage());
-        if (micExceptionActivityListener!=null)
+        if (micExceptionActivityListener!=null){
+            Log.e("micTcpServerEx","listener "+micExceptionActivityListener.getClass().getSimpleName());
             micExceptionActivityListener.micExceptionCaught(e);
+        }
     }
 
     public void registerForMicException(MicExceptionListener listener){

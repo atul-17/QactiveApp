@@ -27,7 +27,7 @@
         android:name=".LibreApplication"
         android:allowBackup="false"
         android:hardwareAccelerated="true"
-        android:icon="@drawable/riva_icon"
+        android:icon="@drawable/ic_launcher_universal"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:theme="@style/AppTheme"
@@ -92,11 +92,6 @@
         <activity
             android:name=".nowplaying.DeviceList"
             android:label="@string/title_activity_device_list"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ManageDevice.BrowserActivity"
-            android:label="Sources"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
         <activity
@@ -205,7 +200,7 @@
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.libre.com.cumulations.libreV2.activity.DeviceDiscoveryActivity" />
+                android:value="com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity" />
         </activity>
         <activity
             android:name=".Ls9Sac.GoogleCastUpdateAfterSac"
@@ -355,6 +350,26 @@
 
         <activity
             android:name="com.cumulations.libreV2.activity.CTMediaSourcesActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cumulations.libreV2.activity.CTNowPlayingActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cumulations.libreV2.activity.CTDMSBrowserActivityV2"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cumulations.libreV2.activity.CTUpnpFileBrowserActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.cumulations.libreV2.activity.CTDeviceBrowserActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 

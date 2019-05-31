@@ -112,7 +112,7 @@ public class FirmwareUploadActivity extends Activity {
 
                 {
                     Log.d("", "Devices found");
-                     /*loading stop with success message*/
+                     /*loading stopMediaServer with success message*/
                 }
                 break;
 

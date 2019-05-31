@@ -49,7 +49,7 @@ public class MIDCONST {
     public static final int NETWORK_STATUS_CHANGE = 124;
 
     public static final int CURREN_TIME = 49;
-    public static final int GET_UI = 42;
+    public static final int SET_UI = 42;
 
 
     public static final short MID_DDMS = 100;

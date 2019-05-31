@@ -145,6 +145,7 @@ public class MicTcpServer {
                     micTcpServerExceptionListener.micTcpServerException(e);
                 }
             } else {
+                /*Saving recorded buffer data to total byte array until client socket is accepted*/
                 try {
                     totalBufferStream.write(audioBuffer);
                     Log.d(TAG, "device not connected,totalBufferStream = " + Arrays.toString(totalBufferStream.toByteArray()));
@@ -155,6 +156,7 @@ public class MicTcpServer {
                 }
             }
         } else {
+            /*Saving recorded buffer data to total byte array until client socket is accepted*/
             try {
                 totalBufferStream.write(audioBuffer);
             } catch (IOException e) {
@@ -179,7 +181,7 @@ public class MicTcpServer {
     }
 
 
-    public void createVerificationFile() {
+    void createVerificationFile() {
         /*try {
             fileOutputStream.close();
             fileOutputStream.flush();
@@ -193,7 +195,7 @@ public class MicTcpServer {
         void micTcpServerException(Exception e);
     }
 
-    public void clearAudioBuffer() {
+    void clearAudioBuffer() {
         totalBufferStream.reset();
     }
 

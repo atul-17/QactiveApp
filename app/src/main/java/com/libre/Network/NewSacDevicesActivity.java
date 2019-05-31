@@ -273,7 +273,7 @@ public class NewSacDevicesActivity extends CTDeviceDiscoveryActivity implements 
     }
 
     public void stopTimer() {
-        //stop the timer, if it's not already null
+        //stopMediaServer the timer, if it's not already null
 
         if (timer != null) {
             timer.cancel();

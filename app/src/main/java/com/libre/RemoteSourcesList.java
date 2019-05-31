@@ -10,6 +10,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -19,12 +20,15 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
+import com.cumulations.libreV2.activity.CTMediaSourcesActivity;
+import com.cumulations.libreV2.activity.CTNowPlayingActivity;
 import com.libre.LErrorHandeling.LibreError;
 import com.libre.ManageDevice.DataItem;
 import com.libre.Scanning.Constants;
@@ -66,7 +70,6 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
     private static final String TAG_ITEM_ALBUMURL = "StationImage";
     private RecyclerView recyclerView;
     private ArrayList<DataItem> ViewItemArray;
-    //    private RemoteSourcesFilesDisplayAdapter mAdapter;
     private RecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     boolean gotolastpostion;
@@ -80,7 +83,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
     private ImageButton homeButton;
     private int current_source_index_selected = -1;
     AlertDialog alert;
-   // private boolean isSearchEnabled;
+    // private boolean isSearchEnabled;
     private boolean isSongSlected = false;
 
     private int searchJsonHashCode;
@@ -107,19 +110,23 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
         }
     };
 
+    private AppCompatTextView tvNoItems;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_remote_sources_list);
 
         currentIpaddress = getIntent().getStringExtra(Constants.CURRENT_DEVICE_IP);
-        current_source_index_selected = getIntent().getIntExtra("current_source_index_selected", -1);
+        current_source_index_selected = getIntent().getIntExtra(Constants.CURRENT_SOURCE_INDEX_SELECTED, -1);
         setTitleForTheBrowser(current_source_index_selected);
 
         if (current_source_index_selected < 0) {
             Toast.makeText(this, getString(R.string.sourceIndexWrong), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(RemoteSourcesList.this, SourcesOptionActivity.class);
+            Intent intent = new Intent(RemoteSourcesList.this, CTMediaSourcesActivity.class);
             intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
+            SceneObject sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress);
+            intent.putExtra(Constants.CURRENT_SOURCE, sceneObject.getCurrentSource());
             startActivity(intent);
             finish();
         }
@@ -142,13 +149,13 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
-        ViewItemArray = new ArrayList<DataItem>();
-//        mAdapter = new RemoteSourcesFilesDisplayAdapter(ViewItemArray, this);
-        mAdapter = new RecyclerViewAdapter(this,ViewItemArray, this);
-        recyclerView.setAdapter(mAdapter);
+        tvNoItems = findViewById(R.id.tv_no_data);
 
         mLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(mLayoutManager);
+        ViewItemArray = new ArrayList<DataItem>();
+        mAdapter = new RecyclerViewAdapter(this, ViewItemArray, this);
+        recyclerView.setAdapter(mAdapter);
 
 
         /////////////////////////// tracks limit //////////////////////////////////////
@@ -199,26 +206,27 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
         });*/
 
         recyclerView.setOnTouchListener(new View.OnTouchListener() {
-            float beginY=0,endY =0;
+            float beginY = 0, endY = 0;
+
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 //ACTION_DOWN when the user first touches the screen. We are taking the beginY co ordinate here
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN){
-                    LibreLogger.d(this,"action down, touched y co ordinate is "+motionEvent.getY());
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    LibreLogger.d(this, "action down, touched y co ordinate is " + motionEvent.getY());
                     beginY = motionEvent.getY();
-                 
+
 
                 }
                 //ACTION_UP, when the user finally releases the touch. We are taking the endY co ordinate here
-                if (motionEvent.getAction() == MotionEvent.ACTION_UP){
-                    LibreLogger.d(this,"action up, touch lifted y co ordinate is "+motionEvent.getY());
+                if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
+                    LibreLogger.d(this, "action up, touch lifted y co ordinate is " + motionEvent.getY());
                     endY = motionEvent.getY();
-                    if (beginY > endY){
-                        LibreLogger.d(this,"touched from bottom -> top, send scroll down");
+                    if (beginY > endY) {
+                        LibreLogger.d(this, "touched from bottom -> top, send scroll down");
                         sendScrollDown();
-                    }else if (beginY < endY){
-                        LibreLogger.d(this,"touched from top -> bottom, send scroll up");
-                     sendScrollUp();
+                    } else if (beginY < endY) {
+                        LibreLogger.d(this, "touched from top -> bottom, send scroll up");
+                        sendScrollUp();
                     }
                     //return false - means other touch events like onclick on the view item will now work.
                     return false;
@@ -251,8 +259,10 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                 unRegisterForDeviceEvents();
                 //   luciControl.SendCommand(MIDCONST.MID_REMOTE_UI, GET_HOME, LSSDPCONST.LUCI_SET);
 
-                Intent intent = new Intent(RemoteSourcesList.this, SourcesOptionActivity.class);
+                Intent intent = new Intent(RemoteSourcesList.this, CTMediaSourcesActivity.class);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
+                SceneObject currentSceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress);
+                intent.putExtra(Constants.CURRENT_SOURCE, "" + currentSceneObject.getCurrentSource());
                 startActivity(intent);
                 finish();
 
@@ -260,24 +270,23 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
             }
         });
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-         /*Registering to receive messages*/
+        /*Registering to receive messages*/
         registerForDeviceEvents(this);
     }
 
-    private void sendScrollUp(){
+    private void sendScrollUp() {
         if (mLayoutManager.findFirstVisibleItemPosition() == 0) {
 
             LUCIControl luciControl = new LUCIControl(currentIpaddress);
             luciControl.SendCommand(MIDCONST.MID_REMOTE, "SCROLLUP", LSSDPCONST.LUCI_SET);
             gotolastpostion = true;
             //  mLayoutManager.scrollToPosition(49);
-            m_progressDlg = ProgressDialog.show(RemoteSourcesList.this, getString(R.string.notice),getString(R.string.loading), true, true, null);
+            m_progressDlg = ProgressDialog.show(RemoteSourcesList.this, getString(R.string.notice), getString(R.string.loading), true, true, null);
             LibreLogger.d(this, "recycling " + "SCROLL UP" + "and find first visible item position" +
                     mLayoutManager.findFirstVisibleItemPosition() + "find last visible item" +
                     mLayoutManager.findLastVisibleItemPosition() + "find last completely visible item" +
@@ -287,7 +296,8 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
         }
     }
-    private void sendScrollDown(){
+
+    private void sendScrollDown() {
         if (mLayoutManager.findLastVisibleItemPosition() == 49) {
             LibreLogger.d(this, "recycling " + "last visible Item Position" + mLayoutManager.findLastVisibleItemPosition());
             LUCIControl luciControl = new LUCIControl(currentIpaddress);
@@ -295,11 +305,12 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
             gotolastpostion = false;
             LibreLogger.d(this, "recycling " + "SCROLL DOWN");
             // mLayoutManager.scrollToPosition(0);
-            m_progressDlg = ProgressDialog.show(RemoteSourcesList.this, getString(R.string.notice),getString(R.string.loading), true, true, null);
+            m_progressDlg = ProgressDialog.show(RemoteSourcesList.this, getString(R.string.notice), getString(R.string.loading), true, true, null);
             LibreLogger.d(this, "recycling " + "Last song");
-            Toast.makeText(getApplicationContext(),getString(R.string.lastSong), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), getString(R.string.lastSong), Toast.LENGTH_SHORT).show();
         }
     }
+
     /*Searching dialog */
     private void searchingDialog(final int position) {
         // custom dialog
@@ -418,7 +429,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     try {
                         closeLoader();
                         presentJsonHashCode = message.hashCode();
-                        LibreLogger.d(this," present hash code : the hash code for "+message +" is "+presentJsonHashCode);
+                        LibreLogger.d(this, " present hash code : the hash code for " + message + " is " + presentJsonHashCode);
                         parseJsonAndReflectInUI(message);
 
                     } catch (JSONException e) {
@@ -508,8 +519,6 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     unRegisterForDeviceEvents();
 
 
-
-
                     String newTrackname = window.getString("TrackName");
                     int newPlayState = window.getInt("PlayState");
                     int currentPlayState = window.getInt("Current_time");
@@ -525,14 +534,13 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     ScanningHandler mScanHandler = ScanningHandler.getInstance();
                     SceneObject currentSceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpaddress);
 
-                    if(currentSceneObject!=null)
-                    {
+                    if (currentSceneObject != null) {
                         // currentSceneObject.setSceneName(window.getString("TrackName"));
                         currentSceneObject.setPlaystatus(window.getInt("PlayState"));
                         currentSceneObject.setAlbum_art(album_arturl);
                         currentSceneObject.setPlayUrl(window.getString("PlayUrl"));
                         currentSceneObject.setTrackName(window.getString("TrackName"));
-                            /*For favourite*/
+                        /*For favourite*/
                         currentSceneObject.setIsFavourite(window.getBoolean("Favourite"));
                         currentSceneObject.setCurrentSource(currentSource);
 
@@ -543,18 +551,15 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     }
 
 
-
-
-
                     //Intent intent = new Intent(RemoteSourcesList.this, ActiveScenesListActivity.class);
-                    Intent intent = new Intent(RemoteSourcesList.this, NowPlayingActivity.class);
+                    Intent intent = new Intent(RemoteSourcesList.this, CTNowPlayingActivity.class);
                     intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
                     /*SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress);
                     if (sceneObjectFromCentralRepo != null) {
                         sceneObjectFromCentralRepo.setCurrentSource(current_source_index_selected);
                     }*/
                     startActivity(intent);
-                    finish();
+//                    finish();
 
                 } else if (cmd_id == 1) {
 
@@ -563,56 +568,25 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     Integer item_count = window.getInt(TAG_ITEM_COUNT);
 
                     if (Browser.equalsIgnoreCase("HOME")) {
-                       /* This means we have reached the home collection and hence we need to lauch the SourcesOptionEntry Activity */
+                        /* This means we have reached the home collection and hence we need to lauch the SourcesOptionEntry Activity */
                         unRegisterForDeviceEvents();
-                        Intent intent = new Intent(RemoteSourcesList.this, SourcesOptionActivity.class);
+                        Intent intent = new Intent(RemoteSourcesList.this, CTMediaSourcesActivity.class);
                         intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
+
+                        SceneObject currentSceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress);
+                        intent.putExtra(Constants.CURRENT_SOURCE, "" + currentSceneObject.getCurrentSource());
                         startActivity(intent);
                         finish();
                         return;
                     }
 
                     if (item_count == 0) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-
-
-//                                Toast.makeText(RemoteSourcesList.this, "No item-Empty", Toast.LENGTH_SHORT).show();
-                                if (current_source_index_selected == 0) {
-                                    LibreLogger.d(this, "remote no item");
-                                /*    LibreError error = new LibreError(currentIpaddress, "No item-Empty - show dialog");
-                                    showErrorMessage(error);*/
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(RemoteSourcesList.this)
-                                            .setTitle(getString(R.string.loadingFromServer))
-                                            .setMessage(getString(R.string.pleaseWait))
-                                            .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialog, int which) {
-                                                    dialog.cancel();
-                                                }
-                                            });
-                                    if (alert == null) {
-                                        alert = builder.create();
-                                    }
-                                    if (alert != null && !alert.isShowing())
-                                        alert.show();
-                                } else {
-                                    LibreError error = new LibreError(currentIpaddress,getString(R.string.no_item_empty));
-                                    showErrorMessage(error);
-                                    // send back
-                                   // luciControl.SendCommand(MIDCONST.MID_REMOTE_UI, BACK, LSSDPCONST.LUCI_SET);
-                                }
-
-
-                                /**commenting as it is not required when json is empty*/
-//                                onBackPressed();
-
-                            }
-                        });
+                        LibreError error = new LibreError(currentIpaddress, getString(R.string.no_item_empty));
+                        showErrorMessage(error);
+                        tvNoItems.setVisibility(View.VISIBLE);
+                    } else {
+                        tvNoItems.setVisibility(View.GONE);
                     }
-                    if (alert != null && alert.isShowing())
-                        alert.cancel();
 
                     JSONArray ItemList = window.getJSONArray(TAG_ITEM_LIST);
 
@@ -634,24 +608,24 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                             viewItem.setItemAlbumURL(item.getString(TAG_ITEM_ALBUMURL));
                         }
 
-                        if (item.has(TAG_ITEM_ALBUMURL) && item.getString(TAG_ITEM_ALBUMURL)!=null
-                                && !item.getString(TAG_ITEM_ALBUMURL).isEmpty()){
+                        if (item.has(TAG_ITEM_ALBUMURL) && item.getString(TAG_ITEM_ALBUMURL) != null
+                                && !item.getString(TAG_ITEM_ALBUMURL).isEmpty()) {
                             viewItem.setItemAlbumURL(item.getString(TAG_ITEM_ALBUMURL));
                         }
 
-                        if (searchOptionClicked){
+                        if (searchOptionClicked) {
                             //This JSON is the result,when user clicked search
                             // put to hashcode
                             searchJsonHashCode = jsonStr.hashCode();
-                            LibreLogger.d(this,"Search hash code : the hash code for "+jsonStr +" is "+ searchJsonHashCode);
+                            LibreLogger.d(this, "Search hash code : the hash code for " + jsonStr + " is " + searchJsonHashCode);
                             searchOptionClicked = false;
 
                             //save it in shared preference
                             boolean savedInPref = saveInSharedPreference(searchJsonHashCode);
-                            if (savedInPref){
-                                LibreLogger.d(this,"saved in shared preference");
-                            }else{
-                                LibreLogger.d(this,"not saved in shared preference");
+                            if (savedInPref) {
+                                LibreLogger.d(this, "saved in shared preference");
+                            } else {
+                                LibreLogger.d(this, "not saved in shared preference");
                             }
                         }
 //                         this is temp for search screen
@@ -682,7 +656,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
 
         }
@@ -690,14 +664,14 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
     }
 
-    private boolean saveInSharedPreference(int hashResult){
+    private boolean saveInSharedPreference(int hashResult) {
         try {
             SharedPreferences sharedpreferences = getApplicationContext()
                     .getSharedPreferences(Constants.SEARCH_RESULT_HASH_CODE, Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putInt(Constants.SEARCH_RESULT_HASH_CODE_VALUE, hashResult);
             editor.commit();
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
         return true;
@@ -712,7 +686,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
     @Override
     public void onBackPressed() {
-       /* Sends the back command issues*/
+        /* Sends the back command issues*/
         luciControl.SendCommand(MIDCONST.MID_REMOTE_UI, BACK, LSSDPCONST.LUCI_SET);
         showLoader();
 
@@ -728,7 +702,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
     private void setTitleForTheBrowser(int current_source_index_selected) {
         TextView title = (TextView) findViewById(R.id.choosesong);
-        ImageView sourceIcon = (ImageView)findViewById(R.id.sourceIcon);
+        ImageView sourceIcon = (ImageView) findViewById(R.id.sourceIcon);
 
         switch (current_source_index_selected) {
 
@@ -786,17 +760,17 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
         } else if ((Browser.equalsIgnoreCase("TIDAL")
                 || Browser.equalsIgnoreCase("DEEZER"))
-              //  && !isSearchEnabled
+                //  && !isSearchEnabled
                 && (ViewItemArray.get(position).getItemName().equalsIgnoreCase("search"))) {
 
             luciControl.SendCommand(MIDCONST.MID_REMOTE, LUCIMESSAGES.SELECT_ITEM + ":" + position, LSSDPCONST.LUCI_SET);
             //isSearchEnabled = true;
             searchOptionClicked = true;
-            LibreLogger.d(this,"Next JSON that comes is search result. Make hash code with the next result");
+            LibreLogger.d(this, "Next JSON that comes is search result. Make hash code with the next result");
 
         } else if ((Browser.equalsIgnoreCase("TIDAL")
                 || Browser.equalsIgnoreCase("DEEZER"))
-              //  && isSearchEnabled
+                //  && isSearchEnabled
                 && (ViewItemArray.get(position).getItemName().toLowerCase().startsWith("playlist")
                 ||
                 ViewItemArray.get(position).getItemName().toLowerCase().startsWith("artist")
@@ -808,17 +782,17 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                 ViewItemArray.get(position).getItemName().equalsIgnoreCase("podcast"))) {
             // dialog should be shown only when it is one stage above "search"
 
-            if(presentJsonHashCode == searchJsonHashCode){
-                LibreLogger.d(this,"hash codes matched. Can show dialog");
+            if (presentJsonHashCode == searchJsonHashCode) {
+                LibreLogger.d(this, "hash codes matched. Can show dialog");
                 searchingDialog(position);
-            }else {
-                LibreLogger.d(this,"hash codes did not match.");
+            } else {
+                LibreLogger.d(this, "hash codes did not match.");
                 luciControl.SendCommand(MIDCONST.MID_REMOTE, LUCIMESSAGES.SELECT_ITEM + ":" + position, LSSDPCONST.LUCI_SET);
                 showLoader();
             }
 
 
-        }else {
+        } else {
             if (ViewItemArray.get(position).getItemType().contains("File")) {
                /*
                 Commenting to avoid forcefull DMR stopping
@@ -826,7 +800,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
                     LibreLogger.d(this, "Going to Remove the DMR Playback");
                     RemoteDevice renderingDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpaddress);
                     *//* For the New DMR Implementation , whenever a Source Switching is happening
-                    * we are Stopping the Playback *//*
+                 * we are Stopping the Playback *//*
                     if (renderingDevice != null) {
                         String renderingUDN = renderingDevice.getIdentity().getUdn().toString();
                         PlaybackHelper playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP.get(renderingUDN);
@@ -845,7 +819,7 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
 
             //////////// timeout for dialog - showLoader() ///////////////////
             if (current_source_index_selected == 0) {
-            /*increasing timeout for media servers only*/
+                /*increasing timeout for media servers only*/
                 handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, 60000);
             } else {
                 handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, Constants.INTERNET_PLAY_TIMEOUT);
@@ -869,13 +843,12 @@ public class RemoteSourcesList extends CTDeviceDiscoveryActivity implements Libr
             mAdapter.notifyDataSetChanged();
             return;
         }
+
         if (dataItem.getFavorite() == 1) {
             /*make fav here*/
             luciControl.SendCommand(MIDCONST.MID_REMOTE, LUCIMESSAGES.FAVORITE_ITEM + ":" + position, LSSDPCONST.LUCI_SET);
             dataItem.setFavorite(2);
             mAdapter.notifyDataSetChanged();
         }
-
-
     }
 }

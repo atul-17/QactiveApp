@@ -269,15 +269,15 @@ public class DMRProcessorImpl implements DMRProcessor {
 
                     }).get(TIMEOUT_FOR_RESPONSE_AVTRANSPORT, TimeUnit.SECONDS);
                 } catch (InterruptedException e) {
-                    LibreLogger.d(this, "TransportInfo State Failure Karuna" + "Interrupted Exception");
+                    LibreLogger.d(this, "TransportInfo State Failure " + "Interrupted Exception");
                     LibreLogger.d(this, "GetTransportStateThread is Running Interrupted");
                     e.printStackTrace();
                 } catch (ExecutionException e) {
-                    LibreLogger.d(this, "TransportInfo State Failure Karuna" + "ExecutionException Exception");
+                    LibreLogger.d(this, "TransportInfo State Failure " + "ExecutionException Exception");
                     LibreLogger.d(this, "GetTransportStateThread is Running ExecutionException");
                     e.printStackTrace();
                 } catch (TimeoutException e) {
-                    LibreLogger.d(this, "TransportInfo State Failure Karuna" + "TimeoutException Exception" +
+                    LibreLogger.d(this, "TransportInfo State Failure " + "TimeoutException Exception" +
                             m_device.getDetails().getBaseURL().getHost());
                     LibreLogger.d(this, "GetTransportStateThread is Running TimeoutException");
                     mCountOfTransportInfoError++;
@@ -303,7 +303,7 @@ public class DMRProcessorImpl implements DMRProcessor {
                     }
 
                 } catch (Exception e) {
-                    LibreLogger.d(this, "TransportInfo State Failure Karuna" + "Exception Exception" +
+                    LibreLogger.d(this, "TransportInfo State Failure " + "Exception Exception" +
                             m_device.getDetails().getBaseURL().getHost());
                     LibreLogger.d(this, "GetTransportStateThread is Running Exception");
                     /*mCountOfTransportInfoError ++ ;*/
@@ -372,7 +372,7 @@ public class DMRProcessorImpl implements DMRProcessor {
             return;
         }
         Log.e(TAG, "set AV uri now:" + uri);
-        stop();
+        stopMediaServer();
 
         m_isSettingURI = true;
         m_hasPendingURI = false;
@@ -692,7 +692,7 @@ public class DMRProcessorImpl implements DMRProcessor {
     @Override
     public void dispose() {
         m_isRunning = false;
-        //stop();
+        //stopMediaServer();
     }
 
     @Override

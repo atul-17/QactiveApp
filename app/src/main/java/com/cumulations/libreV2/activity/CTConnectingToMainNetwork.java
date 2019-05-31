@@ -94,15 +94,23 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
     @Override
     public void onStartComplete() {
         super.onStartComplete();
-        LibreLogger.d(this, "OnCreate Called");
+        LibreLogger.d(this, "onStartComplete Called");
         showProgressDialog();
         /*Get Connected Ssid Name */
-        String mConnectedSsidName = getConnectedSSIDName(this);
-        if (mConnectedSsidName.equalsIgnoreCase(wifiConnect.getMainSSID())) {
-            LibreLogger.d(this, "OnCreate MainSSIDSuccess ");
+        if (getConnectedSSIDName(this).equalsIgnoreCase(wifiConnect.getMainSSID())) {
+            LibreLogger.d(this, "onStartComplete CONNECTED_TO_MAIN_SSID_SUCCESS ");
             mHandler.sendEmptyMessage(Constants.CONNECTED_TO_MAIN_SSID_SUCCESS);
         } else {
             mHandler.sendEmptyMessage(Constants.HTTP_POST_DONE_SUCCESSFULLY);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (getConnectedSSIDName(this).equalsIgnoreCase(wifiConnect.getMainSSID())) {
+            LibreLogger.d(this, "onStart CONNECTED_TO_MAIN_SSID_SUCCESS");
+            mHandler.sendEmptyMessage(Constants.CONNECTED_TO_MAIN_SSID_SUCCESS);
         }
     }
 
@@ -229,7 +237,7 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                         if (mHandler.hasMessages(Constants.TIMEOUT_FOR_SEARCHING_DEVICE))
                             mHandler.removeMessages(Constants.TIMEOUT_FOR_SEARCHING_DEVICE);
 
-                        checkForAlexaToken(mSACConfiguredIpAddress);
+                        readAlexaToken(mSACConfiguredIpAddress);
                     }
                 }
 
@@ -246,51 +254,64 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
 
     @Override
     public void messageRecieved(NettyData nettyData) {
-        String ipaddressRecieved = nettyData.getRemotedeviceIp();
+        String nettyDataRemotedeviceIp = nettyData.getRemotedeviceIp();
         LUCIPacket packet = new LUCIPacket(nettyData.getMessage());
-        Log.d("messageRecieved", "Message recieved for ipaddress " + ipaddressRecieved + "command is " + packet.getCommand());
+        Log.d("messageRecieved", "Message recieved for ipaddress " + nettyDataRemotedeviceIp + "command is " + packet.getCommand());
 
-        if (mSACConfiguredIpAddress.equalsIgnoreCase(ipaddressRecieved)) {
+        if (mSACConfiguredIpAddress.equalsIgnoreCase(nettyDataRemotedeviceIp)) {
+            String alexaMessage = new String(packet.getpayload());
+            if (packet.getCommand() == MIDCONST.ALEXA_COMMAND) {
+                LibreLogger.d(this, "Alexa Value From 230  " + alexaMessage);
+                if (alexaMessage != null && !alexaMessage.isEmpty()) {
+                    /* Parse JSon */
+                    try {
+                        JSONObject jsonRootObject = new JSONObject(alexaMessage);
+                        // JSONArray jsonArray = jsonRootObject.optJSONArray("Window CONTENTS");
+                        JSONObject jsonObject = jsonRootObject.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT);
+                        String productId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_PRODUCT_ID);
+                        String dsn = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_DSN);
+                        String sessionId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_SESSION_ID);
+                        String codeChallenge = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE);
+                        String codeChallengeMethod = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE_METHOD);
+                        if (jsonObject.has(LUCIMESSAGES.ALEXA_KEY_LOCALE))
+                            locale = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_LOCALE);
+                        mDeviceProvisioningInfo = new DeviceProvisioningInfo(productId, dsn, sessionId, codeChallenge, codeChallengeMethod, locale);
 
-            switch (packet.getCommand()) {
+                        LSSDPNodes node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyDataRemotedeviceIp);
+                        if (node != null) {
+                            node.setMdeviceProvisioningInfo(mDeviceProvisioningInfo);
+                        }
 
-                case MIDCONST.ALEXA_COMMAND: {
-                    String alexaMessage = new String(packet.getpayload());
-                    LibreLogger.d(this, "Alexa Value From 230  " + alexaMessage);
-                    if (alexaMessage != null && !alexaMessage.isEmpty()) {
-                        /* Parse JSon */
-                        try {
-                            JSONObject jsonRootObject = new JSONObject(alexaMessage);
-                            // JSONArray jsonArray = jsonRootObject.optJSONArray("Window CONTENTS");
-                            JSONObject jsonObject = jsonRootObject.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT);
-                            String productId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_PRODUCT_ID);
-                            String dsn = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_DSN);
-                            String sessionId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_SESSION_ID);
-                            String codeChallenge = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE);
-                            String codeChallengeMethod = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE_METHOD);
-                            if (jsonObject.has(LUCIMESSAGES.ALEXA_KEY_LOCALE))
-                                locale = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_LOCALE);
-                            mDeviceProvisioningInfo = new DeviceProvisioningInfo(productId, dsn, sessionId, codeChallenge, codeChallengeMethod, locale);
+                        closeProgressDialog();
+                        mHandler.removeMessages(Constants.ALEXA_CHECK_TIMEOUT);
+                        setSetupInfoText(getString(R.string.mConfiguredSuccessfully) + " " + LibreApplication.sacDeviceNameSetFromTheApp);
+                        /* Toast.makeText(getApplicationContext(),"Libre App is Restarting .." , Toast.LENGTH_SHORT).show();*/
+                        showDeviceAlertDialog(getString(R.string.mConfiguredSuccessfully) + " " + LibreApplication.sacDeviceNameSetFromTheApp);
 
-                            LSSDPNodes node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(ipaddressRecieved);
-                            if (node!=null){
-                                node.setMdeviceProvisioningInfo(mDeviceProvisioningInfo);
-                            }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
+            if (packet.Command == MIDCONST.MID_ENV_READ){
+                if (alexaMessage.contains("AlexaRefreshToken")) {
+                    String token = alexaMessage.substring(alexaMessage.indexOf(":") + 1);
+                    LSSDPNodes mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp());
+                    if (mNode != null) {
+                        mNode.setAlexaRefreshToken(token);
+                        if (token!=null && !token.isEmpty()){
                             closeProgressDialog();
                             mHandler.removeMessages(Constants.ALEXA_CHECK_TIMEOUT);
                             setSetupInfoText(getString(R.string.mConfiguredSuccessfully) + " " + LibreApplication.sacDeviceNameSetFromTheApp);
                             /* Toast.makeText(getApplicationContext(),"Libre App is Restarting .." , Toast.LENGTH_SHORT).show();*/
                             showDeviceAlertDialog(getString(R.string.mConfiguredSuccessfully) + " " + LibreApplication.sacDeviceNameSetFromTheApp);
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        } else {
+                            /*request metadata for login*/
+                            readAlexaMetaData(mSACConfiguredIpAddress);
                         }
                     }
-
-
                 }
-                break;
             }
         }
     }
@@ -333,9 +354,13 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
 
     }
 
-    private void checkForAlexaToken(String configuredDeviceIp) {
-        AlexaUtils.sendAlexaMetaDataRequest(configuredDeviceIp);
+    private void readAlexaToken(String configuredDeviceIp) {
         AlexaUtils.sendAlexaRefreshTokenRequest(configuredDeviceIp);
+        mHandler.sendEmptyMessageDelayed(Constants.ALEXA_CHECK_TIMEOUT, Constants.INTERNET_PLAY_TIMEOUT);
+    }
+
+    private void readAlexaMetaData(String configuredDeviceIp) {
+        AlexaUtils.sendAlexaMetaDataRequest(configuredDeviceIp);
         mHandler.sendEmptyMessageDelayed(Constants.ALEXA_CHECK_TIMEOUT, Constants.INTERNET_PLAY_TIMEOUT);
     }
 
@@ -343,7 +368,6 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
         if (!CTConnectingToMainNetwork.this.isFinishing()) {
             setAlertDialog1(null);
             AlertDialog.Builder builder = new AlertDialog.Builder(CTConnectingToMainNetwork.this);
-
             builder.setMessage(message)
                     .setCancelable(false)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -362,14 +386,14 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                                 e.printStackTrace();
                             }
 
-                            if (mDeviceProvisioningInfo != null) {
-                                LSSDPNodes mNode = ScanningHandler.getInstance().getLSSDPNodeFromCentralDB(mSACConfiguredIpAddress);
-                                if (mNode == null){
-                                    showToast("Device not available in central db");
-                                    intentToHome(CTConnectingToMainNetwork.this);
-                                    return;
-                                }
+                            LSSDPNodes mNode = ScanningHandler.getInstance().getLSSDPNodeFromCentralDB(mSACConfiguredIpAddress);
+                            if (mNode == null){
+                                showToast("Device not available in central db");
+                                intentToHome(CTConnectingToMainNetwork.this);
+                                return;
+                            }
 
+                            if (/*mDeviceProvisioningInfo != null || */mNode.getmDeviceCap().getmSource().isAlexaAvsSource()) {
                                 if (mNode.getAlexaRefreshToken() == null || mNode.getAlexaRefreshToken().isEmpty()) {
                                     Intent newIntent = new Intent(CTConnectingToMainNetwork.this, CTAmazonInfoActivity.class)
                                             .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -418,8 +442,11 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                             alertConnectingtoNetwork.dismiss();
                             alertConnectingtoNetwork = null;
                             Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                            startActivityForResult(intent, 1234);
+//                            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                            startActivityForResult(intent, AppConstants.WIFI_SETTINGS_REQUEST_CODE);
                         }
                     });
             if (alertConnectingtoNetwork == null) {

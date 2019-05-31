@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><!--<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -56,22 +55,17 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="24dp"
         android:text="@string/no_device_found"
         android:textColor="@color/white" />
 
-    <FrameLayout
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="match_parent"
+        android:layout_marginTop="32dp"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <android.support.v7.widget.AppCompatImageView
-            android:layout_width="196dp"
-            android:layout_height="196dp"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/no_speakers" />
-    </FrameLayout>
+        android:layout_weight="1"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/no_speakers" />
 
 
     <android.support.v7.widget.AppCompatTextView
@@ -79,7 +73,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:padding="20dp"
+        android:padding="12dp"
         android:text="@string/make_sure_devices_connected_to_wifi"
         android:textColor="@color/white" />
 
@@ -88,7 +82,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="20dp"
+        android:layout_marginBottom="8dp"
         android:background="@drawable/btn_enabled_round_bg"
         android:clickable="true"
         android:focusable="true"
@@ -121,7 +115,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:gravity="center"
-        android:padding="16dp"
+        android:padding="12dp"
         android:text="@string/using_speaker_first_time"
         android:textColor="@color/white" />
 
@@ -130,11 +124,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="36dp"
+        android:layout_marginBottom="24dp"
         android:background="@drawable/btn_enabled_round_bg"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingLeft="24dp"

@@ -189,8 +189,7 @@ class CTAmazonLoginActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 LibreLogger.d(this, "Alexa Value From 234  $alexaMessage")
                 try {
                     val jsonRootObject = JSONObject(alexaMessage)
-
-                    if (jsonRootObject.has(AppConstants.TITLE)){
+                    if (jsonRootObject.has(AppConstants.TITLE)) {
                         val title = jsonRootObject.getString(AppConstants.TITLE)
                         if (title != null) {
                             if (title == AlexaConstants.ACCESS_TOKENS_STATUS) {
@@ -202,27 +201,27 @@ class CTAmazonLoginActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                                 } else {
                                     showSomethingWentWrongAlert(this@CTAmazonLoginActivity)
                                 }
-                            }
-                        }
-                    } else {
-                        val jsonObject = jsonRootObject.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT)
-                        val productId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_PRODUCT_ID)
-                        val dsn = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_DSN)
-                        val sessionId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_SESSION_ID)
-                        val codeChallenge = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE)
-                        val codeChallengeMethod = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE_METHOD)
-                        var locale = ""
-                        if (jsonObject.has(LUCIMESSAGES.ALEXA_KEY_LOCALE))
-                            locale = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_LOCALE)
-                        if (speakerNode != null) {
-                            val mDeviceProvisioningInfo = DeviceProvisioningInfo(productId, dsn, sessionId, codeChallenge, codeChallengeMethod, locale)
-                            speakerNode!!.mdeviceProvisioningInfo = mDeviceProvisioningInfo
-                            handler.removeMessages(ALEXA_META_DATA_TIMER)
-                            isMetaDateRequestSent = true
-                            setAlexaViews()
-                            if (isMetaDateRequestSent) {
-                                closeLoader()
-                                btn_login_amazon?.performClick()
+                            } else {
+                                val jsonObject = jsonRootObject.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT)
+                                val productId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_PRODUCT_ID)
+                                val dsn = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_DSN)
+                                val sessionId = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_SESSION_ID)
+                                val codeChallenge = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE)
+                                val codeChallengeMethod = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_CODE_CHALLENGE_METHOD)
+                                var locale = ""
+                                if (jsonObject.has(LUCIMESSAGES.ALEXA_KEY_LOCALE))
+                                    locale = jsonObject.optString(LUCIMESSAGES.ALEXA_KEY_LOCALE)
+                                if (speakerNode != null) {
+                                    val mDeviceProvisioningInfo = DeviceProvisioningInfo(productId, dsn, sessionId, codeChallenge, codeChallengeMethod, locale)
+                                    speakerNode!!.mdeviceProvisioningInfo = mDeviceProvisioningInfo
+                                    handler.removeMessages(ALEXA_META_DATA_TIMER)
+                                    isMetaDateRequestSent = true
+                                    setAlexaViews()
+                                    if (isMetaDateRequestSent) {
+                                        closeLoader()
+                                        btn_login_amazon?.performClick()
+                                    }
+                                }
                             }
                         }
                     }
@@ -253,13 +252,15 @@ class CTAmazonLoginActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
     private fun closeLoader() {
         runOnUiThread {
-            progress_bar!!.visibility = View.GONE
+            dismissDialog()
+//            progress_bar!!.visibility = View.GONE
         }
     }
 
     private fun showLoader() {
         runOnUiThread {
-            progress_bar!!.visibility = View.VISIBLE
+            showProgressDialog(R.string.pleaseWait)
+//            progress_bar!!.visibility = View.VISIBLE
         }
     }
 
@@ -280,7 +281,7 @@ class CTAmazonLoginActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 showLoader()
                 if (handler.hasMessages(ALEXA_META_DATA_TIMER))
                     handler.removeMessages(ALEXA_META_DATA_TIMER)
-                handler.sendEmptyMessageDelayed(ACCESS_TOKEN_TIMEOUT, 10000)
+                handler.sendEmptyMessageDelayed(ACCESS_TOKEN_TIMEOUT, Constants.CHECK_ALIVE_TIMEOUT)
 
             } catch (authError: AuthError) {
                 closeLoader()

@@ -47,16 +47,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.AppConstants;
+import com.cumulations.libreV2.activity.CTDMSBrowserActivityV2;
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
+import com.cumulations.libreV2.activity.CTNowPlayingActivity;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.libre.LErrorHandeling.LibreError;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
 import com.libre.StaticInstructions.spotifyInstructions;
 import com.libre.alexa.DeviceProvisioningInfo;
-import com.libre.alexa_signin.AlexaThingsToTryDoneActivity;
 import com.libre.alexa_signin.AlexaSignInActivity;
-import com.libre.app.dlna.dmc.LocalDMSActivity;
+import com.libre.alexa_signin.AlexaThingsToTryDoneActivity;
 import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
@@ -69,7 +70,6 @@ import com.libre.luci.LUCIControl;
 import com.libre.luci.LUCIPacket;
 import com.libre.netty.LibreDeviceInteractionListner;
 import com.libre.netty.NettyData;
-import com.libre.nowplaying.NowPlayingActivity;
 import com.libre.util.LibreLogger;
 import com.libre.util.Sources;
 
@@ -262,7 +262,7 @@ public class SourcesOptionActivity extends CTDeviceDiscoveryActivity implements 
         super.onBackPressed();
         doneClicked=true;
         if (getIntent().hasExtra(Constants.FROM_ACTIVITY)) {
-            Intent intent = new Intent(SourcesOptionActivity.this, NowPlayingActivity.class);
+            Intent intent = new Intent(SourcesOptionActivity.this, CTNowPlayingActivity.class);
             intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
             startActivity(intent);
             finish();
@@ -468,7 +468,7 @@ public class SourcesOptionActivity extends CTDeviceDiscoveryActivity implements 
                     }
                 }
                 showLoader();
-                Intent localIntent = new Intent(SourcesOptionActivity.this, LocalDMSActivity.class);
+                Intent localIntent = new Intent(SourcesOptionActivity.this, CTDMSBrowserActivityV2.class);
                 localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                 localIntent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                 startActivity(localIntent);
@@ -1125,7 +1125,7 @@ public class SourcesOptionActivity extends CTDeviceDiscoveryActivity implements 
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int id) {
                                     if (getIntent().hasExtra(Constants.FROM_ACTIVITY)) {
-                                        Intent intent = new Intent(SourcesOptionActivity.this, NowPlayingActivity.class);
+                                        Intent intent = new Intent(SourcesOptionActivity.this, CTNowPlayingActivity.class);
                                         intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                                         startActivity(intent);
                                         finish();
@@ -1180,7 +1180,7 @@ public class SourcesOptionActivity extends CTDeviceDiscoveryActivity implements 
         if (credentialHandler != null)
             credentialHandler.removeCallbacksAndMessages(null);
         if (getIntent().hasExtra(Constants.FROM_ACTIVITY)) {
-            Intent intent = new Intent(SourcesOptionActivity.this, NowPlayingActivity.class);
+            Intent intent = new Intent(SourcesOptionActivity.this, CTNowPlayingActivity.class);
             intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
             startActivity(intent);
             finish();

@@ -1,5 +1,6 @@
 package com.libre.app.dlna.dmc.server;
 
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
@@ -161,11 +162,12 @@ public class MusicBitmap {
 		return bm;
 	}
 
+	@SuppressLint("ResourceType")
 	private static Bitmap getDefaultArtwork(Context context) {
 		BitmapFactory.Options opts = new BitmapFactory.Options();
 		opts.inPreferredConfig = Bitmap.Config.RGB_565;
 		return BitmapFactory.decodeStream(context.getResources()
-				.openRawResource(R.mipmap.ic_launcher), null, opts);
+				.openRawResource(R.drawable.ic_launcher), null, opts);
 	}
 
 //	private static Bitmap mCachedBit = null;

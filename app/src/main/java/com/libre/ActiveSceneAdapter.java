@@ -20,10 +20,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.AppConstants;
+import com.cumulations.libreV2.activity.CTDMSBrowserActivityV2;
 import com.libre.LErrorHandeling.LibreError;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
-import com.libre.app.dlna.dmc.LocalDMSActivity;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
 import com.libre.constants.CommandType;
@@ -1062,7 +1062,7 @@ public class ActiveSceneAdapter extends ArrayAdapter<SceneObject> {
 
                                        /* In SA mode we need to go to local content while in HN mode we will go to sources option */
                     if (LibreApplication.activeSSID.contains(Constants.DDMS_SSID)){
-                        Intent localIntent = new Intent(context, LocalDMSActivity.class);
+                        Intent localIntent = new Intent(context, CTDMSBrowserActivityV2.class);
                         localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                         localIntent.putExtra(Constants.CURRENT_DEVICE_IP, object.getIpAddress());
                         context.startActivity(localIntent);
@@ -1158,7 +1158,7 @@ public class ActiveSceneAdapter extends ArrayAdapter<SceneObject> {
 
                                        /* In SA mode we need to go to local content while in HN mode we will go to sources option */
                     if (LibreApplication.activeSSID.contains(Constants.DDMS_SSID)){
-                        Intent localIntent = new Intent(context, LocalDMSActivity.class);
+                        Intent localIntent = new Intent(context, CTDMSBrowserActivityV2.class);
                         localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                         localIntent.putExtra(Constants.CURRENT_DEVICE_IP, object.getIpAddress());
                         context.startActivity(localIntent);

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
+import com.cumulations.libreV2.activity.CTNowPlayingActivity;
 import com.libre.ManageDevice.DataItem;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
@@ -61,7 +62,6 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
     private static final String TAG_ITEM_ALBUMURL = "StationImage";
     private RecyclerView recyclerView;
     private ArrayList<DataItem> ViewItemArray;
-    //    private RemoteSourcesFilesDisplayAdapter mAdapter;
     private RecyclerViewAdapter mAdapter;
     private LinearLayoutManager mLayoutManager;
     boolean gotolastpostion;
@@ -113,7 +113,7 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
         if (current_source_index_selected < 0) {
             Toast.makeText(this, getString(R.string.sourceIndexWrong), Toast.LENGTH_SHORT).show();
 //            Intent intent = new Intent(TuneInRemoteSourcesList.this, SourcesOptionActivity.class);
-            Intent intent = new Intent(TuneInRemoteSourcesList.this, NowPlayingActivity.class);
+            Intent intent = new Intent(TuneInRemoteSourcesList.this, CTNowPlayingActivity.class);
             intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
             startActivity(intent);
             finish();
@@ -140,7 +140,6 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         ViewItemArray = new ArrayList<DataItem>();
-//        mAdapter = new RemoteSourcesFilesDisplayAdapter(ViewItemArray);
         mAdapter = new RecyclerViewAdapter(this,ViewItemArray, TuneInRemoteSourcesList.this);
         recyclerView.setAdapter(mAdapter);
 
@@ -262,7 +261,7 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
                 //   luciControl.SendCommand(MIDCONST.MID_REMOTE_UI, GET_HOME, LSSDPCONST.LUCI_SET);
 
 //                Intent intent = new Intent(TuneInRemoteSourcesList.this, SourcesOptionActivity.class);
-                Intent intent = new Intent(TuneInRemoteSourcesList.this, NowPlayingActivity.class);
+                Intent intent = new Intent(TuneInRemoteSourcesList.this, CTNowPlayingActivity.class);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
                 startActivity(intent);
                 finish();
@@ -443,7 +442,7 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
 
                     unRegisterForDeviceEvents();
                     //Intent intent = new Intent(RemoteSourcesList.this, ActiveScenesListActivity.class);
-                    Intent intent = new Intent(TuneInRemoteSourcesList.this, NowPlayingActivity.class);
+                    Intent intent = new Intent(TuneInRemoteSourcesList.this, CTNowPlayingActivity.class);
                     intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
                     SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress);
                     if (sceneObjectFromCentralRepo != null) {
@@ -462,7 +461,7 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
                        /* This means we have reached the home collection and hence we need to lauch the SourcesOptionEntry Activity */
                         unRegisterForDeviceEvents();
 //                        Intent intent = new Intent(TuneInRemoteSourcesList.this, SourcesOptionActivity.class);
-                        Intent intent = new Intent(TuneInRemoteSourcesList.this, NowPlayingActivity.class);
+                        Intent intent = new Intent(TuneInRemoteSourcesList.this, CTNowPlayingActivity.class);
                         intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress);
                         startActivity(intent);
                         finish();
@@ -676,7 +675,7 @@ public class TuneInRemoteSourcesList extends CTDeviceDiscoveryActivity implement
         } else {
             if (ViewItemArray.get(position).getItemType().contains("File")) {
   
-        /* Commented as we need not force DMR stop now
+        /* Commented as we need not force DMR stopMediaServer now
               try {
                     LibreLogger.d(this, "Going to Remove the DMR Playback");
                     RemoteDevice renderingDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpaddress);

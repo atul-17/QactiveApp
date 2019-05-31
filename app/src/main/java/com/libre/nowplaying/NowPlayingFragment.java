@@ -28,9 +28,10 @@ import android.widget.Toast;
 
 import com.cumulations.libreV2.AppConstants;
 import com.cumulations.libreV2.AppUtils;
+import com.cumulations.libreV2.activity.CTDMSBrowserActivityV2;
+import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.ActiveSceneAdapter;
 import com.libre.AudioWave.DummyVisualizer;
-import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.DeviceDiscoveryFragment;
 import com.libre.LErrorHandeling.LibreError;
 import com.libre.LibreApplication;
@@ -45,7 +46,6 @@ import com.libre.alexa.AudioRecordCallback;
 import com.libre.alexa.AudioRecordUtil;
 import com.libre.alexa.MicExceptionListener;
 import com.libre.alexa.MicTcpServer;
-import com.libre.app.dlna.dmc.LocalDMSActivity;
 import com.libre.app.dlna.dmc.processor.interfaces.DMRProcessor;
 import com.libre.app.dlna.dmc.utility.DMRControlHelper;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
@@ -937,7 +937,7 @@ public class NowPlayingFragment extends DeviceDiscoveryFragment
     public void onClick(View view) {
 
 
-        /*stop any previous started playback handler started by removing them*/
+        /*stopMediaServer any previous started playback handler started by removing them*/
         startPlaybackTimerhandler.removeCallbacks(startPlaybackTimerRunnable);
 
         if (currentSceneObject == null) {
@@ -1422,7 +1422,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                         if (isStillPlaying) {
                             /*For now we check this only in NowPlaying screen, hence add and remove handler only when fragment is active*/
                             if (getActivity() != null && !getActivity().isFinishing()) {
-                            /*stop any previous handler started by removing them*/
+                            /*stopMediaServer any previous handler started by removing them*/
                                 startPlaybackTimerhandler.removeCallbacks(startPlaybackTimerRunnable);
                             /*start fresh handler as timer to montior device got removed or 49 not recieved after 5 seconds*/
                                 startPlaybackTimerhandler.postDelayed(startPlaybackTimerRunnable, PLAYBACK_TIMER_TIMEOUT);
@@ -2739,7 +2739,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
                     /* In SA mode we need to go to local content while in HN mode we will go to sources option */
                     if (LibreApplication.activeSSID.contains(Constants.DDMS_SSID)) {
-                        Intent localIntent = new Intent(getActivity(), LocalDMSActivity.class);
+                        Intent localIntent = new Intent(getActivity(), CTDMSBrowserActivityV2.class);
                         localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                         localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress);
                         startActivity(localIntent);
@@ -2826,7 +2826,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
                     /* In SA mode we need to go to local content while in HN mode we will go to sources option */
                     if (LibreApplication.activeSSID.contains(Constants.DDMS_SSID)) {
-                        Intent localIntent = new Intent(getActivity(), LocalDMSActivity.class);
+                        Intent localIntent = new Intent(getActivity(), CTDMSBrowserActivityV2.class);
                         localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                         localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress);
                         startActivity(localIntent);

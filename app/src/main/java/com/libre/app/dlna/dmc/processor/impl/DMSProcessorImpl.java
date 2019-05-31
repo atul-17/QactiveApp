@@ -4,6 +4,7 @@ import android.util.Log;
 
 
 import com.libre.app.dlna.dmc.processor.interfaces.DMSProcessor;
+import com.libre.app.dlna.dmc.server.ContentTree;
 
 import org.fourthline.cling.controlpoint.ActionCallback;
 import org.fourthline.cling.controlpoint.ControlPoint;
@@ -42,12 +43,12 @@ public class DMSProcessorImpl implements DMSProcessor {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void browse(String objectID) {
+	public void browse(final String objectID) {
 		m_result = new HashMap<String, List<? extends DIDLObject>>();
 		Service cds = m_server.findService(new ServiceType(UpnpProcessorImpl.DMS_NAMESPACE, "ContentDirectory"));
 
 		if (cds != null) {
-			Action action = cds.getAction("Browse");
+			final Action action = cds.getAction("Browse");
 			ActionInvocation actionInvocation = new ActionInvocation(action);
 			actionInvocation.setInput("ObjectID", objectID);
 			actionInvocation.setInput("BrowseFlag", "BrowseDirectChildren");
@@ -66,17 +67,18 @@ public class DMSProcessorImpl implements DMSProcessor {
 						DIDLContent content = parser.parse(invocation.getOutput("Result").toString());
 						
 						for (Container container : content.getContainers()) {
-							Log.d(TAG, "Container: " + container.getTitle() + "id is =" + container.getId());
+							Log.d(TAG, "Container: " + container.getTitle() + ", Id is =" + container.getId());
 						}
 						m_result.put("Containers", content.getContainers());
 
 						for (Item item : content.getItems()) {
-							Log.d(TAG, "Item: " + item.getTitle());
+							item.setRefID(objectID);
+							Log.d(TAG, "Item: " + item.getTitle()+", setRefID = "+objectID);
 						}
 
 						m_result.put("Items", content.getItems());
 
-						fireOnBrowseCompleteEvent();
+						fireOnBrowseCompleteEvent(objectID);
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -115,10 +117,10 @@ public class DMSProcessorImpl implements DMSProcessor {
 		}
 	}
 
-	private void fireOnBrowseCompleteEvent() {
+	private void fireOnBrowseCompleteEvent(String parentObjectId) {
 		synchronized (m_listeners) {
 			for (DMSProcessorListener listener : m_listeners) {
-				listener.onBrowseComplete(m_result);
+				listener.onBrowseComplete(parentObjectId,m_result);
 			}
 		}
 	}

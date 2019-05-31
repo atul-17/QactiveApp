@@ -3,6 +3,7 @@
 
 
 import com.libre.app.dlna.dmc.server.ContentTree;
+import com.libre.nowplaying.NowPlayingFragment;
 
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.support.model.DIDLObject;
@@ -42,9 +43,36 @@ public class DMSBrowseHelper implements Cloneable {
 	private List<DIDLObject> didlList;
 	private int adapterPosition = 0;
 	public void saveDidlListAndPosition(List<DIDLObject> list, int position) {
-
 		didlList = list;
 		adapterPosition = position;
+	}
+
+	public DIDLObject getNextDIDLObject(int repeatState){
+
+		if (repeatState== NowPlayingFragment.REPEAT_ALL ){
+
+			int mNewAdapterPosition = (adapterPosition+1) % didlList.size();
+			if (didlList != null &&
+					mNewAdapterPosition >= 0 &&
+					mNewAdapterPosition < didlList.size()) {
+
+				return didlList.get(mNewAdapterPosition);
+
+			}
+
+		}else if (repeatState== NowPlayingFragment.REPEAT_OFF){
+
+			int mNewAdapterPosition = adapterPosition+1;
+			if (didlList != null &&
+					mNewAdapterPosition > 0 &&
+					mNewAdapterPosition < didlList.size()) {
+
+				return didlList.get(mNewAdapterPosition);
+
+			}
+		}
+
+		return null;
 	}
 	
 	public DIDLObject getDIDLObject() {
@@ -119,12 +147,18 @@ public class DMSBrowseHelper implements Cloneable {
 	public DMSBrowseHelper clone() {
 		DMSBrowseHelper cloneObj = new DMSBrowseHelper(isLocalDevice, deviceUdn);
 
-		List<DIDLObject> cloneList = new ArrayList<DIDLObject>();
-		cloneList.addAll(didlList);
+		List<DIDLObject> cloneList = new ArrayList<DIDLObject>(didlList);
 		
 		cloneObj.saveDidlListAndPosition(cloneList, adapterPosition);
 		cloneObj.setBrowseObjectStack(browseObjectStack);
 		cloneObj.setScrollPosition(scrollPosition);
 		return cloneObj;
+	}
+
+	public boolean checkIfTheNextURLIsTheLastSong() {
+		if(adapterPosition+2 >= didlList.size())
+			return true;
+		else
+			return false;
 	}
 }

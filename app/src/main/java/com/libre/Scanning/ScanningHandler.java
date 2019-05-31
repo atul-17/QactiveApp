@@ -678,11 +678,11 @@ public class ScanningHandler {
                     }
                 } catch (Exception e) {
 
-                    LibreLogger.d(this, "Handling the exception while sending the stop command ");
+                    LibreLogger.d(this, "Handling the exception while sending the stopMediaServer command ");
 
                 }
             }catch(Exception e){
-                LibreLogger.d(this, " 1 Handling the exception while sending the stop command ");
+                LibreLogger.d(this, " 1 Handling the exception while sending the stopMediaServer command ");
             }
         }
         return true;

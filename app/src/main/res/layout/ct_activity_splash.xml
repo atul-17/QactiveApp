@@ -5,14 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/screen_bg">
+    android:background="@color/appbar_bg">
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/iv_libre_logo"
         android:layout_centerInParent="true"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/riva_logo_512"
-        android:layout_width="144dp"
+        app:srcCompat="@drawable/riva_logo_1024"
+        android:layout_width="match_parent"
         android:layout_height="144dp" />
 
     <ProgressBar

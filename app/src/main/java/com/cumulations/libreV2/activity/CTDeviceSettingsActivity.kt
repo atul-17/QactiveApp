@@ -313,10 +313,12 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
                         closeLoader(login_progress_bar.id)
                         val token = message.substring(message.indexOf(":") + 1)
                         val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-                        if (mNode != null && !token.isNullOrEmpty()) {
+                        if (mNode != null) {
                             mNode.alexaRefreshToken = token
-                            tv_amazon_login?.text = getString(R.string.logged_in)
-                        } else tv_amazon_login?.text = getString(R.string.logged_out)
+                        }
+                        if (token.isEmpty())
+                            tv_amazon_login?.text = getString(R.string.logged_out)
+                        else tv_amazon_login?.text = getString(R.string.logged_in)
                     }
 
                     val messageArray = message.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -447,7 +449,7 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
             }
 
             if (customView?.et_network_name?.text.toString() != ssid
-                    && customView?.et_pwd?.text.toString() != pwd){
+                    || customView?.et_pwd?.text.toString() != pwd){
                 closeKeyboard(this,it)
                 /*Write env items to device*/
                 writeAwayModeSettingsToDevice(

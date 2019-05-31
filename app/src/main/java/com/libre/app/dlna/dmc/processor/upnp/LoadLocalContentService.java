@@ -1,9 +1,13 @@
 package com.libre.app.dlna.dmc.processor.upnp;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
+import com.cumulations.libreV2.AppUtils;
 import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl;
 import com.libre.app.dlna.dmc.server.MusicServer;
 
@@ -17,38 +21,22 @@ import com.libre.app.dlna.dmc.server.MusicServer;
 public class LoadLocalContentService extends IntentService {
     // TODO: Rename actions, choose action names that describe tasks that this
 
-
     public LoadLocalContentService() {
         super("LoadLocalContentService");
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M
+                && !AppUtils.INSTANCE.isPermissionGranted(this, Manifest.permission.READ_EXTERNAL_STORAGE)){
+            return;
+        }
 
-        UpnpProcessorImpl  m_upnpProcessor = new UpnpProcessorImpl(this);
-        m_upnpProcessor.bindUpnpService();
-        MusicServer musicServer = MusicServer.getMusicServer();
-
+        UpnpProcessorImpl  upnpProcessor = new UpnpProcessorImpl(this);
+        upnpProcessor.bindUpnpService();
         /* Using the applicationContet to avoid memort leak */
-        musicServer.prepareMediaServer(getApplicationContext(), m_upnpProcessor.getBinder());
-        m_upnpProcessor.unbindUpnpService();
-    }
-
-    /**
-     * Handle action Foo in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    /**
-     * Handle action Baz in the provided background thread with the provided
-     * parameters.
-     */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+        MusicServer.getMusicServer().prepareMediaServer(getApplicationContext(), upnpProcessor.getBinder());
+        upnpProcessor.unbindUpnpService();
+        Log.e("LoadLocalContentService","started");
     }
 }

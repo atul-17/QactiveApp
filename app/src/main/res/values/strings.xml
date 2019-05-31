@@ -239,7 +239,7 @@
     <string name="searchText">Please enter text to search</string>
     <string name="loadingFromServer">Loading data from server</string>
     <string name="castGroupToast">Cast groups can be managed only from the Google cast app</string>
-    <string name="storagePermitToast">Storage permission required for loading songs</string>
+    <string name="storagePermitToast">You need to allow read storage permission to stream local media</string>
     <string name="locationPermitToast">Location permission required.</string>
     <string name="permitNotAvailable">Permission is Not Available</string>
     <string name="enableStoragePermit">Permission to access storage is required to load songs,please goto settings and enable
@@ -369,7 +369,7 @@ The Google Privacy Policy describes the information that Google collects during 
     <string name="FirmwareUpdateinProgress">Firmware Update in Progress</string>
     <string name="back">Back</string>
     <string name="seek_not_allowed">Seek not allowed</string>
-    <string name="no_active_playlist">No active playlist please select song</string>
+    <string name="no_active_playlist">No active playlist available.Please select a song</string>
 
     <string name="title_activity_connecting_to_main_network">Configuring To AP</string>
     <string name="mConnectingToMainNetwork">Connecting To </string>
@@ -469,7 +469,7 @@ The Google Privacy Policy describes the information that Google collects during 
     <string name="firmwareAlertMsg">Are you sure you want to update the device with this Firmware?</string>
     <string name="requestingFwFlash">Requesting Firmware Flash</string>
     <string name="uploadCancelledByUser">You  cancelled the upload</string>
-    <string name="noItems">No item-Empty</string>
+    <string name="noItems">No items available</string>
     <string name="setMaster">Set Master</string>
     <string name="master">Master</string>
     <string name="free">Free</string>
@@ -586,10 +586,10 @@ performance.</string>
     <string name="engINLang">English (India)</string>
     <string name="deutschLang">Deutsch</string>
     <string name="japaneseLang">Japanese</string>
-    <string name="alexaText">amazon alexa</string>
+    <string name="alexaText">Amazon Alexa</string>
     <string name="alexaNextPrevMsg">Preparing to play..</string>
 
-    <!--alexa cognito-->
+    <!--Alexa cognito-->
     <string name="app_main_screen">Sign in</string>
     <string name="app_main_screen_title">Libre Login</string>
     <string name="app_main_desc">Login to libre account for controlling your speakers through Alexa.</string>
@@ -641,7 +641,7 @@ performance.</string>
     <string name="setup_instructions">Setup Instructions</string>
     <string name="one">1</string>
     <string name="power_on_libre_device">Power on Riva Voice speaker</string>
-    <string name="go_to_wifi_settings">Go to Wi-Fi settings and select \'LSConfigure_xxxxxx\'/\'RIVAACONCERT_xxxxxx\' from the Wi-Fi list</string>
+    <string name="go_to_wifi_settings">Go to Wi-Fi settings and select \'RIVAACONCERT_xxxxxx\' from the Wi-Fi list</string>
     <string name="two">2</string>
     <string name="three">3</string>
     <string name="after_connecting_to_libre_device"><![CDATA[After connecting to the Riva Voice speaker, return to the Riva Voice app & click next]]></string>
@@ -670,7 +670,7 @@ performance.</string>
     <string name="login_with_amazon">Login with Amazon</string>
     <string name="connect_amazon_account">Your speaker includes access to Alexa. Connect your Amazon account to access  personalized features.</string>
     <string name="alexa_info">Alexa allows you to use your voice to play music and get news, sorts scores, weather and more- all hands-free. All you have to do is ask Alexa.</string>
-    <string name="amazon_alexa">amazon alexa</string>
+    <string name="amazon_alexa">Amazon Alexa</string>
     <string name="wifi_scanning">Getting Wi-Fi list…</string>
     <string name="password_empty_error">Password cannot be empty</string>
     <string name="wifi_password_invalid">Invalid Wi-Fi password</string>
@@ -686,7 +686,7 @@ performance.</string>
     <string name="speaker_ready_for_cmds">Speaker is ready for commands</string>
     <string name="listening">Listening …</string>
     <string name="login_with_amazon_warn">You need to login to Amazon to enable speech commands</string>
-    <string name="riva_tutorial_url">https://rivaaudio.com/alexa-tutorial/en/index.html</string>
+    <string name="riva_tutorial_url">https://rivaaudio.com/Alexa-tutorial/en/index.html</string>
     <string name="version_only">Version</string>
     <string name="language">Language</string>
     <string name="english">English</string>
@@ -717,5 +717,11 @@ performance.</string>
     <string name="other_input_types">Other input types</string>
     <string name="aux_label">Aux</string>
     <string name="alexa_not_connected">Amazon Alexa account not connected</string>
+    <string name="music">Music</string>
+
+    <string name="lastSongPlayed">No next song. End of playlist</string>
+    <string name="onlyOneSong">No previous song available</string>
+    <string name="loading_next_items">Loading next items..</string>
+    <string name="loading_prev_items">Loading previous items...</string>
 
 </resources>

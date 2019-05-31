@@ -16,7 +16,7 @@ public interface DMSProcessor {
     void removeListener(DMSProcessorListener listener);
 
     interface DMSProcessorListener {
-        void onBrowseComplete(Map<String, List<? extends DIDLObject>> result);
+        void onBrowseComplete(String parentObjectId, Map<String, List<? extends DIDLObject>> result);
 
         void onBrowseFail(String message);
     }

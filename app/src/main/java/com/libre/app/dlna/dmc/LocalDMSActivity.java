@@ -70,10 +70,10 @@ public class LocalDMSActivity extends CTDeviceDiscoveryActivity {
         mServiceHandler = new ServiceHandler(mThread.getLooper());
 
 
-            if (!(LibreApplication.LOCAL_UDN.trim().equalsIgnoreCase(""))) {
+            if (!LibreApplication.LOCAL_UDN.trim().isEmpty()) {
                 /* Local device is already exists in the registery and hence launch the DMSBrowsingActivity or else wait*/
                 Intent intent = new Intent(LocalDMSActivity.this, DMSBrowserActivity.class);
-                intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+                intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                 if (getIntent().hasExtra(Constants.FROM_ACTIVITY)){
                     intent.putExtra(Constants.FROM_ACTIVITY,"Nowplaying");
@@ -81,9 +81,7 @@ public class LocalDMSActivity extends CTDeviceDiscoveryActivity {
                 startActivity(intent);
 
                 finish();
-                return;
-            }
-            else{
+            } else{
                 LibreLogger.d(this, "Interesting! local content ");
                 /* this is the case where the content is not present and hence we need to load */
                 showLoader();
@@ -176,7 +174,7 @@ public class LocalDMSActivity extends CTDeviceDiscoveryActivity {
         if (localDevices != null && localDevices.size() > 0) {
                 LocalDevice device = localDevices.iterator().next();
                 Intent intent = new Intent(LocalDMSActivity.this, DMSBrowserActivity.class);
-                intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+                intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                 startActivity(intent);
                 finish();
@@ -199,11 +197,11 @@ public class LocalDMSActivity extends CTDeviceDiscoveryActivity {
                 {
                     closeLoader();
                     LibreLogger.d(this, "Local songs are loaded" );
-                    /*loading stop with success message*/
+                    /*loading stopMediaServer with success message*/
                     Toast.makeText(LocalDMSActivity.this,"Local content loading Done!", Toast.LENGTH_SHORT).show();
 
                     Intent intent = new Intent(LocalDMSActivity.this, DMSBrowserActivity.class);
-                    intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+                    intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
                     intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                     startActivity(intent);
                     finish();

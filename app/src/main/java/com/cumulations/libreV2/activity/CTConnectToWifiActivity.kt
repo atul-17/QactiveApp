@@ -52,7 +52,7 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        val deviceName = intent?.getStringExtra(AppConstants.DEVICE_NAME)
+        val deviceName = intent?.getStringExtra(AppConstants.DEVICE_SSID)
         et_device_name.setText(deviceName)
         et_device_name.post {
             et_device_name.setSelection(et_device_name.length())

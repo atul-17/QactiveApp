@@ -13,7 +13,8 @@
         <!--<item name="android:colorForeground">@color/brand_dark_grey</item>-->
         <item name="android:textColor">@color/white</item>
         <item name="colorAccent">@color/app_text_color_enabled</item>
-        <item name="colorPrimary">@color/app_text_color_enabled</item>
+
+        <item name="alertDialogTheme">@style/CustomAlertDialogTheme</item>
 
     </style>
 
@@ -156,8 +157,8 @@
         <!--<item name="android:indeterminateTint" tools:targetApi="lollipop">@color/btn_app_dark_pink</item>-->
         <!--<item name="android:indeterminateTintMode" tools:targetApi="lollipop">src_in</item>-->
         <!--<item name="colorAccent">@color/btn_app_orange</item>-->
-        <item name="android:maxHeight">3dp</item>
-        <item name="android:minHeight">3dp</item>
+        <item name="android:maxHeight">2dp</item>
+        <item name="android:minHeight">2dp</item>
     </style>
 
     <style name="StyledDialogTheme" parent="AppTheme">
@@ -170,6 +171,16 @@
     <style name="StyledDialogTheme.windowAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
+    </style>
+
+    <style name="TabLayoutTextStyle" parent="@android:style/TextAppearance.Widget.TabWidget">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="CustomAlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <!--<item name="colorPrimary">#00397F</item>-->
+        <item name="colorAccent">@color/app_text_color_enabled</item>
     </style>
 
 

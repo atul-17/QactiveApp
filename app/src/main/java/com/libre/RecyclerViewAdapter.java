@@ -35,7 +35,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View itemView = inflater.inflate(R.layout.remotecommand_item, parent, false);
+        View itemView = inflater.inflate(R.layout.ct_remotecommand_item, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -51,7 +51,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                     case R.id.row_layout:
                         itemClickListener.onRemoteItemClicked(position);
                         break;
-                    case R.id.item_fav_button_layout:
+                    case R.id.item_fav_button:
                         itemClickListener.onRemoteFavClicked(position);
                         break;
                 }
@@ -71,17 +71,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String file = " File ";
 
         if (viewItemList.get(position).getItemType().equals(folder)) {
-                holder.mImageview.setImageResource(R.mipmap.folder);
+                holder.mImageview.setImageResource(R.drawable.album_borderless);
         } else {
             if(viewItemList.get(position).getItemAlbumURL()!=null && !viewItemList.get(position).getItemAlbumURL().trim().isEmpty()){
                 // default image for tidal file is tidal logo, else load the image in the URL
-                PicassoTrustCertificates.getInstance(mContext).
-                        load(viewItemList.get(position).getItemAlbumURL())
-                        .placeholder(R.mipmap.tidal_white_logo).error(R.mipmap.tidal_white_logo)
-//                        .memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)
-                        .into(holder.mImageview);
+                if (viewItemList.get(position).getItemType().equals(folder)) {
+                    PicassoTrustCertificates.getInstance(mContext).
+                            load(viewItemList.get(position).getItemAlbumURL())
+                            .placeholder(R.drawable.album_borderless)
+                            .error(R.drawable.album_borderless)
+                            .into(holder.mImageview);
+                } else {
+                    PicassoTrustCertificates.getInstance(mContext).
+                            load(viewItemList.get(position).getItemAlbumURL())
+                            .placeholder(R.drawable.songs_borderless)
+                            .error(R.drawable.songs_borderless)
+                            .into(holder.mImageview);
+                }
             }else {
-                holder.mImageview.setImageResource(R.mipmap.music_item);
+                holder.mImageview.setImageResource(R.drawable.songs_borderless);
             }
         }
 
@@ -119,8 +127,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         public TextView mTextView;
         public ImageView mImageview;
         public ImageView mFavImageview;
-        public LinearLayout mFavImageviewLayout;
-        public RelativeLayout mRowLayout;
+        public LinearLayout mRowLayout;
         private ItemClickListener clickListener;
 
         public ViewHolder(View itemView) {
@@ -129,11 +136,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mImageview = (ImageView) itemView.findViewById(R.id.item_icon);
             mTextView = (TextView) itemView.findViewById(R.id.item_title);
             mFavImageview = (ImageView) itemView.findViewById(R.id.item_fav_button);
-            mFavImageviewLayout = (LinearLayout) itemView.findViewById(R.id.item_fav_button_layout);
-            mRowLayout = (RelativeLayout) itemView.findViewById(R.id.row_layout);
+            mRowLayout = itemView.findViewById(R.id.row_layout);
 
 
-            mFavImageviewLayout.setOnClickListener(this);
+            mFavImageview.setOnClickListener(this);
             mRowLayout.setOnClickListener(this);
         }
 

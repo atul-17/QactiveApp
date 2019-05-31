@@ -9,22 +9,18 @@ import com.libre.LibreApplication;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
 import com.libre.SceneObject;
-import com.libre.alexa.DeviceProvisioningInfo;
 import com.libre.app.dlna.dmc.server.ContentTree;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
 import com.libre.constants.LSSDPCONST;
 import com.libre.constants.LUCIMESSAGES;
 import com.libre.constants.MIDCONST;
-import com.libre.luci.LSSDPNodeDB;
-import com.libre.luci.LSSDPNodes;
 import com.libre.luci.LUCIControl;
 import com.libre.luci.LUCIPacket;
 import com.libre.util.LibreLogger;
 import com.squareup.otto.Bus;
 
 import org.fourthline.cling.model.meta.RemoteDevice;
-import org.json.JSONObject;
 
 import java.net.SocketAddress;
 
@@ -43,7 +39,7 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
     public ChannelHandlerContext mChannelContext;
 
     private final String remotedevice;
-    Handler handler;
+    private Handler handler;
 
 
     public NettyClientHandler(final String remotedevice) {
@@ -59,11 +55,7 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
                 if (msg.what == Constants.CHECK_ALIVE) {
                     if (LUCIControl.luciSocketMap.containsKey(remotedevice)) {
                         if ((System.currentTimeMillis() - LUCIControl.luciSocketMap.get(remotedevice).getLastNotifiedTime() > 10000)) {
-
-
                             try {
-
-
                                 LibreLogger.d(this, "Trying to write bye bye");
                                 if (mChannelContext != null && isSocketToBeRemovedFromTheTCPMap(mChannelContext, remotedevice)) {
 
@@ -130,7 +122,7 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
 //            mChannelContext.pipeline().fireChannelRead("1");
             try {
                 mChannelContext.channel().writeAndFlush(byteBufMsg).sync();
-                handler.sendEmptyMessageDelayed(Constants.CHECK_ALIVE, 10000);
+                handler.sendEmptyMessageDelayed(Constants.CHECK_ALIVE, Constants.CHECK_ALIVE_TIMEOUT);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 LibreLogger.d(this, "InterruptedException Happend in Writing the Data, Dont Know What is the Issue ");
@@ -160,38 +152,8 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
         byte[] databytes=bytes.clone();*/
         NettyData nData = new NettyData(remotedevice, databytes);
 
-
         LUCIPacket packet = new LUCIPacket(nData.getMessage());
 
-        if (packet.getCommand() == MIDCONST.ALEXA_COMMAND) {
-
-            String alexaMessage = new String(packet.getpayload());
-            LibreLogger.d(this, "Alexa Value From 230  " + alexaMessage);
-
-            try {
-                JSONObject jsonRootObject = new JSONObject(alexaMessage);
-                // JSONArray jsonArray = jsonRootObject.optJSONArray("Window CONTENTS");
-                JSONObject jsonObject = jsonRootObject.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT);
-                String productId = jsonObject.optString("PRODUCT_ID").toString();
-                String dsn = jsonObject.optString("DSN").toString();
-                String sessionId = jsonObject.optString("SESSION_ID").toString();
-                String codeChallenge = jsonObject.optString("CODE_CHALLENGE").toString();
-                String codeChallengeMethod = jsonObject.optString("CODE_CHALLENGE_METHOD").toString();
-                String locale = "";
-                if (jsonObject.has("LOCALE"))
-                    locale = jsonObject.optString("LOCALE").toString();
-                LSSDPNodes node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nData.getRemotedeviceIp());
-                if (node != null) {
-                    DeviceProvisioningInfo mDeviceProvisioningInfo = new DeviceProvisioningInfo(productId, dsn, sessionId, codeChallenge, codeChallengeMethod, locale);
-                    node.setMdeviceProvisioningInfo(mDeviceProvisioningInfo);
-
-                }
-
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
         /* Special case to handle the 54 for DMR playback completed */
         if (packet.getCommand() == 54) {
             String message = new String(packet.getpayload());
@@ -331,25 +293,16 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
         }
     }
 
-
-/*    public void write(String stringMessage){
-
-
-        Log.d(TAG, "Application is writing " + stringMessage);
-        ChannelFuture channelFuture = mChannelContext.writeAndFlush(Unpooled.copiedBuffer(stringMessage, CharsetUtil.UTF_8));
-
-    }*/
-
     public void write(final byte[] sbytes) {
 
         if (mChannelContext != null) {
             final ByteBuf byteBufMsg = mChannelContext.channel().alloc().buffer(sbytes.length);
             byteBufMsg.writeBytes(sbytes);
-            byte[] bytenew = new byte[sbytes.length];
-            String str = "";
+            byte[] bytenew;
+            StringBuilder str = new StringBuilder();
             bytenew = byteBufMsg.array();
-            for (int i = 0; i < bytenew.length; i++) {
-                str += bytenew[i] + ",";
+            for (byte b1 : bytenew) {
+                str.append(b1).append(",");
             }
 
             /*ChannelFuture channelFuture = mChannelContext.channel().writeAndFlush(byteBufMsg);
@@ -390,30 +343,29 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
                 if (!((mMessageBox == MIDCONST.VOLUME_CONTROL
                         /*|| mMessageBox == MIDCONST.ZONE_VOLUME*/
                         || mMessageBox == MIDCONST.MID_ENV_READ
-                        || mMessageBox == MIDCONST.GET_UI
+                        || mMessageBox == MIDCONST.SET_UI
                         || mMessageBox == MIDCONST.MID_REMOTE
                         || mMessageBox == MIDCONST.MID_IOT_CONTROL
                         || mMessageBox == MIDCONST.MID_DE_REGISTER)
                         && getCommandType(sbytes) == LSSDPCONST.LUCI_SET)) {
-                    LibreLogger.d(this, "Amit + NettyClient HAndler Timer is Started " + mMessageBox + " :: Value :: " + getCommandType(sbytes));
+                    LibreLogger.d(this, "Amit + NettyClient handler Timer is Started " + mMessageBox + " :: Value :: " + getCommandType(sbytes));
 
                     Message msg = new Message();
                     Bundle b = new Bundle();
-                    b.putString("Message", str);
+                    b.putString("Message", str.toString());
                     msg.what = Constants.CHECK_ALIVE;
                     msg.setData(b);
-                    handler.sendMessageDelayed(msg, 10000);
+                    handler.sendMessageDelayed(msg, Constants.CHECK_ALIVE_TIMEOUT);
+//                    handler.sendEmptyMessageDelayed(Constants.CHECK_ALIVE, Constants.CHECK_ALIVE_TIMEOUT);
                 } else {
-                    LibreLogger.d(this, "Amit + NettyClient HAndler is  Not Started " + mMessageBox + " :: Value :: " + getCommandType(sbytes));
+                    LibreLogger.d(this, "Amit + NettyClient handler is  Not Started " + mMessageBox + " :: Value :: " + getCommandType(sbytes));
                 }
-                /*handler.sendEmptyMessageDelayed(Constants.CHECK_ALIVE, 10000);*/
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                LibreLogger.d(this, "InterruptedException Happend in Writing the Data, Dont Know What is the Issue ");
+                LibreLogger.d(this, "InterruptedException happened in Writing the Data, Dont Know What is the Issue ");
             } catch (Exception e) {
                 e.printStackTrace();
-
-                LibreLogger.d(this, "Exception Happend in Writing the Data, Pending Write Issues Have been Cancelled, Device Got Rebooted ");
+                LibreLogger.d(this, "Exception happened in Writing the Data, Pending Write Issues Have been Cancelled, Device Got Rebooted ");
             }
 
         }
@@ -471,17 +423,11 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
             return false;
 
         if (ctx != null && ctx.channel().id() == mAndroidClient.handler.mChannelContext.channel().id()) {
-            /*LibreLogger.d(this, "BROKEN" + remotedevice + "id MATCH  "
-                    + ctx.channel().id() + " " +
-                    LUCIControl.luciSocketMap.get(remotedevice).handler.mChannelContext.channel().id());
-*/
-
             return true;
         } else {
-            LibreLogger.d(this, "BROKEN" + remotedevice + "id DIDNOT MATCH  "
-                    + ctx.channel().id() + " " +
-                    LUCIControl.luciSocketMap.get(remotedevice).handler.mChannelContext.channel().id());
-
+            LibreLogger.d(this, "BROKEN" + remotedevice
+                    + "id DID NOT MATCH " + ctx.channel().id() + " "
+                    + LUCIControl.luciSocketMap.get(remotedevice).handler.mChannelContext.channel().id());
             return false;
         }
     }

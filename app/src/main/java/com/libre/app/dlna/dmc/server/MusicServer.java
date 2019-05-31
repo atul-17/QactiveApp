@@ -22,6 +22,7 @@ import org.fourthline.cling.support.model.WriteStatus;
 import org.fourthline.cling.support.model.container.Container;
 import org.fourthline.cling.support.model.container.MusicAlbum;
 import org.fourthline.cling.support.model.container.MusicArtist;
+import org.fourthline.cling.support.model.container.MusicGenre;
 import org.fourthline.cling.support.model.item.Item;
 import org.fourthline.cling.support.model.item.MusicTrack;
 import org.seamless.util.MimeType;
@@ -36,12 +37,17 @@ import java.util.List;
 
 public class MusicServer {
     private static final String TAG = MusicServer.class.getName();
+    public static final String ALBUMS = "Albums";
+    public static final String ARTISTS = "Artists";
+    public static final String FOLDER = "Folder";
+    public static final String GENRES = "Genres";
+    public static final String SONGS = "Songs";
     private static MusicServer musicServer;
     private MediaServer mediaServer;
-    private boolean hasPrepared = false;
-    private Context m_context = null;
-    private List<String> m_musicMap = null;
-    private Hashtable<String, String> m_musicTable = null;
+    private boolean mediaReady = false;
+    private Context context = null;
+    private List<String> audioFormatsMap = null;
+    private Hashtable<String, String> musicTable = null;
     private static final String[] AUDIO_PROJECTION = {
             MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.DATA, MediaStore.Audio.Media.ARTIST,
@@ -55,63 +61,53 @@ public class MusicServer {
     private Container albumsContainer = null;
     private Container folderContainer = null;
     private Container genresContainer = null;
-    Item musicTrack;
 
-
-    Container genChild;
-
-    String genres;
-    List<String> genreslist = new ArrayList<String>();
-    HashMap<String, Container> genresMap = new HashMap<String, Container>();
     HashMap<Long, String> albumIdToCoverArtMap = new HashMap<Long, String>();
+    private static String[] genresProjection = {
+            MediaStore.Audio.Genres.NAME,
+            MediaStore.Audio.Genres._ID
+    };
 
 
     private MusicServer() {
+        audioFormatsMap = new ArrayList<String>();
 
-
-        m_musicMap = new ArrayList<String>();
-
-        m_musicMap.add("mp3");
-        m_musicMap.add("MP3");
-        m_musicMap.add("aac");
-        m_musicMap.add("flac");
+        audioFormatsMap.add("mp3");
+        audioFormatsMap.add("MP3");
+        audioFormatsMap.add("aac");
+        audioFormatsMap.add("flac");
 
         /*added new file format*/
-
-        m_musicMap.add("wma");
-        m_musicMap.add("wav");
-        m_musicMap.add("3g2");
-        m_musicMap.add("3gp");
-        m_musicMap.add("mp4");
-        m_musicMap.add("m4a");
-        m_musicMap.add("ogg");
+        audioFormatsMap.add("wma");
+        audioFormatsMap.add("wav");
+        audioFormatsMap.add("3g2");
+        audioFormatsMap.add("3gp");
+        audioFormatsMap.add("mp4");
+        audioFormatsMap.add("m4a");
+        audioFormatsMap.add("ogg");
 
         /*LS9 Bug */
-        m_musicMap.add("amr");
-        m_musicMap.add("wma");
+        audioFormatsMap.add("amr");
+        audioFormatsMap.add("wma");
 
-//allowable formats should be lower case
+        //allowable formats should be lower case
+        /*because contains method is case sensitive so adding */
+        audioFormatsMap.add("aac");
+        audioFormatsMap.add("AAC");
+        audioFormatsMap.add("ADTS");
+        audioFormatsMap.add("adts");
+        audioFormatsMap.add("dff");
+        audioFormatsMap.add("dsf");
+        //audioFormatsMap.add("mid");
+        //audioFormatsMap.add("midi");
 
-         /*because contains method is case sensitive so adding */
-        m_musicMap.add("aac");
-        m_musicMap.add("AAC");
-        m_musicMap.add("ADTS");
-        m_musicMap.add("adts");
 
-        m_musicMap.add("dff");
-        m_musicMap.add("dsf");
+        musicTable = new Hashtable<String, String>();
+        musicTable.put("mp3", "audio/mpeg");
+        musicTable.put("MP3", "audio/mpeg");
 
-
-        m_musicTable = new Hashtable<String, String>();
-        m_musicTable.put("mp3", "audio/mpeg");
-        m_musicTable.put("MP3", "audio/mpeg");
-
-//  m_musicTable.put("aac","audio/mpeg");
-        // m_musicTable.put("AAC","audio/mpeg");
-        //m_musicMap.add("wma");
-        //m_musicMap.add("wav");
-        //m_musicMap.add("mid");
-        //m_musicMap.add("midi");
+        //musicTable.put("aac","audio/mpeg");
+        //musicTable.put("AAC","audio/mpeg");
     }
 
     private String getCoverArtPath(Context context, long androidAlbumId) {
@@ -143,17 +139,19 @@ public class MusicServer {
 
     }
 
-    public boolean mPreparedMediaServer() {
-        return hasPrepared;
+    public boolean isMediaServerReady() {
+        return mediaReady;
     }
 
     //	private AndroidUpnpService upnpService;
     public void prepareMediaServer(Context context, CoreUpnpService.Binder service) {
-        if (hasPrepared)
+        if (mediaReady)
             return;
         try {
-            hasPrepared = true;
-            InetAddress localAddress = getLocalIpAddress(context);
+            this.context = context;
+            InetAddress localAddress = getLocalInetAddress(context);
+            if (localAddress == null)
+                return;
             LibreApplication.LOCAL_IP = localAddress.getHostAddress();
             if (mediaServer != null) {
                 ContentTree.clearContentMap();
@@ -161,163 +159,30 @@ public class MusicServer {
                 mediaServer.resartHTTPServer();
             } else {
                 mediaServer = new MediaServer(localAddress);
-
             }
 
             LibreApplication.LOCAL_UDN = mediaServer.getDevice().getIdentity().getUdn().toString();
             /* this line always has to be present before adding the device*/
             service.getRegistry().addDevice(mediaServer.getDevice());
-
+//            mediaReady = true;
+            ContentNode rootNode = ContentTree.getRootNode();
+            rootNode.getContainer().setChildCount(0);
+            buildAudioContainers(rootNode.getContainer());
+//		    buildOtherContainers(rootNode);
+            prepareMediaServerBackground();
         } catch (Exception ex) {
             // TODO: handle exception
             Log.d(TAG, "Creating local device failed" + ex);
-            hasPrepared = false;
+            mediaReady = false;
             return;
         }
-
-        ContentNode rootNode = ContentTree.getRootNode();
-        rootNode.getContainer().setChildCount(0);
-
-        // A                                                                                                                                                        udio Container
-//		audioContainer = new Container(ContentTree.AUDIO_ID,
-//				ContentTree.ROOT_ID, "Music", ContentTree.CREATOR,
-//				new DIDLObject.Class("object.container"), 0);
-//		audioContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
-//		rootNode.getContainer().addContainer(audioContainer);
-//		rootNode.getContainer().setChildCount(rootNode.getContainer().getChildCount() + 1);
-//		ContentTree.addNode(ContentTree.AUDIO_ID, new ContentNode(
-//				ContentTree.AUDIO_ID, audioContainer));
-
-        buildAudioContainers(rootNode.getContainer());
-
-//		buildOtherContainers(rootNode);
-
-        m_context = context;
-//        Activity activity = (Activity) context;
-
-
-     /*   activity.getLoaderManager().initLoader(0, null, new LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-
-
-                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                    Log.d("Music ServerThread","Init in the main thread");
-                }else{
-                    Log.d("Music ServerThread","Init  Not inthe main thread");
-
-                }
-
-                String order = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
-
-                CursorLoader cursorLoader = new CursorLoader(
-                        m_context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-                        AUDIO_PROJECTION, null, null, order);
-                return cursorLoader;
-            }
-
-            @Override
-            public void onLoadFinished(Loader<Cursor> arg0, final Cursor arg1) {
-
-                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                    Log.d("Music ServerThread","finished  in the main thread");
-                }else{
-                    Log.d("Music ServerThread","finished Not inthe main thread");
-
-                }
-                        getContents(arg1);
-           }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> arg0) {
-
-//                resetContents();
-            }
-        });*/
-
-        prepareMusicServerWithOutTheHeckOfLoader(context);
-        hasPrepared = true;
     }
-
-
-       /* activity.getLoaderManager().initLoader(1, null, new LoaderCallbacks<Cursor>() {
-            @Override
-            public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-                // TODO Auto-generated method stub
-                String[] STAR = { MediaStore.Audio.Genres._ID,
-                        MediaStore.Audio.Genres.NAME };
-                CursorLoader cursorLoader = new CursorLoader(
-                        m_context, MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
-                        STAR, null, null, null);
-
-                return cursorLoader;
-            }
-            @Override
-            public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-
-                tempcursor=arg1;
-
-
-
-                // TODO Auto-generated method stub
-
-             //  getGenres1(arg1);
-
-
-
-                //getContents(arg1);
-            }
-
-            private void getGenres1(Cursor cursor) {
-
-
-
-
-                if (cursor.moveToFirst())
-                    do {
-                        genres = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Genres.NAME));
-                        genreslist.add(genres);
-
-                        if (genres != null) {
-
-                            if (genresMap.containsKey(genres)) {
-                                genChild = genresMap.get(genres);
-                            } else {
-                                String genId = ContentTree.AUDIO_GENRES_PREFIX + genres;
-                                genChild = new MusicGenre(genId,
-                                        ContentTree.AUDIO_GENRES_ID, genres, ContentTree.CREATOR, 0);
-                                genChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
-                                genresContainer.addContainer(genChild);
-                                genresContainer.setChildCount(genresContainer.getChildCount() + 1);
-                                ContentTree.addNode(genId, new ContentNode(genId, genChild));
-                                genresMap.put(genres, genChild);
-                            }
-
-                        }
-
-
-                        Log.d(TAG,"generes+"+genres);
-                    }while (cursor.moveToNext());
-            }
-
-            @Override
-            public void onLoaderReset(Loader<Cursor> arg0) {
-                // TODO Auto-generated method stub
-                //resetContents();
-            }
-        });
-
-//		Cursor cursor = ((Activity)context).managedQuery(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-//				m_audioColumns, null, null, null);
-//		
-//		getContents(cursor);
-	} */
 
     private void buildAudioContainers(Container parent) {
         // TODO Auto-generated method stub
         // Albums
         albumsContainer = new Container(ContentTree.AUDIO_ALBUMS_ID,
-                ContentTree.AUDIO_ID, "Albums", ContentTree.CREATOR,
+                ContentTree.AUDIO_ID, ALBUMS, ContentTree.CREATOR,
                 new DIDLObject.Class("object.container"), 0);
         albumsContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
         parent.addContainer(albumsContainer);
@@ -327,7 +192,7 @@ public class MusicServer {
 
         // Artists
         artistsContainer = new Container(ContentTree.AUDIO_ARTISTS_ID,
-                ContentTree.AUDIO_ID, "Artists", ContentTree.CREATOR,
+                ContentTree.AUDIO_ID, ARTISTS, ContentTree.CREATOR,
                 new DIDLObject.Class("object.container"), 0);
         artistsContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
         parent.addContainer(artistsContainer);
@@ -335,29 +200,29 @@ public class MusicServer {
         ContentTree.addNode(ContentTree.AUDIO_ARTISTS_ID, new ContentNode(
                 ContentTree.AUDIO_ARTISTS_ID, artistsContainer));
 
-        // Artists
-        folderContainer = new Container(ContentTree.AUDIO_FOLDER_ID,
-                ContentTree.AUDIO_ID, "Folder", ContentTree.CREATOR,
+        // Folder
+        /*folderContainer = new Container(ContentTree.AUDIO_FOLDER_ID,
+                ContentTree.AUDIO_ID, FOLDER, ContentTree.CREATOR,
                 new DIDLObject.Class("object.container"), 0);
         folderContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
         parent.addContainer(folderContainer);
         parent.setChildCount(parent.getChildCount() + 1);
         ContentTree.addNode(ContentTree.AUDIO_FOLDER_ID, new ContentNode(
-                ContentTree.AUDIO_FOLDER_ID, folderContainer));
+                ContentTree.AUDIO_FOLDER_ID, folderContainer));*/
 
         // Genres
-        /*genresContainer = new Container(ContentTree.AUDIO_GENRES_ID,
-                ContentTree.AUDIO_ID, "Genres", ContentTree.CREATOR,
-				new DIDLObject.Class("object.container"), 0);
-		genresContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
-		parent.addContainer(genresContainer);
-		parent.setChildCount(parent.getChildCount() + 1);
-		ContentTree.addNode(ContentTree.AUDIO_GENRES_ID, new ContentNode(
-				ContentTree.AUDIO_GENRES_ID, genresContainer)); */
+        genresContainer = new Container(ContentTree.AUDIO_GENRES_ID,
+                ContentTree.AUDIO_ID, GENRES, ContentTree.CREATOR,
+                new DIDLObject.Class("object.container"), 0);
+        genresContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
+        parent.addContainer(genresContainer);
+        parent.setChildCount(parent.getChildCount() + 1);
+        ContentTree.addNode(ContentTree.AUDIO_GENRES_ID, new ContentNode(
+                ContentTree.AUDIO_GENRES_ID, genresContainer));
 
         // Songs
         songsContainer = new Container(ContentTree.AUDIO_SONGS_ID,
-                ContentTree.AUDIO_ID, "Songs", ContentTree.CREATOR,
+                ContentTree.AUDIO_ID, SONGS, ContentTree.CREATOR,
                 new DIDLObject.Class("object.container"), 0);
         songsContainer.setWriteStatus(WriteStatus.NOT_WRITABLE);
         parent.addContainer(songsContainer);
@@ -368,11 +233,10 @@ public class MusicServer {
 
     private boolean isFileExtSupport(String fileExtension) {
         if (fileExtension == null) return false;
-        return m_musicMap.contains(fileExtension.toLowerCase());
-
+        return audioFormatsMap.contains(fileExtension.toLowerCase());
     }
 
-    public void stop() {
+    public void stopMediaServer() {
         if (mediaServer != null) {
             mediaServer.stop();
         }
@@ -380,63 +244,47 @@ public class MusicServer {
 
     // FIXME: now only can get wifi address
     @SuppressLint("DefaultLocale")
-    private InetAddress getLocalIpAddress(Context context) throws UnknownHostException {
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-        WifiInfo wifiInfo = wifiManager.getConnectionInfo();
-        int ipAddress = wifiInfo.getIpAddress();
-        return InetAddress.getByName(String.format("%d.%d.%d.%d",
-                (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
-                (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
-    }
+    private InetAddress getLocalInetAddress(Context context) throws UnknownHostException {
+        WifiManager wifiManager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        if (wifiManager != null) {
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+            return InetAddress.getByName(String.format("%d.%d.%d.%d",
+                    (ipAddress & 0xff), (ipAddress >> 8 & 0xff),
+                    (ipAddress >> 16 & 0xff), (ipAddress >> 24 & 0xff)));
+        }
 
-    private void resetContents() {
-        // TODO Auto-generated method stub
-        resetAudioContents();
+        return null;
     }
 
     private void resetAudioContents() {
         // TODO Auto-generated method stub
         albumsContainer.getContainers().clear();
         albumsContainer.getItems().clear();
-
         artistsContainer.getContainers().clear();
         artistsContainer.getItems().clear();
-
-
         folderContainer.getContainers().clear();
         folderContainer.getItems().clear();
-
-		/*genresContainer.getContainers().clear();
-        genresContainer.getItems().clear(); */
-
+        genresContainer.getContainers().clear();
+        genresContainer.getItems().clear();
         songsContainer.getContainers().clear();
         songsContainer.getItems().clear();
     }
 
-    private void getContents(Cursor cursor) {
-        if (cursor == null) return;
-        getAudioContents(cursor);
-    }
-
     private void getAudioContents(Cursor cursor) {
-
-
-        HashMap<String,Integer> list = new HashMap<String,Integer>();
-
-
-
-
         // TODO Auto-generated method stub
-        //HashMap<String, Container> genresMap = new HashMap<String, Container>();
+        HashMap<String, Container> genresMap = new HashMap<String, Container>();
         HashMap<String, Container> artistsMap = new HashMap<String, Container>();
         HashMap<String, Container> albumsMap = new HashMap<String, Container>();
         HashMap<String, Container> playlistMap = new HashMap<String, Container>();
- 		HashMap<String, Container> folderMap = new HashMap<>();
+        HashMap<String, Container> folderMap = new HashMap<>();
 
         if (cursor.moveToFirst()) {
             do {
                 long mediaId = cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media._ID));
-                String id = ContentTree.AUDIO_PREFIX + mediaId;
+
+                /*Now we will assign id to identify whether this Music Item belongs under album,artist or folder*/
+                String musicTrackItemId = ContentTree.AUDIO_PREFIX + mediaId;
 
                 String title = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.TITLE));
                 String artist = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ARTIST));
@@ -448,34 +296,32 @@ public class MusicServer {
                 long album_id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.ALBUM_ID));
 
                 /* this is done for getting the album art */
-                String album_art_path = getCoverArtPath(m_context, album_id);
-                Log.d("MusicServer", "" + album_art_path );
-   String folderPaths = filePath;
-
-                Log.d("Title ="+title +" Artist image", "" + artist);
+                String album_art_path = getCoverArtPath(context, album_id);
+                Log.d("getAudioContents", "Title = " + title + " Artist = " + artist + ", \nalbum = "+ album_art_path);
 
                 int dotPos = filePath.lastIndexOf(".");
                 String fileExtension = dotPos != -1 ? filePath.substring(dotPos + 1) : null;
                 if (!isFileExtSupport(fileExtension)) continue;
-                if (m_musicTable.containsKey(fileExtension))
-                    mimeType = m_musicTable.get(fileExtension);
+                if (musicTable.containsKey(fileExtension))
+                    mimeType = musicTable.get(fileExtension);
                 if (mimeType.indexOf('/') == -1) continue;
                 Res res = new Res(new MimeType(mimeType.substring(0, mimeType.indexOf('/')), mimeType.substring(mimeType
-                        .indexOf('/') + 1)), size, "http://" + mediaServer.getAddressAndPort() + "/" + id);
+                        .indexOf('/') + 1)), size, "http://" + mediaServer.getAddressAndPort() + "/" + musicTrackItemId);
                 res.setDuration(ModelUtil.toTimeString(duration / 1000));
 
                 // Music Track must have `artist' with role field, or
                 // DIDLParser().generate(didl) will throw nullpointException
-                musicTrack = new MusicTrack(id,
+                Item musicTrack = new MusicTrack(musicTrackItemId,
                         ContentTree.AUDIO_ID, title, artist, album,
                         new PersonWithRole(artist, "Performer"), res);
                 musicTrack.setCreator(artist);
-                musicTrack.addProperty(new DIDLObject.Property.UPNP.ALBUM_ART_URI(URI.create("http://" + mediaServer.getAddressAndPort() + "/" + id + "/album_art")));
+                musicTrack.addProperty(new DIDLObject.Property.UPNP.ALBUM_ART_URI(URI.create("http://" + mediaServer.getAddressAndPort() + "/" + musicTrackItemId + "/album_art")));
 
+                /*Append song container id to item id*/
                 songsContainer.addItem(musicTrack);
                 songsContainer.setChildCount(songsContainer.getChildCount() + 1);
 
-                ContentTree.addNode(id, new ContentNode(id, musicTrack, filePath).setAlbumArtpath(album_art_path));
+                ContentTree.addNode(musicTrackItemId, new ContentNode(musicTrackItemId, musicTrack, filePath).setAlbumArtpath(album_art_path));
 
                 if (artist != null) {
                     Container artistChild;
@@ -510,61 +356,48 @@ public class MusicServer {
                         albumsMap.put(album, albumChild);
                     }
                     albumChild.addItem(musicTrack);
-
-                if (folderPaths != null) {
-                    Container folderChild;
-
-                    folderContainerFunc(folderPaths, folderContainer, musicTrack, folderMap);
-
-//                    if (folderMap.containsKey(folderPaths)) {
-//                        folderChild = folderMap.get(folderPaths);
-//                    } else {
-//                        String folderID = ContentTree.AUDIO_FOLDER_PREFIX + folderPaths;
-//                        folderChild = new MusicAlbum(folderID,
-//                                ContentTree.AUDIO_FOLDER_ID, folderPaths, ContentTree.CREATOR, 0, new ArrayList<MusicTrack>());
-//                        folderChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
-//                        folderContainer.addContainer(folderChild);
-//                        folderContainer.setChildCount(folderContainer.getChildCount() + 1);
-//                        ContentTree.addNode(folderID, new ContentNode(folderPaths, folderChild));
-//                        folderMap.put(folderPaths, folderChild);
-//                    }
-//                    folderChild.addItem(musicTrack);
-//                    folderChild.setChildCount(folderChild.getChildCount() + 1);
-                }
-
                     albumChild.setChildCount(albumChild.getChildCount() + 1);
                 }
 
-		/*	 if (genres != null) {
-                 Container genChild;
+                /*if (filePath != null || !filePath.isEmpty()) {
+                    buildFoldersContainers(filePath, folderContainer, musicTrack, folderMap);
+                }*/
 
-                if (genresMap.containsKey(genres)) {
-                    genChild = genresMap.get(genres);
-                } else {
-                    String genId = ContentTree.AUDIO_GENRES_PREFIX + genres;
-                    genChild = new MusicGenre(genId,
-                            ContentTree.AUDIO_GENRES_ID, genres, ContentTree.CREATOR, 0);
-                    genChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
-                    genresContainer.addContainer(genChild);
-                    genresContainer.setChildCount(genresContainer.getChildCount() + 1);
-                    ContentTree.addNode(genId, new ContentNode(genId, genChild));
-                    genresMap.put(genres, genChild);
+//                String genres = getGenres(mediaId);
+                String genres = getGenresV2((int) mediaId);
+                Log.e("getAudioContents","genre = "+genres);
+                if (genres != null) {
+                    Container genChild;
+                    if (genresMap.containsKey(genres)) {
+                        genChild = genresMap.get(genres);
+                    } else {
+                        String genId = ContentTree.AUDIO_GENRES_PREFIX + genres;
+                        genChild = new MusicGenre(genId,
+                                ContentTree.AUDIO_GENRES_ID, genres, ContentTree.CREATOR, 0);
+                        genChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
+                        genresContainer.addContainer(genChild);
+                        genresContainer.setChildCount(genresContainer.getChildCount() + 1);
+                        ContentTree.addNode(genId, new ContentNode(genId, genChild));
+                        genresMap.put(genres, genChild);
+                    }
+                    genChild.addItem(musicTrack);
+                    genChild.setChildCount(genChild.getChildCount() + 1);
                 }
-                 genChild.addItem(musicTrack);
-               genChild.setChildCount(genChild.getChildCount() + 1);
-
-            } */
-
 
                 Log.d(TAG, "added audio item, title:" + title + " ext:" + fileExtension + " mime:" + mimeType + " path:" + filePath);
             } while (cursor.moveToNext());
         }
+
+        if (!cursor.isClosed()) {
+            cursor.close();
+        }
+        mediaReady = true;
     }
 
-    public int ordinalIndexOf(String str) {
+    private int ordinalIndexOf(String str) {
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '/') {
-                Log.d("AABBCCDD", "Position" + i);
+//                Log.d("AABBCCDD", "Position" + i);
                 return i;
             }
         }
@@ -572,68 +405,88 @@ public class MusicServer {
     }
 
 
-    private void folderContainerFunc(String path, Container parentContainer, Item musicTrack, HashMap<String, Container> folderMap) {
+    private void buildFoldersContainers(String path, Container parentContainer, Item musicTrack, HashMap<String, Container> folderMap) {
         path = path.substring(1);
-        String array[] = path.split("/");
+        String[] array = path.split("/");
         if (array.length == 0) {
             parentContainer.addItem(musicTrack);
             parentContainer.setChildCount(parentContainer.getChildCount() + 1);
-
             return;
         }
+
         /*Now we are checking if first element in path has a container or not*/
-        else if (folderMap.containsKey(array[0])) {
-            String remainingPath = path.substring(ordinalIndexOf(path), path.length());
-            Log.d("AABBCCDD", remainingPath);
-            folderContainerFunc(remainingPath, folderMap.get(array[0]), musicTrack, folderMap);
+        if (folderMap.containsKey(array[0])) {
+            String remainingPath = path.substring(ordinalIndexOf(path));
+            Log.d("buildFolders", remainingPath);
+            buildFoldersContainers(remainingPath, folderMap.get(array[0]), musicTrack, folderMap);
             return;
         }
+
         /*we don't have container for entire path so we will create container for entire path*/
-        else {
+        Log.d("buildFolders", "We don't have any container for path " + path);
 
-            Log.d("AABBCCDD", "We dont have any container for path " + path);
+        Container previousContainer = null;
+        for (int i = array.length - 2; i >= 0; i--) {
+            Container folderChild;
+            String folderID = ContentTree.AUDIO_FOLDER_PREFIX + array[i];
+            folderChild = new MusicAlbum(folderID,
+                    ContentTree.AUDIO_FOLDER_ID, "" + array[i], ContentTree.CREATOR, 0, new ArrayList<MusicTrack>());
+            folderChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
+            Log.d("buildFolders", "created container for " + array[i]);
 
-            Container previousContainer = null;
-            for (int i = array.length - 2; i >= 0; i--) {
-                Container folderChild;
-                String folderID = ContentTree.AUDIO_FOLDER_PREFIX + array[i];
-                folderChild = new MusicAlbum(folderID,
-                        ContentTree.AUDIO_FOLDER_ID, "" + array[i], ContentTree.CREATOR, 0, new ArrayList<MusicTrack>());
-                folderChild.setWriteStatus(WriteStatus.NOT_WRITABLE);
-                Log.d("AABBCCDD", "created container for  " + array[i]);
-
-                if (i == array.length - 2) {
-                    folderChild.addItem(musicTrack);
-                    folderChild.setChildCount(folderChild.getChildCount() + 1);
-                } else {
-                    folderChild.addContainer(previousContainer);
-                    folderChild.setChildCount(folderChild.getChildCount() + 1);
-                }
-                previousContainer = folderChild;
-                ContentTree.addNode(folderID, new ContentNode(folderID, folderChild));
-                folderMap.put(array[i], folderChild);
-            }
-            if (previousContainer != null) {
-                parentContainer.addContainer(previousContainer);
-                parentContainer.setChildCount(parentContainer.getChildCount() + 1);
+            if (i == array.length - 2) {
+                folderChild.addItem(musicTrack);
+                folderChild.setChildCount(folderChild.getChildCount() + 1);
             } else {
-                parentContainer.addItem(musicTrack);
+                folderChild.addContainer(previousContainer);
+                folderChild.setChildCount(folderChild.getChildCount() + 1);
             }
-            Log.d("XXYYZZ", "container for  " + previousContainer);
-
+            previousContainer = folderChild;
+            ContentTree.addNode(folderID, new ContentNode(folderID, folderChild));
+            folderMap.put(array[i], folderChild);
         }
+        if (previousContainer != null) {
+            parentContainer.addContainer(previousContainer);
+            parentContainer.setChildCount(parentContainer.getChildCount() + 1);
+        } else {
+            parentContainer.addItem(musicTrack);
+        }
+        Log.d("buildFolders", "container for  " + previousContainer);
     }
+
     @SuppressWarnings("deprecation")
-    private String getGenres(long mediaId, Cursor c) {
+    private String getGenres(long mediaId) {
         // TODO Auto-generated method stub
         Uri uri = Uri.parse("content://media/external/audio/media/" + mediaId + "/genres");
-        c = ((Activity) m_context).managedQuery(uri,
+        /*Cursor c = ((Activity) context).managedQuery(uri,
                 new String[]{MediaStore.Audio.GenresColumns.NAME},
-                null, null, null);
-        if (c.moveToFirst()) {
-            String genre = c.getString(c.getColumnIndex(MediaStore.Audio.GenresColumns.NAME));
-            return genre;
+                null, null, null);*/
+        String genre = null;
+        Cursor c = context.getContentResolver().query(
+                MediaStore.Audio.Genres.EXTERNAL_CONTENT_URI,
+                new String[]{MediaStore.Audio.GenresColumns.NAME}, null, null, null);
+        if (c != null && c.moveToFirst()) {
+            genre = c.getString(c.getColumnIndex(MediaStore.Audio.GenresColumns.NAME));
+            if (!c.isClosed()) c.close();
         }
+        return genre;
+    }
+
+    private String getGenresV2(int mediaId) {
+        try {
+            Uri uri = MediaStore.Audio.Genres.getContentUriForAudioId("external", mediaId);
+            Cursor genresCursor = context.getContentResolver().query(uri,
+                    genresProjection, null, null, null);
+            String genres;
+            if (genresCursor != null && genresCursor.moveToFirst()) {
+                genres = genresCursor.getString(genresCursor.getColumnIndexOrThrow(MediaStore.Audio.Genres.NAME));
+                if (!genresCursor.isClosed()) genresCursor.close();
+                return genres;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return null;
     }
 /*
@@ -655,9 +508,9 @@ public class MusicServer {
         }
         return playListIds;
     }*/
+
     private void buildOtherContainers(Container parent) {
         // TODO Auto-generated method stub
-
         // Image Container
         Container imageContainer = new Container(ContentTree.IMAGE_ID,
                 ContentTree.ROOT_ID, "Photo", ContentTree.CREATOR,
@@ -682,37 +535,25 @@ public class MusicServer {
     }
 
 
-    public void reprepareMediaServer() {
-        hasPrepared = false;
-
+    public void clearMediaServer() {
+        mediaReady = false;
     }
 
     public MediaServer getMediaServer() {
         return mediaServer;
     }
 
-
     public static MusicServer getMusicServer() {
-
         if (musicServer == null)
             musicServer = new MusicServer();
-
         return musicServer;
     }
 
-
-    public static void removeMusicServer() {
-        musicServer = null;
-    }
-
-
-    public void prepareMusicServerWithOutTheHeckOfLoader(Context context) {
-
+    private void prepareMediaServerBackground() {
         String order = MediaStore.Audio.Media.TITLE + " COLLATE LOCALIZED ASC";
         Cursor cursor = context.getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, AUDIO_PROJECTION, null, null, order);
-        getContents(cursor);
-        cursor.close();
-        return;
+        if (cursor != null) {
+            getAudioContents(cursor);
+        }
     }
-
 }

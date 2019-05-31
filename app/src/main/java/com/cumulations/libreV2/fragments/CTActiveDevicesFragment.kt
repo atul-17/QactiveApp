@@ -148,7 +148,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
     private var mDeviceFound: Boolean = false
     private var mMasterFound: Boolean = false
 
-    private fun updateFromCentralRepositryDeviceList() {
+    fun updateFromCentralRepositryDeviceList() {
         var sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
         LibreLogger.d(this, "Master is Getting Added T Active Scenes Adapter" + mScanHandler.sceneObjectFromCentralRepo.keys)
         /* Fix For If Device is Available But SceneObject is Not Available in the Network */
@@ -234,29 +234,12 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         }
 
         val luciPacket = LUCIPacket(nettyData.getMessage())
-        val luciControl = LUCIControl(nettyData.getRemotedeviceIp())
         val msg = String(luciPacket.payload)
 
         when(luciPacket.command){
             MIDCONST.MID_DEVICE_STATE_ACK -> {
                 try {
-//                    which means i have already registered for 3 that's why i got 103
-//                    * SO no need to send it again
-//                    val luciPackets = java.util.ArrayList<LUCIPacket>()
-//                    val mScenePacket = LUCIPacket(null, 0.toShort(), MIDCONST.MID_SCENE_NAME.toShort(), LSSDPCONST.LUCI_GET.toByte())
-//                    removing it to resolve flickering issue
-//                    LUCIPacket volumePacket = new LUCIPacket(null, (short) 0, (short) MIDCONST.ZONE_VOLUME, (byte) LSSDPCONST.LUCI_GET);
-//                    val getUIPacket = LUCIPacket(LUCIMESSAGES.GET_PLAY.toByteArray(), LUCIMESSAGES.GET_PLAY.length.toShort(),
-//                            MIDCONST.MID_REMOTE_UI, LSSDPCONST.LUCI_SET.toByte())
-//
-//                    luciPackets.add(mScenePacket)
-//                    luciPackets.add(volumePacket)
-//                    luciPackets.add(getUIPacket)
-//
-//                    luciControl.SendCommand(luciPackets)
-
                     (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(nettyData.remotedeviceIp)
-
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -324,6 +307,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                 /*this message box is to get volume*/
                 try {
                     val duration = Integer.parseInt(msg)
+                    Log.e("VOLUME_CONTROL","value = $duration")
                     if (sceneObject?.volumeValueInPercentage != duration) {
                         sceneObject?.volumeValueInPercentage = duration
                         mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
@@ -348,7 +332,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                 }
             }
 
-            MIDCONST.GET_UI -> {
+            MIDCONST.SET_UI -> {
                 try {
 
                     LibreLogger.d(this, "MB : 42, msg = $msg")
@@ -400,7 +384,6 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                     if (sceneObject?.playstatus != playstatus) {
                         sceneObject?.playstatus = playstatus
                         mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
-
                         deviceListAdapter.addDeviceToList(sceneObject)
                     }
 
@@ -479,6 +462,12 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                     sceneObject?.isAlexaBtnLongPressed = false
                     /*updating boolean status to repo as well*/
                     ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject?.ipAddress,sceneObject)
+                    deviceListAdapter?.addDeviceToList(sceneObject)
+                }
+            }
+
+            MIDCONST.MID_ENV_READ -> {
+                if (msg.contains("AlexaRefreshToken")) {
                     deviceListAdapter?.addDeviceToList(sceneObject)
                 }
             }

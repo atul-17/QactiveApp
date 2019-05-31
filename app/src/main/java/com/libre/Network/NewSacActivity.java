@@ -1210,7 +1210,7 @@ loadLssdpDevicesFromCentralRepo();
     }
 
     public void stopTimer() {
-        //stop the timer, if it's not already null
+        //stopMediaServer the timer, if it's not already null
         LibreLogger.d(this,"Timer is Stopping");
         if (timer != null) {
             timer.cancel();

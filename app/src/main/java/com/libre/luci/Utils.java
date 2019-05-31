@@ -73,7 +73,6 @@ public class Utils {
         return "";*/
 
     public static NetworkInterface getActiveNetworkInterface() {
-
         Enumeration<NetworkInterface> interfaces = null;
         try {
             interfaces = NetworkInterface.getNetworkInterfaces();
@@ -88,46 +87,42 @@ public class Utils {
             Enumeration<InetAddress> inetAddresses = iface.getInetAddresses();
 
 //            Log.d("ip check","Bhargav in getActiveInterface "+iface.getName());
-            /* Check if we have a non-local address. If so, this is the active
-             * interface.
-             *
-             * This isn't a perfect heuristic: I have devices which this will
-             * still detect the wrong interface on, but it will handle the
-             * common cases of wifi-only and Ethernet-only.
-             */
+//             Check if we have a non-local address. If so, this is the active
+//             * interface.
+//             *
+//             * This isn't a perfect heuristic: I have devices which this will
+//             * still detect the wrong interface on, but it will handle the
+//             * common cases of wifi-only and Ethernet-only.
+
             if (iface.getName().startsWith("w")) {
                 //this is a perfect hack for getting wifi alone
-
                 while (inetAddresses.hasMoreElements()) {
                     InetAddress addr = inetAddresses.nextElement();
-
                     if (!(addr.isLoopbackAddress() || addr.isLinkLocalAddress())) {
-                        Log.d("LSSDP", "DisplayName" + iface.getDisplayName() + "Name" + iface.getName()+
-                        "Address "+ addr +" Host Address" + addr.getHostAddress());
-
+                        Log.d("LSSDP", "DisplayName" + iface.getDisplayName()
+                                + "Name" + iface.getName()
+                                + "Address "+ addr
+                                +" Host Address" + addr.getHostAddress());
                         return iface;
                     }
                 }
             }
         }
-
         return null;
     }
 
-    public static InetAddress getLocalV4Address(NetworkInterface netif) {
-
-
-        Enumeration addrs;
+    static InetAddress getLocalV4Address(NetworkInterface netif) {
+        Enumeration enumeration;
         try {
-            addrs = netif.getInetAddresses();
+            enumeration = netif.getInetAddresses();
+            while (enumeration.hasMoreElements()) {
+                InetAddress inetAddress = (InetAddress) enumeration.nextElement();
+                if (inetAddress instanceof Inet4Address && !inetAddress.isLoopbackAddress())
+                    return inetAddress;
+            }
         } catch (NullPointerException e) {
             e.printStackTrace();
             return null;
-        }
-        while (addrs.hasMoreElements()) {
-            InetAddress addr = (InetAddress) addrs.nextElement();
-            if (addr instanceof Inet4Address && !addr.isLoopbackAddress())
-                return addr;
         }
         return null;
     }

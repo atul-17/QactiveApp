@@ -319,7 +319,6 @@
 
                     <ProgressBar
                         android:id="@+id/system_firmware_progress_bar"
-                        style="?android:attr/progressBarStyleSmall"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center_vertical|right"
@@ -482,7 +481,6 @@
 
                     <ProgressBar
                         android:id="@+id/network_name_progress_bar"
-                        style="?android:attr/progressBarStyleSmall"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center_vertical|right"
@@ -592,7 +590,6 @@
 
                         <ProgressBar
                             android:id="@+id/login_progress_bar"
-                            style="?android:attr/progressBarStyleSmall"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"
@@ -647,7 +644,6 @@
 
                         <ProgressBar
                             android:id="@+id/locale_progress_bar"
-                            style="?android:attr/progressBarStyleSmall"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"
@@ -716,7 +712,6 @@
 
                         <ProgressBar
                             android:id="@+id/soft_update_progress_bar"
-                            style="?android:attr/progressBarStyleSmall"
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"

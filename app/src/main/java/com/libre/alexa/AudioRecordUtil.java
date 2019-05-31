@@ -4,13 +4,10 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.AudioTrack;
 import android.media.MediaRecorder;
-import android.os.Environment;
 import android.util.Log;
-import android.view.View;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.libre.util.LibreLogger;
+
 import java.util.Arrays;
 
 /**
@@ -23,7 +20,7 @@ public class AudioRecordUtil {
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
     private static final String CLASS = AudioRecordUtil.class.getSimpleName();
     private static AudioRecordUtil audioRecordUtil;
-    private AudioRecord recorder = null;
+    private AudioRecord audioRecord = null;
     private Thread recordingThread = null;
     private boolean isRecording = false;
     private int BufferElements2Rec = 1024; // want to play 2048 (2K) since 2 bytes we use only 1024
@@ -52,14 +49,20 @@ public class AudioRecordUtil {
                     RECORDER_CHANNELS, RECORDER_AUDIO_ENCODING);
 
             /*for voice only*/
-            recorder = new AudioRecord(
+            audioRecord = new AudioRecord(
                     MediaRecorder.AudioSource.VOICE_RECOGNITION,
                     RECORDER_SAMPLERATE,
                     RECORDER_CHANNELS,
                     RECORDER_AUDIO_ENCODING,
                     BufferElements2Rec * BytesPerElement);
 
-            recorder.startRecording();
+            audioRecord.startRecording();
+            int recordingState = audioRecord.getRecordingState();
+            LibreLogger.d(this, "RecordingState() after startRecording() = " + recordingState);
+            if (recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+                LibreLogger.d(this, "Audio recorder not free");
+                audioRecordCallback.recordError("Audio recorder not free");
+            }
 
             isRecording = true;
             recordingThread = new Thread(new Runnable() {
@@ -75,18 +78,18 @@ public class AudioRecordUtil {
     }
 
     private void sendAudioBufferToDevice(AudioRecordCallback audioRecordCallback) {
-        /*if (recorder == null) {
+        /*if (audioRecord == null) {
             audioRecordCallback.recordError("Recorder not initialised");
             return;
         }*/
 
         // Write the output audio in byte
-        short audioBufferInShorts[] = new short[/*minAudioBufferSize*/BufferElements2Rec];
+        short[] audioBufferInShorts = new short[/*minAudioBufferSize*/BufferElements2Rec];
         while (isRecording) {
             // gets the voice output from microphone to byte format
 
             try{
-                shortsRead = recorder.read(audioBufferInShorts, 0, /*minAudioBufferSize*/BufferElements2Rec);
+                shortsRead = audioRecord.read(audioBufferInShorts, 0, /*minAudioBufferSize*/BufferElements2Rec);
 
                 if (shortsRead == AudioRecord.ERROR_BAD_VALUE || shortsRead == AudioRecord.ERROR_INVALID_OPERATION) {
                     Log.e("sendAudioBufferToDevice", "Error reading from microphone.");
@@ -94,7 +97,7 @@ public class AudioRecordUtil {
                     break;
                 }
 
-                byte bufferBytes[] = short2byte(audioBufferInShorts);
+                byte[] bufferBytes = short2byte(audioBufferInShorts);
                 Log.d(CLASS, "bufferBytes[] = " + Arrays.toString(bufferBytes));
                 audioRecordCallback.sendBufferAudio(bufferBytes);
             } catch (Exception e){
@@ -115,11 +118,11 @@ public class AudioRecordUtil {
             while (isRecording) {
                 // gets the voice output from microphone to byte format
 
-                if (recorder == null) {
+                if (audioRecord == null) {
                     audioRecordCallback.recordError("Recorder not initialised");
                     return;
                 }
-                shortsRead = recorder.read(audioBufferInShorts, 0, *//*minAudioBufferSize*//*BufferElements2Rec);
+                shortsRead = audioRecord.read(audioBufferInShorts, 0, *//*minAudioBufferSize*//*BufferElements2Rec);
 
                 if (shortsRead == AudioRecord.ERROR_BAD_VALUE || shortsRead == AudioRecord.ERROR_INVALID_OPERATION) {
                     Log.e("writeAudioBufferToFile", "Error reading from microphone.");
@@ -159,12 +162,12 @@ public class AudioRecordUtil {
 
     public void stopRecording() {
         // stops the recording activity
-        if (recorder!=null) {
+        if (audioRecord !=null) {
             try {
                 isRecording = false;
-                recorder.stop();
-                recorder.release();
-                recorder = null;
+                audioRecord.stop();
+                audioRecord.release();
+                audioRecord = null;
                 audioRecordCallback.recordStopped();
                 recordingThread = null;
                 MicTcpServer.getMicTcpServer().clearAudioBuffer();

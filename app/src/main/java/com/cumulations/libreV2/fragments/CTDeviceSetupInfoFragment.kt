@@ -51,7 +51,6 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
     }
 
     private fun initViews() {
-        toolbar.title = ""
         btn_next.isEnabled = false
     }
 
@@ -108,12 +107,22 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
     }
 
     private fun retrieveDeviceName(){
-        deviceDiscoveryActivity.showProgressDialog(getString(R.string.retrieving))
-        if (handler?.hasMessages(AppConstants.GETTING_DEVICE_NAME)!!)
-            handler?.removeMessages(AppConstants.GETTING_DEVICE_NAME)
-        handler?.sendEmptyMessageDelayed(AppConstants.GETTING_DEVICE_NAME, 15000)
         if (mDeviceName == null) {
+            deviceDiscoveryActivity.showProgressDialog(getString(R.string.retrieving))
+            if (handler?.hasMessages(AppConstants.GETTING_DEVICE_NAME)!!)
+                handler?.removeMessages(AppConstants.GETTING_DEVICE_NAME)
+            handler?.sendEmptyMessageDelayed(AppConstants.GETTING_DEVICE_NAME, 15000)
             getDeviceName()
+        } else {
+            Log.e("retrieveDeviceName","Device name = $mDeviceName")
+            WifiConnection.getInstance().putssidDeviceNameSAC(deviceDiscoveryActivity.connectedSSID, mDeviceName)
+            startActivity(Intent(deviceDiscoveryActivity, CTConnectToWifiActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(Constants.FROM_ACTIVITY,CTDeviceSetupInfoFragment::class.java.simpleName)
+                putExtra(AppConstants.DEVICE_IP, AppConstants.SAC_IP_ADDRESS)
+                putExtra(AppConstants.DEVICE_NAME, mDeviceName)
+                putExtra(AppConstants.DEVICE_SSID, deviceDiscoveryActivity.connectedSSID)
+            })
         }
     }
 

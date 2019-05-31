@@ -29,6 +29,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cumulations.libreV2.activity.CTNowPlayingActivity;
 import com.libre.ActiveScenesListActivity;
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.LErrorHandeling.LibreError;
@@ -50,7 +51,6 @@ import com.libre.luci.LSSDPNodes;
 import com.libre.luci.LUCIPacket;
 import com.libre.netty.LibreDeviceInteractionListner;
 import com.libre.netty.NettyData;
-import com.libre.nowplaying.NowPlayingActivity;
 import com.libre.util.LibreLogger;
 
 import org.fourthline.cling.model.meta.Action;
@@ -123,7 +123,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                     showErrorMessage(error);
                     closeLoader();
 
-                    Intent intent = new Intent(DMSBrowserActivity.this, NowPlayingActivity.class);
+                    Intent intent = new Intent(DMSBrowserActivity.this, CTNowPlayingActivity.class);
 
         /* This change is done to make sure that album art is reflectd after source swithing from Aux to other-START*/
                     SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(ipAddressOfTheRenderingDevice);
@@ -146,7 +146,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
 
 
 
-                            Intent intent = new Intent(DMSBrowserActivity.this, NowPlayingActivity.class);
+                            Intent intent = new Intent(DMSBrowserActivity.this, CTNowPlayingActivity.class);
 
         /* This change is done to make sure that album art is reflectd after source swithing from Aux to other-START*/
                             SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(ipAddressOfTheRenderingDevice);
@@ -219,7 +219,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_browse_dmrcontent);
 
-        dmsDeviceUDN = getIntent().getStringExtra("device_udn");
+        dmsDeviceUDN = getIntent().getStringExtra(Constants.DEVICE_UDN);
         ipAddressOfTheRenderingDevice = getIntent().getStringExtra(Constants.CURRENT_DEVICE_IP);
 
         m_myApp = (LibreApplication) getApplication();
@@ -296,12 +296,12 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                 m_adapter.clear();
                 m_didlObjectListSearchResult.clear();
                 for (DIDLObject searchDid : m_didlObjectList){
-                    if(searchDid.getTitle().toString().toLowerCase().contains(s.toString().toLowerCase())){
+                    if(searchDid.getTitle().toLowerCase().contains(s.toString().toLowerCase())){
                         LibreLogger.d(this, "exist " + s + " in " + searchDid.getTitle());
                        m_adapter.add(searchDid);
                         m_didlObjectListSearchResult.add(searchDid);
                     }
-                    //m_listView.setAdapter(m_adapter);
+                    //m_listView.setAdapter(didlObjectArrayAdapter);
                     m_adapter.notifyDataSetChanged();
                 }
             }
@@ -350,7 +350,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
 
         public void run() {
 
-            if(MusicServer.getMusicServer().mPreparedMediaServer()){
+            if(MusicServer.getMusicServer().isMediaServerReady()){
                 m_listView.performItemClick(m_listView.getAdapter().getView(mPositionClicked, null, null), mPositionClicked, m_listView.getItemIdAtPosition(mPositionClicked));
 /*                closeLoader();*/
                 mPositionClicked=-1;
@@ -370,7 +370,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
 
         @Override
         public void onItemClick(AdapterView<?> adapter, View view, int position, long arg3) {
-            if(!MusicServer.getMusicServer().mPreparedMediaServer()) {
+            if(!MusicServer.getMusicServer().isMediaServerReady()) {
                 Toast.makeText(DMSBrowserActivity.this,"Loading all contents,Please Wait", Toast.LENGTH_SHORT).show();
                 mPositionClicked=position;
                 showLoader();
@@ -401,9 +401,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                 } else {
                     m_progressDlg = ProgressDialog.show(DMSBrowserActivity.this, getString(R.string.searchingRenderer),getString(R.string.pleaseWait) ,true, true, cancelListener);
                     playerObjectSelectedByUser = object;
-
                     handler.sendEmptyMessage(DO_BACKGROUND_DMR);
-
                 }
             }
         }
@@ -419,8 +417,6 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
     };
 
     protected void browse(DIDLObject object) {
-
-
         String id = object.getId();
         Log.i(TAG, "Browse id:" + id);
         m_isBrowseCancel = false;
@@ -578,13 +574,13 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
         //////////// timeout for dialog - showLoader() ///////////////////
 //        handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, DMR_TIMEOUT);
 
-        Intent intent = new Intent(this, NowPlayingActivity.class);
+        Intent intent = new Intent(this, CTNowPlayingActivity.class);
 
         /* This change is done to make sure that album art is reflectd after source swithing from Aux to other-START*/
         SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(ipAddressOfTheRenderingDevice);
         if (sceneObjectFromCentralRepo != null) {
             /* Setting the DMR source */
-            sceneObjectFromCentralRepo.setCurrentSource(2);
+            sceneObjectFromCentralRepo.setCurrentSource(Constants.DMR_SOURCE);
             sceneObjectFromCentralRepo.setCurrentPlaybackSeekPosition(0);
             sceneObjectFromCentralRepo.setTotalTimeOfTheTrack(0);
 
@@ -601,7 +597,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
     }
 
     @Override
-    public void onBrowseComplete(final Map<String, List<? extends DIDLObject>> result) {
+    public void onBrowseComplete(String parentObjectId, final Map<String, List<? extends DIDLObject>> result) {
         LibreLogger.d(this,"Browse Completed");
         if (m_isBrowseCancel) {
             m_isBrowseCancel = false;
@@ -628,7 +624,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                     m_adapter.add(item);
                     m_didlObjectList.add(item);
                 }
-//				m_adapter.notifyDataSetChanged();
+//				didlObjectArrayAdapter.notifyDataSetChanged();
                 m_listView.setAdapter(m_adapter);
 
                 closeLoader();
@@ -696,7 +692,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
 
         if (m_browseObjectStack.isEmpty() || m_browseObjectStack.peek().getId().equals(ContentTree.ROOT_ID)) {
 
-            Intent intent = new Intent(this, NowPlayingActivity.class);
+            Intent intent = new Intent(this, CTNowPlayingActivity.class);
              /* This change is done to make sure that whenever a Back Button is Pressed it should go to Now Playing window
              * without Selecting any Song *- END*/
 
@@ -780,8 +776,8 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                         *//* when we play from DMR and kill the app and open again. The source is 2(DMR).
                         At that instance playbackHelper or playbackHelper.getDmsHelper() is null.
                           So browse to root folder.*//*
-                        m_dmsProcessor.addListener(this);
-                        m_dmsProcessor.browse("0");
+                        dmsProcessor.addListener(this);
+                        dmsProcessor.browse("0");
                     }*/
                 }
             }
@@ -938,7 +934,7 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                       */
                     unRegisterForDeviceEvents();
                     //Intent intent = new Intent(RemoteSourcesList.this, ActiveScenesListActivity.class);
-                    Intent intent = new Intent(DMSBrowserActivity.this, NowPlayingActivity.class);
+                    Intent intent = new Intent(DMSBrowserActivity.this, CTNowPlayingActivity.class);
                     intent.putExtra(Constants.CURRENT_DEVICE_IP, ipAddressOfTheRenderingDevice);
                     SceneObject sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(ipAddressOfTheRenderingDevice);
                     if (sceneObjectFromCentralRepo != null) {

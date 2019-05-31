@@ -19,6 +19,7 @@ import com.libre.netty.LibreDeviceInteractionListner
 import com.libre.netty.NettyData
 import com.libre.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_home_tabs.*
+import java.lang.Exception
 
 
 class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionListner {
@@ -38,6 +39,8 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
         }
     }
 
+    private var isActivityVisible = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ct_activity_home_tabs)
@@ -45,7 +48,7 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
         setListeners()
 
         wifiUtil = WifiUtil(this)
-        if (!wifiUtil?.isWifiEnabled()!! && isNetworkOffCallBackEnabled) {
+        if (!wifiUtil?.isWifiOn()!! && isNetworkOffCallBackEnabled) {
             openFragment(CTNoWifiFragment::class.java.simpleName,animate = false)
             return
         }
@@ -62,6 +65,17 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
         openFragment(loadFragmentName!!,animate = false)
     }
 
+    override fun onStart() {
+        super.onStart()
+        isActivityVisible = true
+        LibreLogger.d(this,"onStart, bottom_navigation?.selectedItemId = ${bottom_navigation.selectedItemId}")
+        LibreLogger.d(this,"onStart, tabSelected = $tabSelected")
+        if (tabSelected == CTActiveDevicesFragment::class.java.simpleName){
+            val ctActiveDevicesFragment = supportFragmentManager?.findFragmentByTag(tabSelected) as CTActiveDevicesFragment
+            ctActiveDevicesFragment?.updateFromCentralRepositryDeviceList()
+        }
+    }
+
     private fun setListeners() {
         val bundle: Bundle? = Bundle()
         var fragmentToLoad: Fragment? = null
@@ -70,7 +84,7 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
             when (it.itemId) {
                 R.id.action_discover -> {
 
-                    if (!wifiUtil?.isWifiEnabled()!! && isNetworkOffCallBackEnabled) {
+                    if (!wifiUtil?.isWifiOn()!! /*&& isNetworkOffCallBackEnabled*/) {
                         removeAllFragments()
                         openFragment(CTNoWifiFragment::class.java.simpleName,animate = false)
                         return@setOnNavigationItemSelectedListener true
@@ -98,6 +112,8 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
                 }
             }
 
+//            bottom_navigation?.selectedItemId = it.itemId
+
             Log.d("bottom nav clicked","clicked ${it.title}")
             if (fragmentToLoad == null)
                 false
@@ -122,12 +138,16 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
 
     private fun removeAllFragments(){
         for (fragment in supportFragmentManager.fragments) {
-            supportFragmentManager.beginTransaction().remove(fragment).commit()
+            try {
+                supportFragmentManager.beginTransaction().remove(fragment).commit()
+            } catch (e:Exception){
+                e.printStackTrace()
+            }
         }
     }
 
     fun refreshDevices() {
-        LibreLogger.d(this, "Refresh Devices With hiding")
+        LibreLogger.d(this, "Refresh Devices")
         showLoader(true)
 //        fl_container.visibility = View.GONE
         removeAllFragments()
@@ -184,15 +204,19 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
 
     private fun loadFragment(fragment: Fragment?,animate: Boolean): Boolean {
         //switching fragment
-        if (fragment != null) {
+        if (fragment != null && isActivityVisible) {
             Log.d("loadFragment", fragment::class.java.simpleName)
-            supportFragmentManager
-                    .beginTransaction()
-                    .apply {
-                        if (animate) setCustomAnimations(R.anim.slide_in_right,R.anim.slide_out_left)
-                        replace(R.id.fl_container, fragment)
-                        commit()
-                    }
+            try {
+                supportFragmentManager
+                        .beginTransaction()
+                        .apply {
+                            if (animate) setCustomAnimations(R.anim.slide_in_right,R.anim.slide_out_left)
+                            replace(R.id.fl_container, fragment,fragment::class.java.simpleName)
+                            commit()
+                        }
+            } catch (e:Exception){
+                e.printStackTrace()
+            }
 
 //            fl_container.visibility = View.VISIBLE
 
@@ -203,6 +227,11 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
     }
 
     override fun wifiConnected(connected: Boolean) {
+        /*Avoid changing when activity is not visible i.e when user goes to wifi settings
+        * and stays in that screen for a while*/
+        if (!isActivityVisible)
+            return
+        Log.d("wifiConnected","$connected")
         if (connected){
             refreshDevices()
         } else
@@ -225,6 +254,11 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
     }
 
     override fun messageRecieved(packet: NettyData?) {
+    }
+
+    override fun onStop() {
+        super.onStop()
+        isActivityVisible = false
     }
 
     override fun onBackPressed() {

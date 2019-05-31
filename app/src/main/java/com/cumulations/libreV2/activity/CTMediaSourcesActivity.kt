@@ -1,12 +1,9 @@
 package com.cumulations.libreV2.activity
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -17,20 +14,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
-import android.widget.Toast
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.SharedPreferenceHelper
 import com.libre.LErrorHandeling.LibreError
+import com.libre.LibreApplication
 import com.libre.R
-import com.libre.RemoteSourcesList
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
 import com.libre.SceneObject
 import com.libre.StaticInstructions.spotifyInstructions
 import com.libre.alexa_signin.AlexaUtils
-import com.libre.app.dlna.dmc.LocalDMSActivity
 import com.libre.constants.CommandType
 import com.libre.constants.LSSDPCONST
+import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
 import com.libre.luci.LSSDPNodeDB
 import com.libre.luci.LSSDPNodes
@@ -126,40 +122,25 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
         currentIpAddress = intent.getStringExtra(Constants.CURRENT_DEVICE_IP)
         currentSource = intent.getStringExtra(Constants.CURRENT_SOURCE)
-        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
     }
 
     override fun onStart() {
         super.onStart()
         initViews()
+        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
         setListeners()
     }
 
     private fun setListeners() {
         iv_toggle_bluetooth?.setOnClickListener {
             val luciControl = LUCIControl(currentIpAddress)
-            timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
             if (iv_toggle_bluetooth?.isChecked!!) {
-//                showLoaderAndAskSource(getString(R.string.BtOnAlert));
-                iv_toggle_bluetooth?.isChecked = false
-                val msg = Message().apply {
-                    what = BT_AUX_INITIATED
-                    data = Bundle().apply {
-                        putString("MessageText", getString(R.string.BtOnAlert))
-                    }
-                }
-                timeOutHandler!!.sendMessage(msg)
-
                 if (iv_toggle_aux?.isChecked!!) {
                     luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
-                    iv_toggle_aux?.isChecked = false
                 }
                 // sleep when BT to AUX switch
-                Handler().postDelayed({
-                    luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_ON, LSSDPCONST.LUCI_SET)
-                }, 1000)
-            } else {
-                iv_toggle_bluetooth?.isChecked = true
+                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
+                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
 
                 val msg = Message().apply {
                     what = BT_AUX_INITIATED
@@ -168,32 +149,30 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     }
                 }
                 timeOutHandler!!.sendMessage(msg)
-                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
+            } else {
+                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_ON, LSSDPCONST.LUCI_SET)
+                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
+                val msg = Message().apply {
+                    what = BT_AUX_INITIATED
+                    data = Bundle().apply {
+                        putString("MessageText", getString(R.string.BtOnAlert))
+                    }
+                }
+                timeOutHandler!!.sendMessage(msg)
             }
         }
 
         iv_toggle_aux?.setOnClickListener {
-            iv_toggle_aux?.isChecked = !iv_toggle_aux?.isChecked!!
             val luciControl = LUCIControl(currentIpAddress)
-            timeOutHandler!!.sendEmptyMessage(ACTION_INITIATED)
-            timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
             if (iv_toggle_aux.isChecked) {
-                val msg = Message().apply {
-                    what = BT_AUX_INITIATED
-                    data = Bundle().apply {
-                        putString("MessageText", getString(R.string.AuxOnAlert))
-                    }
-                }
-                timeOutHandler!!.sendMessage(msg)
                 if (iv_toggle_bluetooth!!.isChecked) {
                     luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
                     iv_toggle_bluetooth?.isChecked = false
                 }
 
-                Handler().postDelayed({
-                    luciControl.SendCommand(MIDCONST.MID_AUX_START, null, LSSDPCONST.LUCI_SET)
-                }, 1000)
-            } else {
+                luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
+                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
+
                 val msg = Message().apply {
                     what = BT_AUX_INITIATED
                     data = Bundle().apply {
@@ -201,8 +180,18 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     }
                 }
                 timeOutHandler!!.sendMessage(msg)
+            } else {
                 /* Setting the source to default */
-                luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
+                luciControl.SendCommand(MIDCONST.MID_AUX_START, null, LSSDPCONST.LUCI_SET)
+                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
+
+                val msg = Message().apply {
+                    what = BT_AUX_INITIATED
+                    data = Bundle().apply {
+                        putString("MessageText", getString(R.string.AuxOnAlert))
+                    }
+                }
+                timeOutHandler!!.sendMessage(msg)
             }
         }
 
@@ -219,6 +208,11 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             override fun onStopTrackingTouch(seekBar: SeekBar) {
 
                 LibreLogger.d("onStopTracking", "${seekBar.progress}")
+
+                if (seekBar.progress==0){
+                    iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+                } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
                 LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject.ipAddress)
 
                 sceneObject!!.volumeValueInPercentage = seekBar.progress
@@ -228,6 +222,31 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
         iv_back?.setOnClickListener {
             onBackPressed()
+        }
+
+        iv_alexa_settings?.setOnClickListener {
+            val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentIpAddress)
+            if (mNode?.alexaRefreshToken?.isEmpty()!!) {
+                startActivity(Intent(this@CTMediaSourcesActivity, CTAmazonLoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+                    putExtra(Constants.FROM_ACTIVITY, CTMediaSourcesActivity::class.java.simpleName)
+                })
+            } else {
+                startActivity(Intent(this@CTMediaSourcesActivity, CTAlexaThingsToTryActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+                    putExtra(Constants.FROM_ACTIVITY, CTMediaSourcesActivity::class.java.simpleName)
+                })
+            }
+        }
+
+        iv_device_settings?.setOnClickListener {
+            startActivity(Intent(this@CTMediaSourcesActivity, CTDeviceSettingsActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+                putExtra(Constants.FROM_ACTIVITY, CTMediaSourcesActivity::class.java.simpleName)
+            })
         }
     }
 
@@ -243,18 +262,18 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         if (lssdpNodes?.getgCastVerision() != null
                 && !lssdpNodes.networkMode.contains("P2P")) {
             mediaSourcesList.clear()
-            mediaSourcesList.add(spotify)
+//            mediaSourcesList.add(spotify)
             adapter.notifyDataSetChanged()
         } else {
             mediaSourcesList.clear()
             mediaSourcesList.add(myDevice)
             mediaSourcesList.add(usbStorage)
             mediaSourcesList.add(mediaServer)
-            mediaSourcesList.add(spotify)
+//            mediaSourcesList.add(spotify)
             adapter.notifyDataSetChanged()
         }
 
-        if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty() && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked()){
+        if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty() && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked(currentIpAddress!!)){
             showAlexaLoginAlert()
         }
 
@@ -277,20 +296,33 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                 iv_toggle_bluetooth?.isChecked = false
             }
         }
+
+        /*For free speakers irrespective of the state use Individual volume*/
+        if (LibreApplication./*ZONE_VOLUME_MAP*/INDIVIDUAL_VOLUME_MAP.containsKey(currentIpAddress)) {
+            seek_bar_volume.progress = LibreApplication.INDIVIDUAL_VOLUME_MAP[currentIpAddress]!!
+        } else {
+            LUCIControl(currentIpAddress).SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, null, LSSDPCONST.LUCI_GET)
+            val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
+            if (sceneObject?.volumeValueInPercentage!! >= 0)
+                seek_bar_volume.progress = sceneObject!!.volumeValueInPercentage
+        }
+        if (seek_bar_volume.progress==0){
+            iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+        } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
     }
 
     private fun showAlexaLoginAlert() {
         AlertDialog.Builder(this).apply {
-            setTitle(R.string.alexa_not_connected)
-            setMessage(getString(R.string.sign_in_az))
+//            setTitle(R.string.alexa_not_connected)
+//            setMessage(getString(R.string.sign_in_az))
 
             val checkBoxView = View.inflate(this@CTMediaSourcesActivity,R.layout.alert_checkbox,null)
             checkBoxView.cb_dont?.setOnCheckedChangeListener { compoundButton, b ->
                 val sharedPreferenceHelper = SharedPreferenceHelper(this@CTMediaSourcesActivity)
                 if (/*compoundButton.isPressed && */b){
-                    sharedPreferenceHelper.alexaLoginAlertDontAsk(dontAsk = true)
+                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!,dontAsk = true)
                 } else {
-                    sharedPreferenceHelper.alexaLoginAlertDontAsk(dontAsk = false)
+                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!,dontAsk = false)
                 }
             }
             setView(checkBoxView)
@@ -310,16 +342,21 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         }
     }
 
-    private fun requestRefreshToken() {
-        timeOutHandler!!.sendEmptyMessageDelayed(ALEXA_REFRESH_TOKEN_TIMER, Constants.LOADING_TIMEOUT.toLong())
-        AlexaUtils.sendAlexaRefreshTokenRequest(currentIpAddress)
+    private fun fetchAuxBtStatus(){
+        readBTControllerStatus()
+        readBluetoothStatus()
+        getAuxStatus()
     }
 
-    private fun readTheCurrentBluetoothStatus() {
+    private fun readBTControllerStatus() {
+        LUCIControl(currentIpAddress).SendCommand(MIDCONST.MID_ENV_READ, LUCIMESSAGES.READ_BT_CONTROLLER, LSSDPCONST.LUCI_GET)
+    }
+
+    private fun readBluetoothStatus() {
         LUCIControl(currentIpAddress).SendCommand(MIDCONST.MID_BLUETOOTH, null, LSSDPCONST.LUCI_GET)
     }
 
-    private fun readTheCurrentAuxStatus() {
+    private fun getAuxStatus() {
         LUCIControl(currentIpAddress).SendCommand(MIDCONST.MID_CURRENT_SOURCE.toInt(), null, LSSDPCONST.LUCI_GET)
     }
 
@@ -327,8 +364,10 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         if (this@CTMediaSourcesActivity.isFinishing)
             return
         //asking source
-        val luciControl = LUCIControl(currentIpAddress)
-        luciControl.SendCommand(MIDCONST.MID_CURRENT_SOURCE.toInt(), null, LSSDPCONST.LUCI_GET)
+//        val luciControl = LUCIControl(currentIpAddress)
+//        luciControl.SendCommand(MIDCONST.MID_CURRENT_SOURCE.toInt(), null, LSSDPCONST.LUCI_GET)
+        showToast(source!!)
+        fetchAuxBtStatus()
         showLoader()
     }
 
@@ -365,7 +404,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         if (currentIpAddress!!.equals(remotedeviceIp, ignoreCase = true)) {
             when (luciPacket.command) {
 
-                MIDCONST.GET_UI -> {
+                MIDCONST.SET_UI -> {
 
                     val message = String(luciPacket.getpayload())
                     LibreLogger.d(this, " message 42 recieved  $message")
@@ -382,7 +421,54 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                 MIDCONST.MID_BLUETOOTH -> {
                     val message = String(luciPacket.getpayload())
                     LibreLogger.d(this, " message 209 is recieved  $message")
+                    when(message){
+                        BLUETOOTH_ON -> {
+                            timeOutHandler?.removeMessages(AUX_BT_TIMEOUT)
+                            closeLoader()
+                            iv_toggle_bluetooth?.isChecked = true
+                            if (iv_toggle_aux.isChecked) {
+                                iv_toggle_aux.isChecked = false
+                            }
+                        }
+                        else -> {
+                            timeOutHandler?.removeMessages(AUX_BT_TIMEOUT)
+                            closeLoader()
+                            iv_toggle_bluetooth?.isChecked = false
+                        }
+                    }
                 }
+
+                MIDCONST.MID_ENV_READ -> {
+                    val messages = String(luciPacket.getpayload())
+                    if (messages.contains("BT_CONTROLLER")) {
+                        val BTvalue = Integer.parseInt(messages.substring(messages.indexOf(":") + 1))
+                        LibreLogger.d(this, "BT_CONTROLLER value after parse is $BTvalue")
+                        sceneObject?.bT_CONTROLLER = BTvalue
+                    }
+                }
+
+                /*MIDCONST.MID_AUX_START -> {
+                    val message = String(luciPacket.getpayload())
+                    LibreLogger.d(this, " message 95 is $message")
+                    if (message.contains("SUCCESS",true)){
+                        timeOutHandler?.removeMessages(AUX_BT_TIMEOUT)
+                        closeLoader()
+                        iv_toggle_aux?.isChecked = true
+                        if (iv_toggle_bluetooth!!.isChecked) {
+                            iv_toggle_bluetooth!!.isChecked = false
+                        }
+                    }
+                }
+
+                MIDCONST.MID_AUX_STOP -> {
+                    val message = String(luciPacket.getpayload())
+                    LibreLogger.d(this, " message 96 is $message")
+                    if (message.contains("SUCCESS",true)){
+                        timeOutHandler?.removeMessages(AUX_BT_TIMEOUT)
+                        closeLoader()
+                        iv_toggle_aux?.isChecked = false
+                    }
+                }*/
 
                 MIDCONST.MID_CURRENT_PLAY_STATE.toInt() -> {
 
@@ -395,22 +481,26 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                             mScanHandler.putSceneObjectToCentralRepo(currentIpAddress, sceneObject)
                         }
 
-                        if (sceneObject?.currentSource == Constants.AUX_SOURCE) {
-                            if (iv_toggle_bluetooth!!.isChecked) {
+                        when {
+                            sceneObject?.currentSource == Constants.AUX_SOURCE -> {
+                                if (iv_toggle_bluetooth!!.isChecked) {
+                                    iv_toggle_bluetooth!!.isChecked = false
+                                }
+                                if (sceneObject.playstatus == SceneObject.CURRENTLY_PLAYING) {
+                                    iv_toggle_aux.isChecked = true
+                                }
+                            }
+                            sceneObject?.currentSource == Constants.BT_SOURCE -> {
+                                if (iv_toggle_aux.isChecked) {
+                                    iv_toggle_aux.isChecked = false
+                                }
+                                if (sceneObject.playstatus == SceneObject.CURRENTLY_PLAYING)
+                                    iv_toggle_bluetooth!!.isChecked = true
+                            }
+                            else -> {
+                                iv_toggle_aux.isChecked = false
                                 iv_toggle_bluetooth!!.isChecked = false
                             }
-                            if (sceneObject.playstatus == SceneObject.CURRENTLY_PLAYING) {
-                                iv_toggle_aux.isChecked = true
-                            }
-                        } else if (sceneObject?.currentSource == Constants.BT_SOURCE) {
-                            if (iv_toggle_aux.isChecked) {
-                                iv_toggle_aux.isChecked = false
-                            }
-                            if (sceneObject.playstatus == SceneObject.CURRENTLY_PLAYING)
-                                iv_toggle_bluetooth!!.isChecked = true
-                        } else {
-                            iv_toggle_aux.isChecked = false
-                            iv_toggle_bluetooth!!.isChecked = false
                         }
                         LibreLogger.d(this, "Recieved the playstate to be" + sceneObject?.playstatus)
                     } catch (e: Exception) {
@@ -421,65 +511,45 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
                 MIDCONST.MID_CURRENT_SOURCE.toInt() -> {
                     val currentSource = String(luciPacket.getpayload())
+                    LibreLogger.d(this, " message 50 is $currentSource")
+                    sceneObject.currentSource = currentSource.toInt()
+                    mScanHandler.sceneObjectFromCentralRepo[currentIpAddress!!] = sceneObject
                     // Toast.makeText(getApplicationContext(),"Message 50 is Received"+message,Toast.LENGTH_SHORT).show();
-                    LibreLogger.d(this, " message 50 is recieved  $currentSource")
-                    if (currentSource.contains(Constants.AUX_SOURCE.toString())) {
-                        timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
-                        timeOutHandler!!.sendEmptyMessage(AUX_BT_TIMEOUT)
+                    when {
+                        currentSource.contains(Constants.AUX_SOURCE.toString()) -> {
+                            timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
+                            closeLoader()
 
-                        sceneObject.currentSource = Constants.AUX_SOURCE
-                        mScanHandler.sceneObjectFromCentralRepo[currentIpAddress!!] = sceneObject
-
-                        if (iv_toggle_bluetooth!!.isChecked)
-                            iv_toggle_bluetooth!!.isChecked = false
-                        iv_toggle_aux.isChecked = true
-                    } else if (currentSource.contains(Constants.BT_SOURCE.toString())) {
-                        /*removing timeout and closing loader*/
-                        timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
-                        timeOutHandler!!.sendEmptyMessage(AUX_BT_TIMEOUT)
-
-                        sceneObject.currentSource = Constants.BT_SOURCE
-                        mScanHandler.sceneObjectFromCentralRepo[currentIpAddress!!] = sceneObject
-
-                        if (iv_toggle_aux.isChecked)
-                            iv_toggle_aux.isChecked = false
-                        iv_toggle_bluetooth!!.isChecked = true
-                    } else if (currentSource.contains(Constants.NO_SOURCE.toString()) || currentSource.contains("NO_SOURCE")) {
-                        LibreLogger.d(this, " No Source received hence closing dialog")
-                        /**Closing loader after 1.5 second */
-                        timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
-                        timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
-                        iv_toggle_bluetooth!!.isChecked = false
-                        iv_toggle_aux.isChecked = false
-                    } else {
-
-                        sceneObject.currentSource = -1
-                        mScanHandler.sceneObjectFromCentralRepo[remotedeviceIp] = sceneObject
-
-                        iv_toggle_aux.isChecked = false
-                        iv_toggle_bluetooth!!.isChecked = false
-                    }
-                }
-
-                MIDCONST.MID_ENV_READ -> {
-                    /* This code is crashing for array out of index exception and hence will be handled with a try and catch -Praveen*/
-                    try {
-                        val messages = String(luciPacket.getpayload())
-                        if (messages.contains("AlexaRefreshToken")) {
-                            //                            alexaLayout.setVisibility(View.VISIBLE);
-                            LibreLogger.d(this, " got alexa token $messages")
-                            val token = messages.substring(messages.indexOf(":") + 1)
-                            val mNodeDB = LSSDPNodeDB.getInstance()
-                            val mNode = mNodeDB.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-                            if (mNode != null) {
-                                mNode.alexaRefreshToken = token
-                            }
-                            timeOutHandler!!.removeMessages(ALEXA_REFRESH_TOKEN_TIMER)
+                            iv_toggle_aux.isChecked = true
+                            if (iv_toggle_bluetooth!!.isChecked)
+                                iv_toggle_bluetooth!!.isChecked = false
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
+                        currentSource.contains(Constants.BT_SOURCE.toString()) -> {
+                            /*removing timeout and closing loader*/
+                            timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
+                            closeLoader()
 
+                            iv_toggle_bluetooth!!.isChecked = true
+                            if (iv_toggle_aux.isChecked)
+                                iv_toggle_aux.isChecked = false
+                        }
+                        currentSource.contains(Constants.NO_SOURCE.toString()) || currentSource.contains("NO_SOURCE") -> {
+                            LibreLogger.d(this, " No Source received hence closing dialog")
+                            /**Closing loader after 1.5 second */
+                            if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) {
+                                timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
+                                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
+                            }
+                            iv_toggle_bluetooth!!.isChecked = false
+                            iv_toggle_aux.isChecked = false
+                        }
+
+                        else -> {
+                            closeLoader()
+                            iv_toggle_aux.isChecked = false
+                            iv_toggle_bluetooth!!.isChecked = false
+                        }
+                    }
                 }
 
                 MIDCONST.VOLUME_CONTROL -> {
@@ -493,6 +563,11 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                             LibreLogger.d(this, "Recieved the current volume to be" + sceneObject?.volumeValueInPercentage)
 
                             seek_bar_volume?.progress = sceneObject?.volumeValueInPercentage!!
+
+                            if (seek_bar_volume?.progress==0){
+                                iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+                            } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
                             seek_bar_volume?.max = 100
                         }
                     } catch (e: Exception) {
@@ -526,7 +601,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         /* Now we have successfully got the stack intialiized to home */
                         timeOutHandler!!.removeMessages(NETWORK_TIMEOUT)
                         unRegisterForDeviceEvents()
-                        val intent = Intent(this@CTMediaSourcesActivity, RemoteSourcesList::class.java)
+                        val intent = Intent(this@CTMediaSourcesActivity, CTDeviceBrowserActivity::class.java)
                         intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
                         intent.putExtra(Constants.CURRENT_SOURCE_INDEX_SELECTED, currentSourceIndexSelected)
                         LibreLogger.d(this, "removing handler message")
@@ -541,18 +616,12 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        when (requestCode) {
-
-        }
-    }
-
     override fun onResume() {
         super.onResume()
         /*Registering to receive messages*/
         registerForDeviceEvents(this)
-        readTheCurrentBluetoothStatus()
-        readTheCurrentAuxStatus()
+        AlexaUtils.sendAlexaRefreshTokenRequest(currentIpAddress)
+        fetchAuxBtStatus()
     }
 
     override fun onStop() {
@@ -590,9 +659,9 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             fun bindSourceItem(source: String?, position: Int) {
                 itemView.tv_source_type.text = source
                 when(source){
-                    context.getString(R.string.my_device) -> itemView.iv_source_icon.setImageResource(R.drawable.add_device_selected)
-                    context.getString(R.string.usb_storage) -> itemView.iv_source_icon.setImageResource(R.drawable.add_device_selected)
-                    context.getString(R.string.mediaserver) -> itemView.iv_source_icon.setImageResource(R.drawable.add_device_selected)
+                    context.getString(R.string.my_device) -> itemView.iv_source_icon.setImageResource(R.drawable.my_device_enabled)
+                    context.getString(R.string.usb_storage) -> itemView.iv_source_icon.setImageResource(R.drawable.usb_storage_enabled)
+                    context.getString(R.string.mediaserver) -> itemView.iv_source_icon.setImageResource(R.drawable.media_servers_enabled)
                     context.getString(R.string.spotify) -> itemView.iv_source_icon.setImageResource(R.mipmap.spotify)
                 }
 
@@ -616,15 +685,14 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         }
 
                         context.getString(R.string.my_device) -> {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                                    Toast.makeText(this@CTMediaSourcesActivity, getString(R.string.locationEnable), Toast.LENGTH_SHORT).show()
-                                    return@setOnClickListener
-                                }
+                            if (!checkReadStoragePermission()){
+                                return@setOnClickListener
                             }
-                            showLoader()
-                            val localIntent = Intent(this@CTMediaSourcesActivity, LocalDMSActivity::class.java)
+
+//                            showLoader()
+                            val localIntent = Intent(this@CTMediaSourcesActivity, CTDMSBrowserActivityV2::class.java)
                             localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true)
+                            localIntent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN)
                             localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
                             startActivity(localIntent)
                             finish()

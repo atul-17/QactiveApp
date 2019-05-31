@@ -42,9 +42,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.AppConstants;
+import com.cumulations.libreV2.activity.CTDMSBrowserActivityV2;
+import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.ActiveSceneAdapter;
 import com.libre.ActiveScenesListActivity;
-import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.LErrorHandeling.LibreError;
 import com.libre.LibreApplication;
 import com.libre.R;
@@ -53,7 +54,6 @@ import com.libre.Scanning.ScanningHandler;
 import com.libre.SceneObject;
 import com.libre.TuneInRemoteSourcesList;
 import com.libre.VolumeReceiver;
-import com.libre.app.dlna.dmc.LocalDMSActivity;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
 import com.libre.constants.DeviceMasterSlaveFreeConstants;
@@ -161,7 +161,7 @@ public class NowPlayingActivity extends CTDeviceDiscoveryActivity implements Lib
                                         So navigate to activescenes.*/
                                 onBackPressed();
                             }else{
-                                Intent localIntent = new Intent(NowPlayingActivity.this, LocalDMSActivity.class);
+                                Intent localIntent = new Intent(NowPlayingActivity.this, CTDMSBrowserActivityV2.class);
                                 localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true);
                                 localIntent.putExtra(Constants.CURRENT_DEVICE_IP, sceneAddressList.get(mCurrentNowPlayingScene));
                                 localIntent.putExtra(Constants.FROM_ACTIVITY,"Nowplaying");
@@ -897,22 +897,26 @@ public class NowPlayingActivity extends CTDeviceDiscoveryActivity implements Lib
             return;
 
         LSSDPNodeDB mNodeDB = LSSDPNodeDB.getInstance();
-        if (mDeviceState.equals("Master")) {
-            mToBeUpdateNode.setDeviceState("M");
-        } else if (mDeviceState.equals("Slave")) {
-            mToBeUpdateNode.setDeviceState("S");
+        switch (mDeviceState) {
+            case "Master":
+                mToBeUpdateNode.setDeviceState("M");
+                break;
+            case "Slave":
+                mToBeUpdateNode.setDeviceState("S");
           /*  if(m_ScanHandler.getConnectedSSIDName(getApplicationContext())== m_ScanHandler.HN_MODE) {
                 mToBeUpdateNode.setcSSID(mMasterNode.getcSSID());
             }else{
                 mToBeUpdateNode.setZoneID(mMasterNode.getZoneID());
             }*/
-        } else if (mDeviceState.equals("Free")) {
-            mToBeUpdateNode.setDeviceState("F");
+                break;
+            case "Free":
+                mToBeUpdateNode.setDeviceState("F");
        /*     if(m_ScanHandler.getConnectedSSIDName(getApplicationContext())== m_ScanHandler.HN_MODE) {
                 mToBeUpdateNode.setcSSID("");
             }else{
                 mToBeUpdateNode.setZoneID("");
             }*/
+                break;
         }
         mNodeDB.renewLSSDPNodeDataWithNewNode(mToBeUpdateNode);
 

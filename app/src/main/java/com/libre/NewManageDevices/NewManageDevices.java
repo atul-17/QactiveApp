@@ -2172,7 +2172,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
     }
 
-    /*sending dmr stop command from application*/
+    /*sending dmr stopMediaServer command from application*/
     private void stopDMRPlayback(String currentIpaddress) {
         try {
             LibreLogger.d(this, "Going to Remove the DMR Playback");
@@ -2198,7 +2198,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                     }
                 } catch (Exception e) {
 
-                    LibreLogger.d(this, "Handling the exception while sending the stop command ");
+                    LibreLogger.d(this, "Handling the exception while sending the stopMediaServer command ");
                 }
                 LibreApplication.PLAYBACK_HELPER_MAP.remove(renderingUDN);
             }

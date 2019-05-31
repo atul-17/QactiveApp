@@ -52,7 +52,6 @@ public class ContentDirectoryService extends AbstractContentDirectoryService {
 					}
 					for (Item item : contentNode.getContainer().getItems()) {
 						didl.addItem(item);
-						
 						Log.v(TAG, "getting child item: " + item.getTitle());
 					}
 					return new BrowseResult(new DIDLParser().generate(didl),

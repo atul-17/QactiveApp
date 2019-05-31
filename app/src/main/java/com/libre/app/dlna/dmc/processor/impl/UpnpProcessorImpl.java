@@ -93,9 +93,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
     public void stopMusicServer() {
         if (ms != null) {
-
-            ms.stop();
-
+            ms.stopMediaServer();
         }
     }
 
@@ -388,7 +386,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     public void renew() {
         m_upnpService.renew();
         ms = MusicServer.getMusicServer();
-        ms.reprepareMediaServer();
+        ms.clearMediaServer();
         UpnpDeviceManager.getInstance().clearMaps();
         LibreApplication.PLAYBACK_HELPER_MAP = new HashMap<String, PlaybackHelper>();
 

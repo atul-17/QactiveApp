@@ -12,7 +12,7 @@
         android:focusableInTouchMode="false"
         android:id="@+id/itemIcon"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/ic_launcher"
+        android:src="@drawable/default_album_art"
         />
 
 

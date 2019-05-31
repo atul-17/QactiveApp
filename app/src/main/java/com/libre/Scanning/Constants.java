@@ -1,5 +1,7 @@
 package com.libre.Scanning;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Created by karunakaran on 8/2/2015.
  */
@@ -24,6 +26,8 @@ public class Constants {
     public static final String DENIED_PERMISSIONS = "DENIED_PERMISSIONS";
     public static final String RECORD_PERMISSION_DENIED = "RECORD_PERMISSION_DENIED";
     public static final String PREV_SCREEN = "prevScreen";
+    public static final String DEVICE_UDN = "device_udn";
+    public static final long CHECK_ALIVE_TIMEOUT = 10000;
     public static int CONNECTED_TO_SAC_DEVICE = 12122;
     public static int PERMISSIONS_REQUEST_CODE_ACCESS_COARSE_LOCATION = 0x1001;
 
@@ -59,7 +63,7 @@ public class Constants {
     public static final int CHECK_ALIVE = 0x6789;
 
     /* 10 Minutes Timeout For Downloading and Upgrading the Firmware Update */
-    public static final int DOWNLADING_UPDATE_TIMEOUT = 10*60*1000;
+    public static final int DOWNLOADING_UPDATE_TIMEOUT = 10*60*1000;
     public static final int DOWNLOADING_UPDATE_MESSAGE_TIMEOUT = 0x1341;
     public static final int PREPARATION_TIMEOUT = 30000;
 
@@ -69,7 +73,7 @@ public class Constants {
     public static final long REFRESH_DEVICE_TIMEOUT = ITEM_CLICKED_TIMEOUT;
     public static final int INTERNET_PLAY_TIMEOUT = 30000;
 
-    public static final String INTERNET_ITEM_SELECTED_TIMEOUT_MESSAGE = "Warning! , Timeout! please try again";
+    public static final String INTERNET_ITEM_SELECTED_TIMEOUT_MESSAGE = "Device response timed out. Please try again";
 
     public static final String PLAY_PAUSE_NOT_ALLOWED = "Play/Pause not available";
     public static final String NEXT_PREVIOUS_NOT_ALLOWED = "Next/Prev not available";
@@ -129,6 +133,7 @@ public class Constants {
     public static final String SCENE_NAME_CANT_CHANGE= "Group Name Change Not Allowed,When Slaves Are Inactive";
     public static final String GCAST_FIRMWARE_UPGRADE = "UPDATE_AVAILABLE_REBOOT_REQUEST";
     public static int ALEXA_NEXT_PREV_INIT = 15122;
+    public static final String DIDL_TITLE = "didlTitle";
 
     public interface ACTION {
         String MAIN_ACTION = "com.libre.Scanning.action.main";
@@ -157,6 +162,7 @@ public class Constants {
     public static final int AIRPLAY_SOURCE = 1;
     public static final int DMR_SOURCE = 2;
     public static final int DMP_SOURCE = 3;
+    public static final int NETWORK_DEVICES = DMP_SOURCE;
     public static final int SPOTIFY_SOURCE = 4;
     public static final int USB_SOURCE = 5;
     public static final int SDCARD_SOURCE = 6;
@@ -194,4 +200,22 @@ public class Constants {
 
     public static final String CURRENT_LOCALE = "current_locale";
     public static final String CURRENT_SOURCE_INDEX_SELECTED = "currentSourceIndexSelected";
+
+    public interface MediaEnum {
+        int MEDIA_PROCESS_INIT = 1000;
+        int MEDIA_PROCESS_DONE = 1001;
+        int MEDIA_LOADING_FAIL = 1002;
+    }
+
+    public static final int NETWORK_TIMEOUT = 0x1;
+    public static final int SERVICE_NOT_FOUND = 0x2;
+    public static final int DO_BACKGROUND_DMR = 0X3;
+    public static final String TAG_CMD_ID = "CMD ID";
+    public static final String TAG_WINDOW_CONTENT = "Window CONTENTS";
+
+    public static final String MUSIC_TYPE = "musicType";
+    public static final String CLICKED_DIDL_ID = "clickedDIDLId";
+    public static final String USB_DEFAULT_FILE_PATH_PREFIX = "/media/usb/";
+    public static final String REPEAT = "_repeat";
+    public static final String SHUFFLE = "_shuffle";
 }

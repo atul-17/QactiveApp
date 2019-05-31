@@ -16,14 +16,16 @@
             android:id="@+id/seek_bar_song"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:focusable="false"
             android:layout_marginTop="-3dp"
+            android:paddingBottom="-1dp"
             android:max="100"
             android:maxHeight="1dp"
             android:paddingLeft="-1px"
             android:paddingRight="-1px"
             android:progress="30"
             android:progressDrawable="@drawable/gradient_progress_song_drawable"
-            android:thumb="@android:color/transparent"
+            android:thumb="@null"
             android:visibility="visible"
             tools:visibility="visible" />
 
@@ -50,7 +52,7 @@
                     android:layout_height="72dp"
                     android:scaleType="centerCrop"
                     android:visibility="visible"
-                    app:srcCompat="@drawable/default_album_art"
+                    app:srcCompat="@mipmap/album_art"
                     tools:visibility="visible" />
 
                 <LinearLayout
@@ -92,7 +94,7 @@
                     android:id="@+id/iv_current_source"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:padding="5dp"
+                    android:padding="3dp"
                     android:visibility="gone"
                     app:srcCompat="@mipmap/spotify"
                     tools:visibility="visible" />
@@ -112,10 +114,11 @@
 
             <android.support.v7.widget.AppCompatImageButton
                 android:id="@+id/ib_alexa_avs_btn"
+                android:focusable="true"
+                android:clickable="true"
+                android:layout_marginRight="8dp"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
                 android:background="@android:color/transparent"
                 android:scaleType="fitCenter"
                 app:srcCompat="@drawable/alexa_blue_white_100px" />

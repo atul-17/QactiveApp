@@ -20,6 +20,7 @@ import com.libre.Scanning.ScanningHandler
 import com.libre.SceneObject
 import com.libre.alexa.userpoolManager.AlexaUtils.AlexaConstants
 import com.libre.alexa.userpoolManager.MainActivity
+import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService
 import com.libre.luci.LSSDPNodes
 import com.libre.netty.LibreDeviceInteractionListner
 import com.libre.netty.NettyData
@@ -137,13 +138,16 @@ class CTSplashScreenActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     if (mNetIf == null)
                         sendEmptyMessage(TIME_EXPIRED)
                     else {*/
-                        LibreApplication.activeSSID = getConnectedSSIDName(this@CTSplashScreenActivity)
-                        LibreApplication.mActiveSSIDBeforeWifiOff = LibreApplication.activeSSID
-                        val finishedTime = System.currentTimeMillis()
-                        if (finishedTime - startTime < 4500)
-                            sendEmptyMessageDelayed(MEDIA_PROCESS_DONE, 4500 - (finishedTime - startTime))
-                        else
-                            sendEmptyMessage(MEDIA_PROCESS_DONE)
+                    if (!LibreApplication.LOCAL_IP.isNullOrEmpty()) {
+                        startService(Intent(this@CTSplashScreenActivity, LoadLocalContentService::class.java))
+                    }
+                    LibreApplication.activeSSID = getConnectedSSIDName(this@CTSplashScreenActivity)
+                    LibreApplication.mActiveSSIDBeforeWifiOff = LibreApplication.activeSSID
+                    val finishedTime = System.currentTimeMillis()
+                    if (finishedTime - startTime < 4500)
+                        sendEmptyMessageDelayed(MEDIA_PROCESS_DONE, 4500 - (finishedTime - startTime))
+                    else
+                        sendEmptyMessage(MEDIA_PROCESS_DONE)
 //                    }
                 }
 
@@ -157,6 +161,7 @@ class CTSplashScreenActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
     }
 
     private fun openNextScreen() {
+
         loader.visibility = View.GONE
         if (!LibreApplication.getIs3PDAEnabled()) {
             intentToHome(this)

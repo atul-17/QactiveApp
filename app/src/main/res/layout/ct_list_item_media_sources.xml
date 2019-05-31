@@ -23,6 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         tools:text="Source Type"
+        android:textSize="16sp"
         android:textColor="@color/app_text_color_enabled"
         app:fontFamily="sans-serif-medium" />
 </LinearLayout>

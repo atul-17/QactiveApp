@@ -321,7 +321,7 @@ public class SpalshScreenActivity extends CTDeviceDiscoveryActivity implements L
 
                 {
                     LibreLogger.d(this, "Devices found");
-                                                                                                                                                                                                                                                                                 /*loading stop with success message*/
+                                                                                                                                                                                                                                                                                 /*loading stopMediaServer with success message*/
                 }
                 break;
 

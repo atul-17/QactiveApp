@@ -751,7 +751,7 @@ public class HttpServer
 
 		/**
 		 * Returns an error message as a HTTP response and
-		 * throws InterruptedException to stop further request processing.
+		 * throws InterruptedException to stopMediaServer further request processing.
 		 */
 		private void sendError( String status, String msg ) throws InterruptedException
 		{

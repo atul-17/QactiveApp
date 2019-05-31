@@ -28,7 +28,8 @@ class CTAmazonInfoActivity : CTDeviceDiscoveryActivity(), View.OnClickListener {
         setContentView(R.layout.ct_activity_amazon_signin_setup)
 
         speakerNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(speakerIpAddress)
-        if (intent?.hasExtra(AppConstants.DEVICE_PROVISIONING_INFO)!!) {
+        if (intent?.hasExtra(AppConstants.DEVICE_PROVISIONING_INFO)!!
+                && intent?.getSerializableExtra(AppConstants.DEVICE_PROVISIONING_INFO)!=null) {
             val deviceProvisioningInfo = intent.getSerializableExtra(AppConstants.DEVICE_PROVISIONING_INFO) as DeviceProvisioningInfo
             speakerNode?.mdeviceProvisioningInfo = deviceProvisioningInfo
         }
@@ -58,6 +59,7 @@ class CTAmazonInfoActivity : CTDeviceDiscoveryActivity(), View.OnClickListener {
             R.id.btn_signin_later -> {
                 startActivity(Intent(this, CTAlexaThingsToTryActivity::class.java)
                         .putExtra(Constants.CURRENT_DEVICE_IP, speakerIpAddress)
+                        .putExtra(Constants.FROM_ACTIVITY, from)
                         .putExtra(Constants.PREV_SCREEN, CTAmazonInfoActivity::class.java.simpleName))
                 finish()
             }

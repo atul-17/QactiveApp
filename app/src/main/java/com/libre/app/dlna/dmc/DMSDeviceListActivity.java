@@ -71,7 +71,7 @@ public class DMSDeviceListActivity extends CTDeviceDiscoveryActivity {
             if (!(LibreApplication.LOCAL_UDN.trim().equalsIgnoreCase(""))) {
                 /* Local device is already exists in the registery and hence launch the DMSBrowsingActivity or else wait*/
                 Intent intent = new Intent(DMSDeviceListActivity.this, DMSBrowserActivity.class);
-                intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+                intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
 
                 startActivity(intent);
@@ -99,7 +99,7 @@ public class DMSDeviceListActivity extends CTDeviceDiscoveryActivity {
 
                 String item = listAdapter.getItem(i);
                 Intent intent = new Intent(DMSDeviceListActivity.this, DMSBrowserActivity.class);
-                intent.putExtra("device_udn", nameToUDNMap.get(item));
+                intent.putExtra(Constants.DEVICE_UDN, nameToUDNMap.get(item));
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                 startActivity(intent);
 //                finish();
@@ -226,7 +226,7 @@ public class DMSDeviceListActivity extends CTDeviceDiscoveryActivity {
         nameToUDNMap.put(device.getDetails().getFriendlyName(), udn);
         if (isLocalDeviceSelected) {
             Intent intent = new Intent(DMSDeviceListActivity.this, DMSBrowserActivity.class);
-            intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+            intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
             intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
             startActivity(intent);
             finish();
@@ -245,7 +245,7 @@ public class DMSDeviceListActivity extends CTDeviceDiscoveryActivity {
             if (isLocalDeviceSelected) {
                 LocalDevice device = localDevices.iterator().next();
                 Intent intent = new Intent(DMSDeviceListActivity.this, DMSBrowserActivity.class);
-                intent.putExtra("device_udn", LibreApplication.LOCAL_UDN);
+                intent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN);
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, current_ipaddress);
                 startActivity(intent);
                 finish();

@@ -254,7 +254,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                         if (handler.hasMessages(Constants.PREPARATION_TIMEOUT)) {
                             handler.removeMessages(Constants.PREPARATION_TIMEOUT);
                             handler.sendEmptyMessage(Constants.PREPARATION_COMPLETED);
-                            handler.sendEmptyMessageDelayed(Constants.DOWNLOADING_UPDATE_MESSAGE_TIMEOUT, Constants.DOWNLADING_UPDATE_TIMEOUT);
+                            handler.sendEmptyMessageDelayed(Constants.DOWNLOADING_UPDATE_MESSAGE_TIMEOUT, Constants.DOWNLOADING_UPDATE_TIMEOUT);
                         }
                     }
 

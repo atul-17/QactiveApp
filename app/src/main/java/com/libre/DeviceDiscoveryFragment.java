@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.widget.Toast;
 
 import com.libre.alexa.MicExceptionListener;
-import com.libre.luci.DiscoverySearchService;
 import com.libre.luci.LSSDPNodes;
 import com.libre.luci.LUCIPacket;
 import com.libre.netty.BusProvider;
@@ -18,7 +17,6 @@ import com.squareup.otto.Subscribe;
  */
 public class DeviceDiscoveryFragment extends Fragment implements MicExceptionListener {
 
-    private static final String TAG = DiscoverySearchService.class.getName();
     LibreDeviceInteractionListner libreDeviceInteractionListner;
     MicExceptionListener fragmentMicExceptionActivityListener;
     Object busEventListener = new Object() {

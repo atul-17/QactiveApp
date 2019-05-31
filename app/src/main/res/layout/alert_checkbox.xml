@@ -1,14 +1,31 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="?dialogPreferredPadding"
+    android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="wrap_content" >
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.AppCompatTextView
+        android:text="@string/alexa_not_connected"
+        app:fontFamily="sans-serif-medium"
+        android:textSize="18sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.AppCompatTextView
+        android:text="@string/sign_in_az"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:fontFamily="sans-serif-light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <android.support.v7.widget.AppCompatCheckBox
         android:id="@+id/cb_dont"
+        android:layout_marginTop="8dp"
         android:textColor="@color/white"
         android:text="@string/dontShowAgain"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp" />
+        android:layout_height="wrap_content" />
 
-</FrameLayout>
+</LinearLayout>

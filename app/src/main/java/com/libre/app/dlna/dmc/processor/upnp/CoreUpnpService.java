@@ -7,11 +7,11 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
-import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.cumulations.libreV2.AppUtils;
 import com.libre.LibreApplication;
 import com.libre.Ls9Sac.GcastUpdateData;
 import com.libre.Scanning.ScanningHandler;
@@ -27,7 +27,6 @@ import com.libre.luci.LSSDPNodeDB;
 import com.libre.luci.LSSDPNodes;
 import com.libre.luci.LUCIControl;
 import com.libre.luci.LUCIPacket;
-import com.libre.luci.Utils;
 import com.libre.netty.BusProvider;
 import com.libre.netty.NettyData;
 import com.libre.netty.RemovedLibreDevice;
@@ -271,17 +270,14 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
         public void newDeviceFound(final LSSDPNodes nodes) {
 
             /* This below if loop is introduced to handle the case where Device state from the DUT could be Null sometimes
-            * Ideally the device state should not be null but we are just handling it to make sure it will not result in any crash!
-            *
-            * */
-
+             * Ideally the device state should not be null but we are just handling it to make sure it will not result in any crash!
+             *
+             * */
             checkForUPnPReinitialization();
 
             if (nodes == null || nodes.getDeviceState() == null) {
                 Toast.makeText(CoreUpnpService.this, "Alert! Device State is null " + nodes.getDeviceState(), Toast.LENGTH_SHORT).show();
-
             } else if (nodes.getDeviceState() != null) {
-
                 GcastUpdateData mGCastData = LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.get(nodes.getIP());
                 if (mGCastData != null) {
                     LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.remove(nodes.getIP());
@@ -402,7 +398,7 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
                     "For the msg " +
                     new String(dummyPacket.getpayload()) + " for the command " + dummyPacket.getCommand());
 
-                            /*Updating the last notified Time for all the Device*/
+            /*Updating the last notified Time for all the Device*/
             if (nettyData != null) {
                 if (LUCIControl.luciSocketMap.containsKey(nettyData.getRemotedeviceIp()))
                     LUCIControl.luciSocketMap.get(nettyData.getRemotedeviceIp()).setLastNotifiedTime(System.currentTimeMillis());
@@ -420,7 +416,7 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
                 String volumeMessage = new String(packet.getpayload());
                 try {
                     int volume = Integer.parseInt(volumeMessage);
-                        /*this map is having all volumes*/
+                    /*this map is having all volumes*/
                     LibreApplication.INDIVIDUAL_VOLUME_MAP.put(nettyData.getRemotedeviceIp(), volume);
                     Log.d("VolumeMapUpdating", "" + volume);
                 } catch (Exception e) {
@@ -429,7 +425,7 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
 
             }
 
-            if (packet.getCommand() == MIDCONST.GET_UI) {
+            if (packet.getCommand() == MIDCONST.SET_UI) {
 
                 try {
                     LibreLogger.d(this, "Recieved Playback url in 42 at coreup");
@@ -452,17 +448,18 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
 
             }
 
-//            if (packet.getCommand() == MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL) {
-//                String volumeMessage = new String(packet.getpayload());
-//                try {
-//                    int volume = Integer.parseInt(volumeMessage);
-//                        /*this map is having Masters volume*/
-//                    LibreApplication./*ZONE_VOLUME_MAP*/INDIVIDUAL_VOLUME_MAP.put(nettyData.getRemotedeviceIp(), volume);
-//                    Log.d("VolumeMapUpdating", "" + volume);
-//                } catch (Exception e) {
-//                    LibreLogger.d(this, "Exception occurred in newMessageReceived");
-//                }
-//            }
+            if (packet.getCommand() == MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL) {
+                String volumeMessage = new String(packet.getpayload());
+                try {
+                    int volume = Integer.parseInt(volumeMessage);
+                    /*this map is having Masters volume*/
+                    LibreApplication./*ZONE_VOLUME_MAP*/INDIVIDUAL_VOLUME_MAP.put(nettyData.getRemotedeviceIp(), volume);
+                    Log.d("VolumeMapUpdating", "" + volume);
+                } catch (Exception e) {
+                    LibreLogger.d(this, "Exception occurred in newMessageReceived");
+                }
+            }
+
             if (packet.getCommand() == MIDCONST.MID_SCENE_NAME) {
                 String msg = new String(packet.getpayload());
                 try {
@@ -481,7 +478,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                 }
             }
 
-                /*this has been added for DMR hijacking issue*/
+            /*this has been added for DMR hijacking issue*/
             if (packet.getCommand() == MIDCONST.NEW_SOURCE) {
                 String msg = new String(packet.getpayload());
                 try {
@@ -502,7 +499,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                     LibreLogger.d(this, "Exception occurred in newMessageReceived");
                 }
             }
-                /* Device State ACK Implementation */
+            /* Device State ACK Implementation */
             if (packet.getCommand() == MIDCONST.MID_DEVICE_STATE_ACK) {
                 try {
                     changeDeviceStateStereoConcurrentZoneids(nettyData.getRemotedeviceIp(), new String(packet.getpayload()));
@@ -526,11 +523,11 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                     LibreLogger.d(this, "Exception occurred in newMessageReceived");
                 }
             }
-            if (packet.getCommand() == 208) {
+            if (packet.getCommand() == MIDCONST.MID_ENV_READ) {
                 try {
                     // for getting env item
                     String messages = new String(packet.getpayload());
-                    LibreLogger.d(this, "BT_CONTROLLER value is " + messages);
+                    LibreLogger.d(this, "MID_ENV_READ value is " + messages);
 
                     if (messages.contains("speechvolume")) {
                         String speechvolume = String.valueOf(messages.substring(messages.indexOf(":") + 1)); /*40,1*/
@@ -542,9 +539,8 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                         }
                     }
                     if (messages.contains("AlexaRefreshToken")) {
-
-                        String token = String.valueOf(messages.substring(messages.indexOf(":") + 1));
-                        LibreLogger.d(this, "BT_CONTROLLER value is token value " + token.length());
+                        String token = messages.substring(messages.indexOf(":") + 1);
+                        LibreLogger.d(this, "AlexaRefreshToken value " + token);
                         LSSDPNodeDB mNodeDB = LSSDPNodeDB.getInstance();
                         LSSDPNodes mNode = mNodeDB.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp());
                         if (mNode != null) {
@@ -607,7 +603,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                     LibreLogger.d(this, "Exception occurred in newMessageReceived");
                 }
             }
-                /* Sending Whenver a Command 3 When i got Zero From Device */
+            /* Sending Whenver a Command 3 When i got Zero From Device */
             if (packet.getCommand() == 0) {
                 new LUCIControl(nettyData.getRemotedeviceIp()).sendAsynchronousCommandSpecificPlaces();
             }
@@ -617,7 +613,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
         @Subscribe
         public void deviceGotRemoved(String ipaddress) {
-            LibreLogger.d(this,"deviceGotRemoved, ip "+ipaddress);
+            LibreLogger.d(this, "deviceGotRemoved, ip " + ipaddress);
             GoAndRemoveTheDevice(ipaddress);
         }
 
@@ -626,67 +622,30 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
 
     private synchronized void checkForUPnPReinitialization() {
-        String localIpAddress = phoneIpAddress();
-
+        String localIpAddress = AppUtils.INSTANCE.getWifiIp(this);
         try {
-            LibreLogger.d(this, "Check passed! Phone ip and upnp ip is different" + localIpAddress
-                    + "MyTerm Ip " + LibreApplication.LOCAL_IP);
+            LibreLogger.d(this, "checkForUPnPReinitialization Phone ip " + localIpAddress + ", LOCAL_IP " + LibreApplication.LOCAL_IP);
             /*if its an Empty String, Contains will pass  , because contains checking >=0 ; if its Not Empty or Not equal we need ot reinitate it*/
-            if (localIpAddress != null && (LibreApplication.LOCAL_IP.isEmpty() || !localIpAddress.equalsIgnoreCase(LibreApplication.LOCAL_IP))) {
+            if (localIpAddress != null
+                    && (LibreApplication.LOCAL_IP.isEmpty() || !localIpAddress.equalsIgnoreCase(LibreApplication.LOCAL_IP))) {
 
+                LibreLogger.d(this, "Phone ip and upnp ip is different");
                 LibreApplication.LOCAL_IP = localIpAddress;
-                LibreLogger.d(this, "Check passed! Phone ip and upnp ip is different");
-
                 binder.renew();
-
                 MusicServer ms = MusicServer.getMusicServer();
-                ms.reprepareMediaServer();
-                /* When we reprepareMediaServer ,it will make hasPrepared as false only Not Preparing of Media Server ,So we have to Call PrepareMediaServer*/
-                //  ms.prepareMediaServer(getApplicationContext(), binder);
+                ms.clearMediaServer();
                 UpnpDeviceManager.getInstance().clearMaps();
-                LibreApplication.PLAYBACK_HELPER_MAP = new HashMap<String, PlaybackHelper>();
-                try {
-                    binder.getRegistry().addDevice(ms.getMediaServer().getDevice());
-                    LibreApplication.LOCAL_UDN = ms.getMediaServer().getDevice().getIdentity().getUdn().toString();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-//                ((LibreApplication) getApplication()).setControlPoint(binder.getControlPoint());
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && LibreApplication.mStoragePermissionGranted) {
-                    /**now run background service which will take care of preparing media in */
-                    Intent serviceIntent = new Intent(CoreUpnpService.this, LoadLocalContentService.class);
-                    startService(serviceIntent);
-                    LibreLogger.d(this, "Check passed! Phone ip and upnp ip is different 9");
-                } else {
-                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                        Intent serviceIntent = new Intent(CoreUpnpService.this, LoadLocalContentService.class);
-                        startService(serviceIntent);
-                    }
-                }
+                LibreApplication.PLAYBACK_HELPER_MAP = new HashMap<String, PlaybackHelper>();
+                binder.getRegistry().addDevice(ms.getMediaServer().getDevice());
+                LibreApplication.LOCAL_UDN = ms.getMediaServer().getDevice().getIdentity().getUdn().toString();
+
+                startService(new Intent(CoreUpnpService.this, LoadLocalContentService.class));
+//              ((LibreApplication) getApplication()).setControlPoint(binder.getControlPoint());
             }
         } catch (Exception ee) {
             ee.printStackTrace();
-            LibreLogger.d(this, "Exception happed while chekcking passed! Phone ip and upnp ip is different");
-
+            LibreLogger.d(this, "Exception " + ee.getMessage());
         }
-
-
     }
-
-
-    public String phoneIpAddress() {
-        Utils mUtil = new Utils();
-            /*
-
-            NetworkInterface mNetIf = Utils.getActiveNetworkInterface();
-            if (mNetIf != null) {
-                if (Utils.getLocalV4Address(mNetIf) != null)
-                    return Utils.getLocalV4Address(mNetIf).getHostAddress();
-            }
-*/
-        return mUtil.getIPAddress(true);
-    }
-
-
 }

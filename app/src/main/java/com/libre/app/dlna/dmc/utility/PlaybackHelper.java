@@ -32,6 +32,11 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
     private String URL;
     private String META;
     private int volume;
+    private boolean LastSongReached;
+
+    public boolean isLastSongReached() {
+        return LastSongReached;
+    }
 
 
     /*this is made for shuffle feature while local content*/
@@ -89,12 +94,13 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         this.dmsHelper = dmsHelper;
     }
 
-    public void addDmrProcessorListener(){
-        if(mStopPlayBackCalled) {
-            mStopPlayBackCalled=false;
+    public void addDmrProcessorListener() {
+        if (mStopPlayBackCalled) {
+            mStopPlayBackCalled = false;
             dmrHelper.getDmrProcessor().addListener(this);
         }
     }
+
     public PlaybackHelper(DMRControlHelper dmr) {
         dmrHelper = dmr;
         dmrHelper.getDmrProcessor().addListener(this);
@@ -102,9 +108,10 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
 
     private boolean mStopPlayBackCalled = false;
 
-    public boolean getPlaybackStopped(){
+    public boolean getPlaybackStopped() {
         return mStopPlayBackCalled;
     }
+
     @Override
     public String toString() {
         return dmrHelper.getDeviceUdn();
@@ -114,13 +121,13 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
 
         dmrHelper.getDmrProcessor().stop();
         dmrHelper.getDmrProcessor().removeListener(this);
-        mStopPlayBackCalled=true;
+        mStopPlayBackCalled = true;
         return true;
     }
 
 
     public void playSong() {
-        LibreLogger.d(this,"PlaySong");
+        LibreLogger.d(this, "PlaySong");
         if (dmsHelper == null) return;
         DIDLObject didlObj = dmsHelper.getDIDLObject();
         if (didlObj == null || !(didlObj instanceof Item)) return;
@@ -147,27 +154,26 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         }
         String duration = didlObj.getFirstResource().getDuration();
 
-
         String urlMeta = null;
         if (duration != null) {
-            duration = duration.indexOf(".") == -1 ? duration : duration.substring(0, duration.indexOf("."));
+            duration = !duration.contains("\\.") ? duration : duration.substring(0, duration.indexOf("\\."));
             urlMeta = "<DIDL-Lite xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:upnp=\"urn:schemas-upnp-org:metadata-1-0/upnp/\" xmlns=\"urn:schemas-upnp-org:metadata-1-0/DIDL-Lite/\">"
                     + "<item id=\"audio-item-293\" parentID=\"2\" restricted=\"0\">"
                     + "<dc:title>"
-                    + "<![CDATA["+title+"]]>"
+                    + "<![CDATA[" + title + "]]>"
                     + "</dc:title>"
                     + "<dc:creator>"
-                    + "<![CDATA["+creator+"]]>"
+                    + "<![CDATA[" + creator + "]]>"
                     + "</dc:creator>"
                     + "<upnp:class>object.item.audioItem.musicTrack</upnp:class>"
                     + "<upnp:album>"
-                    + "<![CDATA["+album+"]]>"
+                    + "<![CDATA[" + album + "]]>"
                     + "</upnp:album>"
                     + "<upnp:albumArtURI>"
                     + uri
                     + "</upnp:albumArtURI>"
                     + "<upnp:artist role=\"Performer\">"
-                    + "<![CDATA["+artist+"]]>"
+                    + "<![CDATA[" + artist + "]]>"
                     + "</upnp:artist>"
                     + "<res protocolInfo=\"http-get:*:"
                     + prtocolinfo
@@ -188,39 +194,13 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         singer = creator;
         songName = title;
 
-
         if (urlMeta == null) {
             dmrHelper.getDmrProcessor().setURI(url, null);
             return;
         }
-
-/*
-//    Commenting as we dont need to access the image through bitmap anymore as it would be taken care by picasso after recieveing the 42 message box
-        Bitmap bm = null;
-        if (uri != null) {
-            bm = MusicBitmap.getBitmap(uri);
-        } else {
-            bm = MusicBitmap.getBitmap(MAIN_CONTEXT, url);
-        }
-        songImage = bm;
-*/
-
         durationSeconds = (int) ModelUtil.fromTimeString(duration);
         relTime = 0;
-        /*URL=url;
-        META=urlMeta;
-		final Handler myhandler = new Handler();
-		myhandler.postDelayed(new Runnable() {
-		  @Override
-		  public void run() {
-		    //Do something after 100ms
-			  dmrHelper.getDmrProcessor().setURI(URL, META);
-		  }
-		}, 500);*/
-
-
         dmrHelper.getDmrProcessor().setURI(url, urlMeta);
-
     }
 
     /*this function will give random pos for shuffle btw given range*/
@@ -257,7 +237,7 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
                 nextPosition = currPosition;
             } else if (repeatState == NowPlayingFragment.REPEAT_ALL) {
                 /*if both counts are equal sending it to previous position*/
-                if (totalCount == currPosition+1) {
+                if (totalCount == currPosition + 1) {
                     nextPosition = 0;
                 } else {
                     /*else increase it by x*/
@@ -291,7 +271,7 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         }
 
         if (object == null) {
-            Log.d(TAG, "PlayerObject Null" );
+            Log.d(TAG, "PlayerObject Null");
             return;
         }
 
@@ -299,6 +279,7 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         try {
             playSong();
         } catch (Throwable t) {
+            t.printStackTrace();
         }
     }
 
@@ -369,11 +350,43 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
 
     @Override
     public void onExceptionHappend(Action actionCallback, String mTitle, String cause) {
-        LibreLogger.d(this,"Exception Happend for the Title "+ mTitle + " for the cause of "+ cause );
+        LibreLogger.d(this, "Exception Happend for the Title " + mTitle + " for the cause of " + cause);
 
     }
 
     public boolean isPlaying() {
         return isPlaying;
+    }
+
+    public boolean isThisTheLastSong(){
+        try {
+            int currentPos = dmsHelper.getAdapterPosition();
+            int size = dmsHelper.getDidlList().size();
+            return size - 1 - currentPos <= 0;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    public boolean isThisOnlySong(){
+        try {
+            int currentPos = dmsHelper.getAdapterPosition();
+            int size = dmsHelper.getDidlList().size();
+            return size == 1;
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    public boolean isThisFirstSong(){
+        try {
+            Log.d("PlaybackHelper","Checking for the content inside the playback helper");
+            int currentPos = dmsHelper.getAdapterPosition();
+            int size = dmsHelper.getDidlList().size();
+            Log.d("Localconmtent","size ="+size+", currentpos "+currentPos);
+            return currentPos == 0;
+        }catch (Exception e){
+            return false;
+        }
     }
 }

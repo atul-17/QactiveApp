@@ -128,7 +128,6 @@ public class AlexaSignInActivity extends CTDeviceDiscoveryActivity implements Vi
         switch (view.getId()){
 
             case R.id.button:
-                /* startActivity(new Intent(this, WebViewActivity.class));*/
 
                 if (invalidApiKey) {
                     showSomethingWentWrongAlert(AlexaSignInActivity.this);

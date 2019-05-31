@@ -103,4 +103,10 @@ public class LUCIMESSAGES {
     public static final String READ_DEEZER_PWD = "READ_DeezerUserPassword";
     public static final String READ_TIDAL_UN = "READ_TidalUserName";
     public static final String READ_TIDAL_PWD = "READ_TidalUserPassword";
+    public static final String READ_BT_CONTROLLER = "READ_BT_CONTROLLER";
+
+    public static final String DIRECT_PLAY = "PLAYITEM:DIRECT:";
+    public static final String DIRECT_NEXT_PLAY = "PLAYITEM:DIRECTNEXT:";
+    public static final String SCROLLUP = "SCROLLUP";
+    public static final String SCROLLDOWN = "SCROLLDOWN";
 }

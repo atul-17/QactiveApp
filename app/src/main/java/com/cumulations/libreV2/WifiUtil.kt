@@ -13,6 +13,7 @@ import android.net.wifi.WifiManager
 import android.util.Log
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.libre.Scanning.Constants
+import com.libre.util.LibreLogger
 
 
 class WifiUtil(private val context: Context) {
@@ -31,8 +32,14 @@ class WifiUtil(private val context: Context) {
     private var wifiList: List<ScanResult> = arrayListOf()
     private val myBroadCastReceiver: MyBroadcastReceiver = MyBroadcastReceiver()
 
-    fun isWifiEnabled():Boolean{
-        return wifiManager.isWifiEnabled && wifiManager.connectionInfo.supplicantState == SupplicantState.COMPLETED
+    fun isWifiOn():Boolean{
+        return wifiManager.isWifiEnabled || wifiManager?.connectionInfo?.supplicantState == SupplicantState.COMPLETED
+    }
+
+    fun getWifiSupplicantState():SupplicantState{
+        val supplicantState = wifiManager.connectionInfo.supplicantState
+        LibreLogger.d(this,"supplicantState name = ${supplicantState.name}")
+        return supplicantState
     }
 
     fun startWifiScan() {
