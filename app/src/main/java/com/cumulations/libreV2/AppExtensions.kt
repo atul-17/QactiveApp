@@ -1,6 +1,7 @@
 package com.cumulations.libreV2
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -145,5 +146,9 @@ fun openKeyboard(context: Context, view: View?) {
     } catch (e: Exception) {
         e.printStackTrace()
     }
+}
+
+fun Activity.isVisibleToUser():Boolean{
+    return this.window.decorView.isShown
 }
 

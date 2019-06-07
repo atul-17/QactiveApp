@@ -123,7 +123,8 @@ object AppUtils {
         oldSceneObject?.genre = window.getString("Genre")
         oldSceneObject?.totalTimeOfTheTrack = window.getLong("TotalTime")
         oldSceneObject?.currentSource = window.getInt("Current Source")
-        if (oldSceneObject?.currentSource == Constants.AUX_SOURCE) {
+        if (oldSceneObject?.currentSource == Constants.AUX_SOURCE
+                || oldSceneObject?.currentSource == Constants.EXTERNAL_SOURCE) {
             oldSceneObject?.artist_name = "Aux Playing"
         }
 

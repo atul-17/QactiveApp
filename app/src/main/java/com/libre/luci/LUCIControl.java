@@ -48,6 +48,7 @@ public class LUCIControl {
     public void deRegister() {
         SendCommand(4, null, LSSDPCONST.LUCI_SET);
     }
+
     public void sendAsynchronousCommandSpecificPlaces(){
         /* Crash Fixed Reported For Multiple Times SAC and rebooting Fix*/
 /*        if ((mNetIf != null)  && (new Utils().getIPAddress(true)!=null))*/ {
@@ -117,7 +118,7 @@ public class LUCIControl {
                 Log.d("Scan_Netty", "" + SERVER_IP);
 
                 if (SERVER_IP==null)
-                    return;;
+                    return;
 
                 if (!(luciSocketMap.containsKey(SERVER_IP))) {
                     // Log.d("Scan_Netty","Socket is Not Available for the IP "+SERVER_IP);
@@ -149,7 +150,6 @@ public class LUCIControl {
                 if (isDataSent) {
                     Log.d(TAG, "Tcp GetLUCICommand is Successfull ");
                 } else {
-                    isDataSent = false;
                     Log.d(TAG, "Tcp GetLUCICommand is UnSuccessfull ");
                 }
 

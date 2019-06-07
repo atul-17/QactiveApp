@@ -8,13 +8,15 @@ import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import android.widget.SeekBar
-import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.closeKeyboard
 import com.cumulations.libreV2.fragments.CTAlexaLocaleDialogFragment
+import com.cumulations.libreV2.fragments.CTAudioOutputDialogFragment
+import com.cumulations.libreV2.tcp_tunneling.*
+import com.cumulations.libreV2.tcp_tunneling.enums.AQModeSelect
+import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
 import com.cumulations.libreV2.writeAwayModeSettingsToDevice
 import com.libre.R
 import com.libre.Scanning.Constants
-import com.libre.Scanning.ScanningHandler
 import com.libre.alexa.LibreAlexaConstants
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
@@ -33,20 +35,11 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
     private lateinit var luciControl: LUCIControl
     private var switchStatus: String? = null
     private var seekbarVolumeValue: String? = null
-    private val deviceSSID by lazy {
-        intent?.getStringExtra(AppConstants.DEVICE_SSID)
-    }
     private val currentDeviceIp by lazy {
         intent?.getStringExtra(Constants.CURRENT_DEVICE_IP)
     }
     internal var mAudioOutput = ""
-    internal var mAudioPreset = ""
 
-    val STEREO = 0
-    val LEFT = 1
-    val RIGHT = 2
-
-    private var mScanHandler = ScanningHandler.getInstance()
     private var awayModeSettingsDialog:AlertDialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +100,6 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
         val dataAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerData)
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
-        closeLoader(audio_progress_bar.id)
         closeLoader(soft_update_progress_bar.id)
 
         if (currentDeviceNode?.getmDeviceCap()?.getmSource()?.isAlexaAvsSource!!){
@@ -183,6 +175,40 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
             }
         })
 
+        seek_bar_bass.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                /*LibreLogger.d(this, "seek_bar_bass " + seekBar.progress + "  " + seekBar.max)
+                tv_bass_value.text = "${progress-5}dB"
+
+                TunnelingControl(currentDeviceIp).sendCommand(PayloadType.BASS_VOLUME, (progress-5).toByte())*/
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                LibreLogger.d(this, "seek_bar_bass " + seekBar.progress + "  " + seekBar.max)
+                tv_bass_value.text = "${seekBar.progress - 5}dB"
+                TunnelingControl(currentDeviceIp).sendCommand(PayloadType.BASS_VOLUME, seekBar.progress.toByte())
+            }
+        })
+
+        seek_bar_treble.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                /*LibreLogger.d(this, "seek_bar_treble " + seekBar.progress + "  " + seekBar.max)
+                tv_treble_value.text = "${progress-5}dB"
+
+                TunnelingControl(currentDeviceIp).sendCommand(PayloadType.TREBLE_VOLUME, (progress-5).toByte())*/
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {}
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                LibreLogger.d(this, "seek_bar_bass " + seekBar.progress + "  " + seekBar.max)
+                tv_treble_value.text = "${seekBar.progress - 5}dB"
+                TunnelingControl(currentDeviceIp).sendCommand(PayloadType.TREBLE_VOLUME, seekBar.progress.toByte())
+            }
+        })
+
         tv_edit_away_mode?.setOnClickListener {
             showAwayModeAlert(tv_network_name.text.toString(),tv_wifi_pwd.text.toString())
         }
@@ -190,12 +216,29 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
         iv_back?.setOnClickListener {
             onBackPressed()
         }
+
+        tv_audio_output?.setOnClickListener {
+            if (tv_audio_output?.text?.toString().isNullOrEmpty())
+                return@setOnClickListener
+
+            val audioOutput = tv_audio_output?.text?.toString()
+
+            CTAudioOutputDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putString(Constants.AUDIO_OUTPUT,audioOutput)
+                }
+
+                show(supportFragmentManager,this::class.java.simpleName)
+            }
+        }
     }
 
     override fun onResume() {
         super.onResume()
         registerForDeviceEvents(this)
         requestLuciUpdates()
+
+        TunnelingControl(currentDeviceIp).sendDataModeCommand()
     }
 
     private fun showLoader(progressBarId : Int) {
@@ -413,6 +456,12 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
         luciControl.SendCommand(MIDCONST.ALEXA_COMMAND.toInt(), LUCIMESSAGES.UPDATE_LOCALE + currentLocale, LSSDPCONST.LUCI_SET)
     }
 
+    fun updateAudioOutputOfDevice(aqModeSelect: AQModeSelect) {
+        showLoader(audio_progress_bar.id)
+//        tv_audio_output?.text = aqModeSelect.name
+        TunnelingControl(currentDeviceIp).sendCommand(PayloadType.AQ_MODE_SELECT, aqModeSelect.value.toByte())
+    }
+
     private fun showAwayModeAlert(ssid:String,pwd:String) {
         if (awayModeSettingsDialog != null && awayModeSettingsDialog?.isShowing!!)
             awayModeSettingsDialog?.dismiss()
@@ -474,5 +523,27 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
     override fun onStop() {
         super.onStop()
         unRegisterForDeviceEvents()
+    }
+
+    override fun tunnelDataReceived(tunnelingData: TunnelingData) {
+        if (tunnelingData.remoteClientIp == currentDeviceIp && tunnelingData.remoteMessage.size >= 24) {
+            val tcpTunnelingData = TCPTunnelPacket(tunnelingData.remoteMessage)
+
+            if (tcpTunnelingData.trebleValue >=0){
+                tv_treble_value.text = "${tcpTunnelingData.trebleValue - 5}dB"
+                seek_bar_treble?.progress = tcpTunnelingData.trebleValue
+                seek_bar_treble?.max = 10
+            }
+
+            if (tcpTunnelingData.bassValue >=0){
+                tv_bass_value.text = "${tcpTunnelingData.bassValue - 5}dB"
+                seek_bar_bass?.progress = tcpTunnelingData.bassValue
+                seek_bar_bass?.max = 10
+            }
+
+            tv_audio_output?.text = tcpTunnelingData.aqMode.name
+            closeLoader(audio_progress_bar.id)
+
+        }
     }
 }

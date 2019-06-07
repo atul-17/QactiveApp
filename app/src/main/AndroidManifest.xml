@@ -373,6 +373,11 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait" />
 
+        <activity
+            android:name="com.cumulations.libreV2.activity.CTDMSDeviceListActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="b0f91dc7a6f0d7ee35d247281ac32a618a418970" />

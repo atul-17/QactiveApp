@@ -483,7 +483,7 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         }
         runOnUiThread {
             dismissDialog()
-            showToast(getString(R.string.loadingMusic) + message)
+            showToast(message)
             onBackPressed()
         }
     }

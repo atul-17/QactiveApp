@@ -234,11 +234,11 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
             LibreLogger.d(this, TAG + "Exception for throwing an event in otto");
-            if (LUCIControl.luciSocketMap.containsKey(remotedevice)) {
+            /*if (LUCIControl.luciSocketMap.containsKey(remotedevice)) {
                 if (isSocketToBeRemovedFromTheTCPMap(ctx, remotedevice)) {
                     LUCIControl.luciSocketMap.remove(remotedevice);
                 }
-            }
+            }*/
         }
 
 
@@ -323,7 +323,7 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
                 mChannelContext.channel().writeAndFlush(byteBufMsg).sync();
                 /* Device will not Send CommandStatus=1 for Volume */
                 int mMessageBox = getMessageBoxofTheCommand(sbytes);
-                /* KK According to the EMail I have Sent on 16 March , Regarding the LUCI Messages ,Device is not sending Command Status as
+                /* KK According to the EMail I have Sent on 16 March , Regarding the LUCI Messages ,Device is not sending command Status as
                  * i.e., no immeidate response from the device.Only they will repsonse for the below Messagebox if we are doing GET
                  * */
                 /* We are not using the below msgbox in the for Setting the Values , thats ComandType as SET */
@@ -371,8 +371,8 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
         }
 
     }
-    /* For Getting The Message Box From the Command */
-    /* KK  :: Commenting because Android is following the approach of Little indian . So if we are try to get Command from
+    /* For Getting The Message Box From the command */
+    /* KK  :: Commenting because Android is following the approach of Little indian . So if we are try to get command from
      * LuciPacket we are getting the wrong value , so we are initiating the timer for all the Commands  but still it will works because
      * NOTIFY packets will update the last Notifed Time. And Our App will not work for 16Bit thats MsgBox greater than 255
      * So I remodified the Code  to support 16 Bit
@@ -383,13 +383,13 @@ public class NettyClientHandler extends ChannelHandlerAdapter {
         return packetbytes[3] * 16 + (packetbytes[4] & 0xFF);
     }*/
 
-    /* KK:: Remodified Code For Getting The Message Box From the Command */
+    /* KK:: Remodified Code For Getting The Message Box From the command */
     public int getMessageBoxofTheCommand(byte[] packetbytes) {
         return packetbytes[3] & 0xFF + ((packetbytes[4] & 0xFF) << 8);
     }
 
 
-    /* For Getting The Message Box From the Command */
+    /* For Getting The Message Box From the command */
     public int getCommandType(byte[] packetbytes) {
         return packetbytes[2];
     }

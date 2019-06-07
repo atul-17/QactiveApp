@@ -26,6 +26,7 @@ import android.util.Log;
 import com.crashlytics.android.Crashlytics;
 import com.cumulations.libreV2.AppUtils;
 import com.cumulations.libreV2.receiver.GpsStateReceiver;
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
 import com.libre.Ls9Sac.GcastUpdateData;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanThread;
@@ -224,6 +225,7 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
             INDIVIDUAL_VOLUME_MAP.clear();
             ZONE_VOLUME_MAP.clear();
             LUCIControl.luciSocketMap.clear();
+            TunnelingControl.clearTunnelingClients();
             LSSDPNodeDB.getInstance().clearDB();
             ScanningHandler.getInstance().clearSceneObjectsFromCentralRepo();
         } catch (Exception e) {

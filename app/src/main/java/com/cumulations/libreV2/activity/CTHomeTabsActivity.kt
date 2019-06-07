@@ -9,6 +9,7 @@ import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.WifiUtil
 import com.cumulations.libreV2.fragments.*
 import com.cumulations.libreV2.removeShiftMode
+import com.cumulations.libreV2.tcp_tunneling.TunnelingFragmentListener
 import com.libre.LibreApplication
 import com.libre.R
 import com.libre.Scanning.Constants
@@ -40,6 +41,7 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
     }
 
     private var isActivityVisible = true
+    private var tunnelingFragmentListener: TunnelingFragmentListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -167,7 +169,7 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
                     openFragment(CTActiveDevicesFragment::class.java.simpleName,animate = false)
                 } /*else openFragment(CTNoDeviceFragment::class.java.simpleName,animate = false)*/
             }
-        },2000)
+        },1000)
     }
 
     fun openFragment(fragmentClassName:String,animate:Boolean){
@@ -271,5 +273,13 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
         showToast(R.string.doubleTapToExit)
         isDoubleTap = true
         Handler().postDelayed({ isDoubleTap = false }, 2000)
+    }
+
+    fun setTunnelFragmentListener(tunnelingFragmentListener: TunnelingFragmentListener){
+        this.tunnelingFragmentListener = tunnelingFragmentListener
+    }
+
+    fun removeTunnelFragmentListener(){
+        tunnelingFragmentListener = null
     }
 }

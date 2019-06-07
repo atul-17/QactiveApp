@@ -161,14 +161,14 @@
         <item name="android:minHeight">2dp</item>
     </style>
 
-    <style name="StyledDialogTheme" parent="AppTheme">
-        <item name="android:layout_margin">12dp</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
+    <style name="TransparentDialogTheme" parent="AppTheme">
+        <item name="windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
-        <item name="android:windowAnimationStyle">@style/StyledDialogTheme.windowAnimation</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowAnimationStyle">@style/TransparentDialogTheme.windowAnimation</item>
     </style>
 
-    <style name="StyledDialogTheme.windowAnimation">
+    <style name="TransparentDialogTheme.windowAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_up</item>
         <item name="android:windowExitAnimation">@anim/slide_down</item>
     </style>

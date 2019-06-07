@@ -20,7 +20,7 @@ class CTAlexaLocaleDialogFragment: DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         super.onCreateDialog(savedInstanceState)
-        val dialog = Dialog(activity!!, R.style.StyledDialogTheme)
+        val dialog = Dialog(activity!!, R.style.TransparentDialogTheme)
         dialog.setContentView(R.layout.ct_dlg_fragment_select_locale)
         dialog.setCanceledOnTouchOutside(true)
         isCancelable = true

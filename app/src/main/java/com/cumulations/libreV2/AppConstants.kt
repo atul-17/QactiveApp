@@ -36,4 +36,7 @@ object AppConstants{
     const val IS_LOCAL_DEVICE_SELECTED = "isLocalDeviceSelected"
     const val SCENE_MAP = "scene_map"
     const val SCENE_POSITION = "scene_position"
+
+    const val SA_MODE_IP = "192.168.43."
+    const val SAC_MODE_IP = "192.168.255."
 }

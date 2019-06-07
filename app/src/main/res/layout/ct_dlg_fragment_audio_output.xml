@@ -6,56 +6,67 @@
     android:layout_margin="12dp"
     android:background="@drawable/rounded_white_bg"
     android:gravity="center"
-    android:orientation="vertical"
-    android:paddingBottom="8dp">
+    android:paddingBottom="8dp"
+    android:orientation="vertical">
 
     <android.support.v7.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:textStyle="bold"
-        android:text="@string/select_locale"
+        android:text="@string/select_audio_output"
         android:textColor="@color/black"
+        android:textStyle="bold"
         app:fontFamily="sans-serif" />
 
     <RadioGroup
-        android:id="@+id/rg_select_locale"
+        android:id="@+id/rg_audio_output"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="vertical">
 
         <RadioButton
-            android:id="@+id/rb_en_us"
+            android:id="@+id/rb_trillium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:button="@null"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/engUSLang"
+            android:text="@string/trillium"
             android:textColor="@color/rb_locale_textcolor_selector"
             android:textSize="16sp" />
 
         <RadioButton
-            android:id="@+id/rb_en_uk"
+            android:id="@+id/rb_power"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:button="@null"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/engUKLang"
+            android:text="@string/power"
             android:textColor="@color/rb_locale_textcolor_selector"
             android:textSize="16sp"
             app:fontFamily="sans-serif-medium" />
 
         <RadioButton
-            android:id="@+id/rb_deu"
+            android:id="@+id/rb_left"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:button="@null"
             android:gravity="center"
             android:padding="16dp"
-            android:text="@string/deutschLang"
+            android:text="@string/left"
+            android:textColor="@color/rb_locale_textcolor_selector"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/rb_right"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:button="@null"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/right"
             android:textColor="@color/rb_locale_textcolor_selector"
             android:textSize="16sp" />
 

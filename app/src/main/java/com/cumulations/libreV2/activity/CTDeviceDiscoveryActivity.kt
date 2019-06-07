@@ -3,10 +3,7 @@ package com.cumulations.libreV2.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.AlarmManager
-import android.app.AlertDialog
-import android.app.PendingIntent
-import android.app.ProgressDialog
+import android.app.*
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -90,6 +87,9 @@ import com.cumulations.libreV2.AppConstants.MICROPHONE_PERM_SETTINGS_REQUEST_COD
 import com.cumulations.libreV2.AppConstants.READ_STORAGE_REQUEST_CODE
 import com.cumulations.libreV2.AppConstants.STORAGE_PERM_SETTINGS_REQUEST_CODE
 import com.cumulations.libreV2.AppConstants.WIFI_SETTINGS_REQUEST_CODE
+import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
+import com.cumulations.libreV2.tcp_tunneling.TunnelingData
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
 import com.libre.*
 import com.libre.LibreApplication.activeSSID
 import com.libre.alexa_signin.AlexaUtils
@@ -108,7 +108,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     private var libreDeviceInteractionListner: LibreDeviceInteractionListner? = null
-    protected var upnpProcessor: UpnpProcessorImpl? = null
+    var upnpProcessor: UpnpProcessorImpl? = null
     private var localNetworkStateReceiver: LocalNetworkStateReceiver? = null
     private var mProgressDialog: ProgressDialog? = null
 
@@ -147,6 +147,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     private var busEventListener: Any = object : Any() {
         @Subscribe
         fun newDeviceFound(nodes: LSSDPNodes) {
+            LibreLogger.d(this, "newDeviceFound, node = " + nodes.friendlyname)
             if (libreDeviceInteractionListner != null) {
                 libreDeviceInteractionListner!!.newDeviceFound(nodes)
             }
@@ -211,6 +212,41 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 showErrorMessage(libreError)
             }
         }
+
+        @Subscribe
+        fun tunnelingMessageReceived(tunnelingData: TunnelingData){
+            LibreLogger.d(this,"tunnelingMessageReceived, data = ${TunnelingControl.getReadableHexByteArray(tunnelingData.remoteMessage)}")
+
+            if (tunnelingData.remoteMessage.size == 4){
+                /*Model Id only when 0x01 0x05 0x05 0x01~0x08*/
+                val byteArray = tunnelingData.remoteMessage
+                if (byteArray[0].toInt() == 0x01
+                        && byteArray[1].toInt() == 0x05
+                        && byteArray[2].toInt() == 0x05) {
+
+                    val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage, tunnelingData.remoteMessage.size)
+                    if (tcpTunnelPacket.modelId != null) {
+                        val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(tunnelingData.remoteClientIp)
+                        lssdpNodes?.modelId = tcpTunnelPacket.modelId
+                        LibreLogger.d(this, "tunnelingMessageReceived, modelId = ${tcpTunnelPacket.modelId}")
+                    }
+                }
+            }
+
+            if (libreDeviceInteractionListner != null) {
+                Log.d(TAG, "tunnelDataReceived, libreDeviceInteractionListner = " + libreDeviceInteractionListner!!::class.java.simpleName)
+                if (libreDeviceInteractionListner is Activity) {
+                    if ((libreDeviceInteractionListner as Activity).isVisibleToUser()) {
+                        tunnelDataReceived(tunnelingData)
+                    }
+                }
+            }
+        }
+    }
+
+    /*Will be overridden by Child classes who want this data*/
+    open fun tunnelDataReceived(tunnelingData: TunnelingData){
+
     }
 
     private val isMicrophonePermissionGranted: Boolean
@@ -490,6 +526,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         playPauseView?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
                 if (musicSceneObject!!.currentSource == Constants.AUX_SOURCE
+                        || musicSceneObject!!.currentSource == Constants.EXTERNAL_SOURCE
                         || musicSceneObject.currentSource == Constants.GCAST_SOURCE
                         || musicSceneObject.currentSource == Constants.VTUNER_SOURCE
                         || musicSceneObject.currentSource == Constants.TUNEIN_SOURCE
@@ -616,6 +653,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         /*Handling album art*/
         /*this is to show loading dialog while we are preparing to play*/
         if (sceneObject!!.currentSource != Constants.AUX_SOURCE
+                && sceneObject!!.currentSource != Constants.EXTERNAL_SOURCE
                 && sceneObject!!.currentSource != Constants.BT_SOURCE
                 && sceneObject!!.currentSource != Constants.GCAST_SOURCE) {
 
@@ -680,19 +718,21 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 songSeekBar?.isEnabled = false
             }
 
-            Constants.AUX_SOURCE -> {
-                playPauseView?.setImageResource(R.drawable.play_white)
+            /*For Riva Tunneling, When switched to Aux, its External Source*/
+            Constants.AUX_SOURCE,Constants.EXTERNAL_SOURCE -> {
+                /*playPauseView?.setImageResource(R.drawable.play_white)
                 songSeekBar?.visibility = View.VISIBLE
                 songSeekBar?.progress = 0
                 songSeekBar?.isEnabled = false
 
                 trackNameView?.text = context.getText(R.string.aux)
                 albumNameView?.visibility = View.GONE
-                albumArtView?.visibility = View.GONE
+                albumArtView?.visibility = View.GONE*/
+                handleAlexaViews(sceneObject)
             }
 
             Constants.BT_SOURCE -> {
-                trackNameView?.text = context.getText(R.string.bluetooth)
+                /*trackNameView?.text = context.getText(R.string.bluetooth)
                 songSeekBar?.progress = 0
                 songSeekBar?.isEnabled = false
                 albumNameView?.visibility = View.GONE
@@ -703,8 +743,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 LibreLogger.d(this, "BT controller value in sceneobject " + mNode.bT_CONTROLLER)
                 if (mNode.bT_CONTROLLER != SceneObject.CURRENTLY_STOPPED && mNode.bT_CONTROLLER != SceneObject.CURRENTLY_PAUSED && mNode.bT_CONTROLLER != 3) {
                     playPauseView?.setImageResource(R.drawable.play_white)
-                }
-
+                }*/
+                handleAlexaViews(sceneObject)
             }
             Constants.GCAST_SOURCE -> {
                 //gCast is Playing
@@ -744,6 +784,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                         || sceneObject.currentSource == Constants.TUNEIN_SOURCE
                         || sceneObject.currentSource == Constants.BT_SOURCE
                         || sceneObject.currentSource == Constants.AUX_SOURCE
+                        || sceneObject.currentSource == Constants.EXTERNAL_SOURCE
                         || sceneObject.currentSource == Constants.NO_SOURCE
                         || sceneObject.currentSource == Constants.GCAST_SOURCE)) {
             playPauseView?.isEnabled = false
@@ -973,7 +1014,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             LibreLogger.d(this, "GCAST_PROGRESS_STATUS " +
                     nettyData.getRemotedeviceIp() +
                     "Message " +
-                    msg + " Command " + dummyPacket.command)
+                    msg + " command " + dummyPacket.command)
 
             val mLssdpNodeDb = LSSDPNodeDB.getInstance()
             val mNode = mLssdpNodeDb.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
@@ -1031,7 +1072,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             val msg = String(packet.getpayload())
             LibreLogger.d(this, "GCAST_UPDATE_MSGBOX " + nettyData.getRemotedeviceIp() +
                     "Message " +
-                    msg + " Command " + dummyPacket.command)
+                    msg + " command " + dummyPacket.command)
 
             val mLssdpNodeDb = LSSDPNodeDB.getInstance()
             val mNode = mLssdpNodeDb.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
@@ -1321,7 +1362,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                             + "wifi Supplicant name = ${supplicantState.name}")
 
                     if (networkInfo.isConnected) {
-                        if (wifiUtil.isWifiOn() || supplicantState == SupplicantState.DISCONNECTED)
+                        if (wifiUtil.isWifiOn())
                             wifiConnected(connected = true)
                     } else wifiConnected(connected = false)
                 }
@@ -1332,7 +1373,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     open fun wifiConnected(connected: Boolean) {
         if (!connected){
             /*clearing data*/
-            libreApplication?.clearApplicationCollections()
+//            libreApplication?.clearApplicationCollections()
         }
     }
 

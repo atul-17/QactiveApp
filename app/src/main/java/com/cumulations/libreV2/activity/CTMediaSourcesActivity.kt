@@ -16,6 +16,11 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.SharedPreferenceHelper
+import com.cumulations.libreV2.fragments.CTMediaServerListFragment
+import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
+import com.cumulations.libreV2.tcp_tunneling.TunnelingData
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
+import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
 import com.libre.LErrorHandeling.LibreError
 import com.libre.LibreApplication
 import com.libre.R
@@ -135,11 +140,14 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         iv_toggle_bluetooth?.setOnClickListener {
             val luciControl = LUCIControl(currentIpAddress)
             if (iv_toggle_bluetooth?.isChecked!!) {
-                if (iv_toggle_aux?.isChecked!!) {
-                    luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
+                /*if (iv_toggle_aux?.isChecked!!) {
+                    /*WiFi == No Source*/
+                    TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x01*//*WiFi*//*)
+//                    luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
                 }
                 // sleep when BT to AUX switch
-                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
+//                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x01*//*WiFi*//*)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
 
                 val msg = Message().apply {
@@ -148,9 +156,10 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         putString("MessageText", getString(R.string.BtOffAlert))
                     }
                 }
-                timeOutHandler!!.sendMessage(msg)
+                timeOutHandler!!.sendMessage(msg)*/
             } else {
-                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_ON, LSSDPCONST.LUCI_SET)
+//                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_ON, LSSDPCONST.LUCI_SET)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x02/*BT*/)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
                 val msg = Message().apply {
                     what = BT_AUX_INITIATED
@@ -165,12 +174,13 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         iv_toggle_aux?.setOnClickListener {
             val luciControl = LUCIControl(currentIpAddress)
             if (iv_toggle_aux.isChecked) {
-                if (iv_toggle_bluetooth!!.isChecked) {
-                    luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
-                    iv_toggle_bluetooth?.isChecked = false
+                /*if (iv_toggle_bluetooth!!.isChecked) {
+                    TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x01*//*WiFi*//*)
+//                    luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_OFF, LSSDPCONST.LUCI_SET)
                 }
 
-                luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
+//                luciControl.SendCommand(MIDCONST.MID_AUX_STOP, null, LSSDPCONST.LUCI_SET)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x01*//*WiFi*//*)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
 
                 val msg = Message().apply {
@@ -179,10 +189,11 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         putString("MessageText", getString(R.string.AuxOffAlert))
                     }
                 }
-                timeOutHandler!!.sendMessage(msg)
+                timeOutHandler!!.sendMessage(msg)*/
             } else {
                 /* Setting the source to default */
-                luciControl.SendCommand(MIDCONST.MID_AUX_START, null, LSSDPCONST.LUCI_SET)
+//                luciControl.SendCommand(MIDCONST.MID_AUX_START, null, LSSDPCONST.LUCI_SET)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x00/*AUX*/)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
 
                 val msg = Message().apply {
@@ -195,7 +206,6 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             }
         }
 
-        val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
         seek_bar_volume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 Log.d("onProgressChanged $progress", "fromUser $fromUser")
@@ -213,10 +223,12 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
                 } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
-                LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject.ipAddress)
+                val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
+                LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject?.ipAddress)
+                sceneObject?.volumeValueInPercentage = seekBar.progress
+                mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
 
-                sceneObject!!.volumeValueInPercentage = seekBar.progress
-                mScanHandler.putSceneObjectToCentralRepo(sceneObject.ipAddress, sceneObject)
+//                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_VOLUME,(seekBar.progress/5).toByte())
             }
         })
 
@@ -283,7 +295,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
             /* Karuna , if Zone is playing in BT/AUX and We Released the Zone
             and we creating the same Guy as a Master then Aux should not Switch ON as a Default*/
-            if (currentSource == Constants.AUX_SOURCE
+            if ((currentSource == Constants.AUX_SOURCE || currentSource == Constants.EXTERNAL_SOURCE)
                     && (sceneObject.playstatus == SceneObject.CURRENTLY_STOPPED
                             || sceneObject.playstatus == SceneObject.CURRENTLY_NOTPLAYING)) {
                 Log.d("AUXSTATE", "--" + sceneObject.playstatus)
@@ -366,9 +378,9 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         //asking source
 //        val luciControl = LUCIControl(currentIpAddress)
 //        luciControl.SendCommand(MIDCONST.MID_CURRENT_SOURCE.toInt(), null, LSSDPCONST.LUCI_GET)
-        showToast(source!!)
-        fetchAuxBtStatus()
         showLoader()
+        showToast(source!!)
+//        fetchAuxBtStatus()
     }
 
     private fun showLoader() {
@@ -396,7 +408,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         val remotedeviceIp = nettyData.getRemotedeviceIp()
 
         val luciPacket = LUCIPacket(nettyData.getMessage())
-        LibreLogger.d(this, "Message recieved for ipaddress " + remotedeviceIp + "command is " + luciPacket.command)
+        LibreLogger.d(this, "Message recieved for ipaddress " + remotedeviceIp + "Command is " + luciPacket.command)
 
         val currentNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(remotedeviceIp)
         val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(remotedeviceIp)
@@ -482,7 +494,8 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         }
 
                         when {
-                            sceneObject?.currentSource == Constants.AUX_SOURCE -> {
+                            sceneObject?.currentSource == Constants.AUX_SOURCE
+                                    || sceneObject?.currentSource == Constants.EXTERNAL_SOURCE-> {
                                 if (iv_toggle_bluetooth!!.isChecked) {
                                     iv_toggle_bluetooth!!.isChecked = false
                                 }
@@ -497,10 +510,10 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                                 if (sceneObject.playstatus == SceneObject.CURRENTLY_PLAYING)
                                     iv_toggle_bluetooth!!.isChecked = true
                             }
-                            else -> {
+                            /*else -> {
                                 iv_toggle_aux.isChecked = false
                                 iv_toggle_bluetooth!!.isChecked = false
-                            }
+                            }*/
                         }
                         LibreLogger.d(this, "Recieved the playstate to be" + sceneObject?.playstatus)
                     } catch (e: Exception) {
@@ -516,7 +529,8 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     mScanHandler.sceneObjectFromCentralRepo[currentIpAddress!!] = sceneObject
                     // Toast.makeText(getApplicationContext(),"Message 50 is Received"+message,Toast.LENGTH_SHORT).show();
                     when {
-                        currentSource.contains(Constants.AUX_SOURCE.toString()) -> {
+                        currentSource.contains(Constants.AUX_SOURCE.toString())
+                                || currentSource.contains(Constants.EXTERNAL_SOURCE.toString())-> {
                             timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
                             closeLoader()
 
@@ -540,15 +554,16 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                                 timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
                                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
                             }
+                            closeLoader()
                             iv_toggle_bluetooth!!.isChecked = false
                             iv_toggle_aux.isChecked = false
                         }
 
-                        else -> {
+                        /*else -> {
                             closeLoader()
                             iv_toggle_aux.isChecked = false
                             iv_toggle_bluetooth!!.isChecked = false
-                        }
+                        }*/
                     }
                 }
 
@@ -621,7 +636,8 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         /*Registering to receive messages*/
         registerForDeviceEvents(this)
         AlexaUtils.sendAlexaRefreshTokenRequest(currentIpAddress)
-        fetchAuxBtStatus()
+//        fetchAuxBtStatus()
+        TunnelingControl(currentIpAddress).sendDataModeCommand()
     }
 
     override fun onStop() {
@@ -695,7 +711,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                             localIntent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN)
                             localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
                             startActivity(localIntent)
-                            finish()
+//                            finish()
                         }
 
                         context.getString(R.string.usb_storage) -> {
@@ -715,6 +731,19 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                             timeOutHandler!!.sendEmptyMessageDelayed(NETWORK_TIMEOUT, Constants.ITEM_CLICKED_TIMEOUT.toLong())
                             LibreLogger.d(this, "sending handler msg")
                             showLoader()
+
+                            /*startActivity(Intent(this@CTMediaSourcesActivity, CTDMSDeviceListActivity::class.java).apply {
+                                putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, false)
+                                putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+                            })
+                            finish()*/
+
+                            /*CTMediaServerListFragment().apply {
+                                arguments = Bundle().apply {
+                                    putString(Constants.CURRENT_DEVICE_IP,currentIpAddress)
+                                }
+                                show(supportFragmentManager,this::class.java.simpleName)
+                            }*/
                         }
                     }
                 }
@@ -724,6 +753,34 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         fun updateList(sourcesList: MutableList<String>?) {
             this.sourcesList = sourcesList
             notifyDataSetChanged()
+        }
+    }
+
+    override fun tunnelDataReceived(tunnelingData: TunnelingData) {
+        if (tunnelingData.remoteClientIp == currentIpAddress && tunnelingData.remoteMessage.size >= 24) {
+            val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
+
+            /*if (tcpTunnelPacket.volume>=0){
+                seek_bar_volume?.progress = tcpTunnelPacket.volume
+
+                if (seek_bar_volume?.progress == 0){
+                    iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+                } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
+                val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
+                sceneObject!!.volumeValueInPercentage = seek_bar_volume?.progress!!
+                LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress] = sceneObject?.volumeValueInPercentage
+                mScanHandler.putSceneObjectToCentralRepo(sceneObject.ipAddress, sceneObject)
+            }*/
+
+            when {
+                tcpTunnelPacket.currentSource == Constants.BT_SOURCE -> iv_toggle_bluetooth?.isChecked = true
+                tcpTunnelPacket.currentSource == Constants.AUX_SOURCE -> iv_toggle_aux?.isChecked = true
+                tcpTunnelPacket.currentSource == Constants.NO_SOURCE -> {
+                    iv_toggle_aux?.isChecked = false
+                    iv_toggle_bluetooth?.isChecked = false
+                }
+            }
         }
     }
 }

@@ -87,8 +87,6 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
         Intent intent = new Intent(mContext, CoreUpnpService.class);
         mContext.bindService(intent, m_serviceConnection, Context.BIND_AUTO_CREATE);
-
-
     }
 
     public void stopMusicServer() {

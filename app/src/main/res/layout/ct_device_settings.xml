@@ -42,7 +42,7 @@
                     android:singleLine="true"
                     android:text="@string/app_name"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
+                    android:textSize="22sp"
                     app:fontFamily="sans-serif-medium" />
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
@@ -84,6 +84,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:text="@string/device_name"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
@@ -103,11 +104,11 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
@@ -118,6 +119,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:text="@string/audio_output"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
@@ -131,6 +133,7 @@
                         android:id="@+id/tv_audio_output"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
+                        android:textSize="16sp"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical|right"
@@ -144,11 +147,10 @@
 
                     <ProgressBar
                         android:id="@+id/audio_progress_bar"
-                        style="?android:attr/progressBarStyleSmall"
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center_vertical|right"
-                        android:layout_marginRight="40dp"
+                        android:layout_marginRight="?attr/actionBarSize"
                         android:indeterminate="true"
                         android:visibility="gone"
                         tools:visibility="visible" />
@@ -157,13 +159,12 @@
             </LinearLayout>
 
             <View
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
@@ -177,6 +178,7 @@
                     android:layout_marginRight="24dp"
                     android:gravity="center_vertical"
                     android:text="@string/bass"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -197,18 +199,18 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical|right"
                     android:text="0db"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
             </LinearLayout>
 
             <View
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
@@ -222,6 +224,7 @@
                     android:layout_marginRight="16dp"
                     android:gravity="center_vertical"
                     android:text="@string/treble"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -242,15 +245,15 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical|right"
                     android:text="0db"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
             </LinearLayout>
 
             <View
-                android:visibility="gone"
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -265,6 +268,7 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="@string/ipAddress"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -275,6 +279,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical|right"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif-black"
                     tools:text="192.168.43.2" />
@@ -282,8 +287,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -298,6 +303,7 @@
                     android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:text="@string/system_firmware"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
@@ -314,6 +320,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical|right"
                         android:text="@string/app_name"
+                        android:textSize="16sp"
                         android:textColor="@color/white"
                         app:fontFamily="sans-serif-black" />
 
@@ -332,8 +339,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:visibility="gone"
@@ -394,6 +401,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:text="@string/mac_address"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
@@ -402,6 +410,7 @@
                     android:id="@+id/tv_mac_address"
                     android:padding="16dp"
                     android:gravity="right"
+                    android:textSize="16sp"
                     android:layout_weight="1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -462,6 +471,7 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="@string/network_name"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -475,6 +485,7 @@
                         android:id="@+id/tv_network_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:textSize="16sp"
                         android:layout_gravity="center_vertical|right"
                         android:textColor="@color/white"
                         app:fontFamily="sans-serif-black" />
@@ -494,8 +505,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -508,6 +519,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:textSize="16sp"
                     android:text="@string/wifi_pwd"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
@@ -520,6 +532,7 @@
                     android:gravity="center_vertical|right"
                     android:padding="16dp"
                     android:textColor="@color/white"
+                    android:textSize="16sp"
                     app:fontFamily="sans-serif-black"
                     tools:text="@string/hello_world" />
             </LinearLayout>
@@ -565,6 +578,7 @@
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:padding="16dp"
+                        android:textSize="16sp"
                         android:text="@string/amazon_login"
                         android:textColor="@color/white"
                         app:fontFamily="sans-serif" />
@@ -585,6 +599,7 @@
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
                             android:text="@string/logged_in"
+                            android:textSize="16sp"
                             android:textColor="@color/app_text_color_enabled"
                             app:fontFamily="sans-serif-black" />
 
@@ -603,8 +618,8 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1px"
-                    android:background="@color/app_text_color_disabled" />
+                    android:layout_height="1dp"
+                    android:background="@android:color/transparent" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -619,6 +634,7 @@
                         android:gravity="center_vertical"
                         android:padding="16dp"
                         android:text="@string/alexa_locale"
+                        android:textSize="16sp"
                         android:textColor="@color/white"
                         app:fontFamily="sans-serif" />
 
@@ -639,6 +655,7 @@
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
                             android:text="@string/logged_in"
+                            android:textSize="16sp"
                             android:textColor="@color/app_text_color_enabled"
                             app:fontFamily="sans-serif-black" />
 
@@ -688,6 +705,7 @@
                         android:gravity="center_vertical"
                         android:padding="16dp"
                         android:text="@string/software_update"
+                        android:textSize="16sp"
                         android:textColor="@color/white"
                         app:fontFamily="sans-serif" />
 
@@ -707,6 +725,7 @@
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
                             android:text="@string/logged_in"
+                            android:textSize="16sp"
                             android:textColor="@color/app_text_color_enabled"
                             app:fontFamily="sans-serif-black" />
 
@@ -759,6 +778,7 @@
                     android:gravity="center_vertical"
                     android:padding="16dp"
                     android:text="@string/speech_volume_follow"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -768,6 +788,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/off"
                     android:textAllCaps="true"
+                    android:textSize="16sp"
                     android:textColor="@color/app_text_color_enabled" />
 
                 <android.support.v7.widget.SwitchCompat
@@ -783,8 +804,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_text_color_disabled" />
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -800,6 +821,7 @@
                     android:layout_marginRight="16dp"
                     android:gravity="center_vertical"
                     android:text="@string/volume"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
@@ -820,6 +842,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical|right"
                     android:text="0db"
+                    android:textSize="16sp"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
             </LinearLayout>

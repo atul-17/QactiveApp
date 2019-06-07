@@ -436,6 +436,7 @@ public class ScanningHandler {
                         mNewSources.setDDMS_Slave(mResult);
                         break;
                     case Constants.AUX_SOURCE:
+                    case Constants.EXTERNAL_SOURCE:
                         mNewSources.setAuxIn(mResult);
                         break;
                     case Constants.APPLEDEVICE_SOURCE:
@@ -459,9 +460,9 @@ public class ScanningHandler {
                     case Constants.GCAST_SOURCE:
                         mNewSources.setGoogleCast(mResult);
                         break;
-                    case Constants.EXTERNAL_SOURCE:
+                    /*case Constants.EXTERNAL_SOURCE:
                         mNewSources.setExternalSource(mResult);
-                        break;
+                        break;*/
                     case Constants.ALEXA_SOURCE:
                         mNewSources.setAlexaAvsSource(mResult);
                         break;

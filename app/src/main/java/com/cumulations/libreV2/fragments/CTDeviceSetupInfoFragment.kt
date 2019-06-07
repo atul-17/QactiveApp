@@ -21,6 +21,7 @@ import com.libre.LibreApplication
 import com.libre.Network.WifiConnection
 import com.libre.R
 import com.libre.Scanning.Constants
+import com.libre.Scanning.Utils
 import com.libre.serviceinterface.LSDeviceClient
 import com.libre.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_fragment_device_setup_instructions.*
@@ -61,8 +62,21 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
 
     override fun onResume() {
         super.onResume()
-        if (deviceDiscoveryActivity.getConnectedSSIDName(deviceDiscoveryActivity).contains(Constants.RIVAA_WAC_SSID)!!)
+
+        /*
+        This is hot fix. Need to check scenario when speaker in SAC/SA mode connected to more then 1 app
+        phoneIp = 192.168.43.149 when app wifi connected to SA
+        phoneIp = 192.168.255.254 when app wifi connected to SAC*/
+
+        LibreLogger.d(this,"onResume, phoneIp = "+deviceDiscoveryActivity.phoneIpAddress())
+        /*if (deviceDiscoveryActivity.getConnectedSSIDName(deviceDiscoveryActivity).contains(Constants.RIVAA_WAC_SSID)!!)
+            btn_next.isEnabled = true*/
+
+        /*if (deviceDiscoveryActivity.phoneIpAddress().contains(AppConstants.SAC_MODE_IP)){
             btn_next.isEnabled = true
+        }*/
+
+        btn_next.isEnabled = deviceDiscoveryActivity.phoneIpAddress().contains(AppConstants.SAC_MODE_IP)
     }
 
     override fun onClick(p0: View?) {

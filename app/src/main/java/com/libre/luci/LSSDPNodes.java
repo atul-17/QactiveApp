@@ -8,6 +8,7 @@ package com.libre.luci;
  * Author: Subhajeet Roy
  ***********************************************************************************************/
 
+import com.cumulations.libreV2.tcp_tunneling.enums.ModelId;
 import com.libre.util.LibreLogger;
 import com.libre.alexa.DeviceProvisioningInfo;
 import com.libre.util.Sources;
@@ -39,6 +40,9 @@ public class LSSDPNodes {
     private DeviceProvisioningInfo mdeviceProvisioningInfo;
     private String alexaRefreshToken;
     private String serialNumber;
+
+    /*Riva Specific*/
+    private ModelId modelId;
 
     public String getSpeechVolume() {
         return speechVolume;
@@ -349,5 +353,13 @@ public class LSSDPNodes {
             this.mHexValue = mHexValue;
             this.mSource = mSource;
         }
+    }
+
+    public ModelId getModelId() {
+        return modelId;
+    }
+
+    public void setModelId(ModelId modelId) {
+        this.modelId = modelId;
     }
 }

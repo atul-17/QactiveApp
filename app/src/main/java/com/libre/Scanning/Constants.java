@@ -134,6 +134,7 @@ public class Constants {
     public static final String GCAST_FIRMWARE_UPGRADE = "UPDATE_AVAILABLE_REBOOT_REQUEST";
     public static int ALEXA_NEXT_PREV_INIT = 15122;
     public static final String DIDL_TITLE = "didlTitle";
+    public static final String AUDIO_OUTPUT = "audioOutput";
 
     public interface ACTION {
         String MAIN_ACTION = "com.libre.Scanning.action.main";

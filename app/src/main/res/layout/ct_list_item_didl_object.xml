@@ -13,8 +13,8 @@
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/iv_didl_item_album_art"
-        android:layout_width="?attr/actionBarSize"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:scaleType="fitCenter"
         app:srcCompat="@mipmap/dms_album_art" />
 

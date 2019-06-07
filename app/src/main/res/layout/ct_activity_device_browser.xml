@@ -33,6 +33,7 @@
             <android.support.v7.widget.AppCompatTextView
                 android:id="@+id/browser_title"
                 android:layout_gravity="center_vertical"
+                android:gravity="center"
                 android:scrollHorizontally="true"
                 android:singleLine="true"
                 android:ellipsize="marquee"
@@ -43,15 +44,16 @@
                 android:text="Music Server"
                 android:fontFamily="sans-serif-medium"
                 android:textColor="@color/white"
-                android:textSize="22sp" />
+                android:textSize="20sp" />
 
-            <android.support.v7.widget.AppCompatImageButton
+            <android.support.v7.widget.AppCompatImageView
                 android:id="@+id/ib_home"
-                android:visibility="gone"
+                android:visibility="visible"
+                android:padding="12dp"
                 android:layout_gravity="center_vertical"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@mipmap/ic_home_black" />
+                android:layout_width="?attr/actionBarSize"
+                android:layout_height="?attr/actionBarSize"
+                android:src="@mipmap/ic_home_black" />
         </LinearLayout>
     </android.support.v7.widget.Toolbar>
     <android.support.v7.widget.RecyclerView
@@ -59,6 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
+        android:paddingBottom="64dp"
         android:paddingTop="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"/>

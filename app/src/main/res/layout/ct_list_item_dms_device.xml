@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:textColor="@android:color/white"
+    android:drawablePadding="16dp"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:singleLine="true"
+    android:scrollHorizontally="true"
+    android:ellipsize="marquee"
+    android:marqueeRepeatLimit="marquee_forever"
+    android:drawableLeft="@drawable/media_servers_enabled"
+    android:gravity="center_vertical"
+    tools:text="Friendly Name" />

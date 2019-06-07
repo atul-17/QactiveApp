@@ -182,7 +182,10 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
                 needSetListViewScroll = true
                 /*Peek : Get the item at the top of the stack without removing it*/
 //                browse(didlObjectStack?.peek())
-                browseByDIDLId(clickedDIDLId)
+                /*When we don't have clickedDIDLId ie when opening DMS devices use browseObjectStack.peek*/
+                if (clickedDIDLId.isNullOrEmpty()) {
+                    browse(didlObjectStack?.peek())
+                } else browseByDIDLId(clickedDIDLId)
             }
         }
     }
@@ -198,7 +201,10 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         supportActionBar!!.setDisplayShowTitleEnabled(false)
         setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
 
-        updateTitle(intent?.getStringExtra(DIDL_TITLE)!!)
+        if (intent?.getStringExtra(DIDL_TITLE)!=null)
+            updateTitle(intent?.getStringExtra(DIDL_TITLE)!!)
+
+        tv_folder_name?.isSelected = true
 
         didlObjectArrayAdapter = CTDIDLObjectListAdapter(this, ArrayList())
         rv_browser_list?.layoutManager = LinearLayoutManager(this)
@@ -340,6 +346,11 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         }
 
         runOnUiThread {
+            if (parentObjectId.equals("0")){
+                if (intent?.getStringExtra(DIDL_TITLE)!=null)
+                    updateTitle(intent?.getStringExtra(DIDL_TITLE)!!)
+            }
+
             didlObjectList?.clear()
             val containersList = result!!["Containers"]
             if (containersList?.isNotEmpty()!!) {
@@ -385,8 +396,22 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
 
     override fun onBackPressed() {
         closeKeyboard(this, currentFocus)
-        if (intent?.getStringExtra(DIDL_TITLE)!! == tv_folder_name?.text?.toString()!!) {
+        if (intent?.getStringExtra(DIDL_TITLE)!=null && intent?.getStringExtra(DIDL_TITLE)!! == tv_folder_name?.text?.toString()!!) {
             super.onBackPressed()
+        } else {
+            if (!didlObjectStack?.isEmpty()!!) {
+                didlObjectStack?.pop()
+                browse(didlObjectStack!!.peek())
+            } else {
+                super.onBackPressed()
+            }
+        }
+    }
+
+    private fun handleBackPress(){
+        closeKeyboard(this, currentFocus)
+        if (intent?.getStringExtra(DIDL_TITLE)!=null && intent?.getStringExtra(DIDL_TITLE)!! == tv_folder_name?.text?.toString()!!) {
+            onBackPressed()
         } else {
             didlObjectStack!!.pop()
             if (!didlObjectStack!!.isEmpty()) {

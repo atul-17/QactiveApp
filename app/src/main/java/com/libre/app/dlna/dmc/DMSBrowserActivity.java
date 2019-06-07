@@ -820,7 +820,6 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
                             @Override
                             public void run() {
                                 closeLoader();
-
                                 play(playerObjectSelectedByUser);
                             }
                         }, 2000);
@@ -838,7 +837,6 @@ public class DMSBrowserActivity extends CTDeviceDiscoveryActivity implements DMS
     protected void onStop() {
         super.onStop();
         unRegisterForDeviceEvents();
-
         handler.removeCallbacksAndMessages(null);
     }
 

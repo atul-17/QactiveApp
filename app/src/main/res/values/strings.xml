@@ -723,5 +723,9 @@ performance.</string>
     <string name="onlyOneSong">No previous song available</string>
     <string name="loading_next_items">Loading next items..</string>
     <string name="loading_prev_items">Loading previous items...</string>
+    <string name="select_audio_output">Select audio output</string>
+    <string name="trillium">Trillium</string>
+    <string name="power">Power</string>
+    <string name="select_media_server">Please select the media server:</string>
 
 </resources>

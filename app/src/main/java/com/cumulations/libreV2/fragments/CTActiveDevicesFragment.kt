@@ -14,6 +14,10 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.cumulations.libreV2.adapter.CTDeviceListAdapter
+import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
+import com.cumulations.libreV2.tcp_tunneling.TunnelingData
+import com.cumulations.libreV2.tcp_tunneling.TunnelingFragmentListener
 import com.libre.*
 import com.libre.ActiveScenesListActivity.PREPARATION_INIT
 import com.libre.ActiveScenesListActivity.PREPARATION_TIMEOUT_CONST
@@ -25,7 +29,6 @@ import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
 import com.libre.luci.LSSDPNodeDB
 import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIControl
 import com.libre.luci.LUCIPacket
 import com.libre.netty.LibreDeviceInteractionListner
 import com.libre.netty.NettyData
@@ -34,7 +37,7 @@ import com.libre.util.PicassoTrustCertificates
 import kotlinx.android.synthetic.main.ct_fragment_discovery_list.*
 import org.json.JSONObject
 
-class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickListener {
+class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickListener, TunnelingFragmentListener {
     private val mScanHandler = ScanningHandler.getInstance()
     private lateinit var deviceListAdapter:CTDeviceListAdapter
 
@@ -71,12 +74,18 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
 
         deviceListAdapter.clear()
         (activity as CTDeviceDiscoveryActivity).registerForDeviceEvents(this)
+        (activity as CTHomeTabsActivity).setTunnelFragmentListener(this)
+
         updateFromCentralRepositryDeviceList()
 
         /*val sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
         if (sceneKeySet.isEmpty()) {
             refreshDevices()
         }*/
+    }
+
+    fun refreshDeviceListWithUpdatedScenes(){
+
     }
 
     override fun onClick(p0: View?) {
@@ -167,8 +176,10 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
 
         for (sceneIp in sceneKeySet) {
+            deviceListAdapter.addDeviceToList(mScanHandler.sceneObjectFromCentralRepo[sceneIp])
             (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(sceneIp)
-            deviceListAdapter.addDeviceToList(mScanHandler.getSceneObjectFromCentralRepo(sceneIp))
+            /*Get Tunneling Data*/
+            TunnelingControl(sceneIp).sendDataModeCommand()
         }
 
     }
@@ -269,7 +280,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
             }
 
             MIDCONST.MID_SCENE_NAME -> {
-                /* if Command Type 1 , then Scene Name information will be come in the same packet
+                /* if command Type 1 , then Scene Name information will be come in the same packet
                 if command type 2 and command status is 1 , then data will be empty., at that time
                 we should not update the value .*/
                 if (luciPacket.commandStatus == 1 && luciPacket.commandType == 2) {
@@ -288,6 +299,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
             }
 
             MIDCONST.MID_PLAYTIME.toInt() -> {
+                if (msg.isEmpty()) return
                 /* This message box indicates the current playing status of the scene, information like current seek position*/
                 var duration = 0
                 try {
@@ -489,6 +501,28 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         handler.removeCallbacksAndMessages(null)
         mTaskHandlerForSendingMSearch.removeCallbacks(mMyTaskRunnableForMSearch)
         (activity as CTDeviceDiscoveryActivity).unRegisterForDeviceEvents()
+        (activity as CTHomeTabsActivity).removeTunnelFragmentListener()
         super.onDestroyView()
+    }
+
+    override fun onTunnelDataReceived(tunnelingData: TunnelingData?) {
+        LibreLogger.d(this,"onTunnelDataReceived, ip = ${tunnelingData?.remoteClientIp}")
+        if (tunnelingData?.remoteMessage?.size!! >= 24) {
+            val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
+
+            val sceneObject = ScanningHandler.getInstance().sceneObjectFromCentralRepo[tunnelingData.remoteClientIp]
+            /*if (tcpTunnelPacket.volume>=0){
+                sceneObject?.volumeValueInPercentage = tcpTunnelPacket.volume
+                LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress] = sceneObject?.volumeValueInPercentage
+            }*/
+
+            if (tcpTunnelPacket.currentSource == Constants.BT_SOURCE
+                    || tcpTunnelPacket.currentSource == Constants.AUX_SOURCE
+                    || tcpTunnelPacket.currentSource == Constants.NO_SOURCE){
+                sceneObject?.currentSource = tcpTunnelPacket.currentSource
+            }
+            mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
+            deviceListAdapter?.addDeviceToList(sceneObject)
+        }
     }
 }

@@ -135,8 +135,8 @@ public class LUCIPacket {
     {
         //fill default fields:
         remoteID=10;
-        CommandType=cmd_type;
-        Command=aCommand;
+        commandType=cmd_type;
+        command=aCommand;
         CommandStatus=0;
         CRC=0;
         DataLen=message_size;
@@ -146,9 +146,9 @@ public class LUCIPacket {
 
         header[0]=(byte) (remoteID & 0x00FF);
         header[1]=(byte) ((remoteID & 0xFF00)>> 8);
-        header[2]=(byte) CommandType;
-        header[3]=(byte) (Command & 0x00FF);
-        header[4]=(byte) ((Command & 0xFF00)>> 8);
+        header[2]=(byte) commandType;
+        header[3]=(byte) (command & 0x00FF);
+        header[4]=(byte) ((command & 0xFF00)>> 8);
         header[5]=(byte) CommandStatus;
         header[6]=(byte) (CRC & 0x00FF);
         header[7]=(byte) ((CRC & 0xFF00)>> 8);
@@ -172,51 +172,23 @@ public class LUCIPacket {
         remoteID = (short) (((buffer[1] & 0xFF) << 8) & (buffer[0] & 0xFF));
         CommandType = buffer[2];
         Command = (short)(buffer[3] * 16 + buffer[4]& 0xFF);
-        //Command = buffer[4];//(short) (((buffer[4] & 0xFF)) & ((buffer[3] & 0xFF) << 8)) ;
+        //command = buffer[4];//(short) (((buffer[4] & 0xFF)) & ((buffer[3] & 0xFF) << 8)) ;
         CommandStatus = buffer[5];
-
 
         byte[] jsonBuf;
         int len = buffer.length - 10;
         jsonBuf = new byte[len];
 
-
-
-
         for (int i = 0; i < len; i++)
             jsonBuf[i] = buffer[i + 10];
 
-
         DataLen=(short)len;
         payload=jsonBuf;
-
-        /*DataLen = buffer[9];//(short) ((buffer[8]  << 8) & buffer[9]  )  ;
-        Log.v(TAG, "RemoteID=" + remoteID + "CommandType=" + CommandType + "Command=" + Command + "CommandStatus=" + CommandStatus + "DataLen=" + DataLen);
-
-        payload_size = DataLen;
-        if (payload_size >= 0) {
-            payload = new byte[payload_size];
-            for (int i = 0; i < payload_size; i++)
-                payload[i] = buffer[10 + i];
-        } else
-            Log.e("LMP", "NegativeSizeArrayException");
-*/
-
-
-
-
-
-
-
-        //Log.v(TAG,str);
     }
 
 
     public byte[] getpayload() {
-
-
         return payload;
-
     }
 
 
@@ -258,6 +230,7 @@ public class LUCIPacket {
             packet[i] = header[i];
             // Log.e(TAG,"p="+packet[i]);
         }
+
         String str ="";
         byte[] newByte = new byte[packet.length];
         for(int i=0;i<packet.length;i++){
@@ -270,7 +243,7 @@ public class LUCIPacket {
             str += payload[i] +",";
             // Log.e(TAG,"p="+packet[HEADER_SIZE+i]);
         }
-        Log.d( TAG, "Finalaized String:: Luci Packet :" +str);
+        Log.d( TAG, "Finalized String:: Luci Packet :" +str);
         //return total size of the packet
         return (payload_size + HEADER_SIZE);
     }

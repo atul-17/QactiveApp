@@ -19,6 +19,8 @@ import com.cumulations.libreV2.activity.CTMediaSourcesActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.cumulations.libreV2.activity.CTNowPlayingActivity
 import com.cumulations.libreV2.fragments.CTActiveDevicesFragment
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
+import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
 import com.libre.*
 import com.libre.LErrorHandeling.LibreError
 import com.libre.Scanning.Constants
@@ -132,6 +134,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
                     /*this is to show loading dialog while we are preparing to play*/
                     if (sceneObject!!.currentSource != Constants.AUX_SOURCE
+                            && sceneObject!!.currentSource != Constants.EXTERNAL_SOURCE
                             && sceneObject!!.currentSource != Constants.BT_SOURCE
                             && sceneObject!!.currentSource != Constants.GCAST_SOURCE) {
 
@@ -245,6 +248,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     return@setOnClickListener
 
                 if (sceneObject!!.currentSource == Constants.AUX_SOURCE
+                        || sceneObject!!.currentSource == Constants.EXTERNAL_SOURCE
                         || sceneObject!!.currentSource == Constants.GCAST_SOURCE
                         || sceneObject!!.currentSource == Constants.VTUNER_SOURCE
                         || sceneObject!!.currentSource == Constants.TUNEIN_SOURCE
@@ -299,7 +303,6 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 override fun onStopTrackingTouch(seekBar: SeekBar) {
 
                     LibreLogger.d("onStopTracking", "" + position)
-
                     if (seekBar.progress==0){
                         itemView?.iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
                     } else itemView?.iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
@@ -308,6 +311,8 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
 
                     sceneObject!!.volumeValueInPercentage = seekBar.progress
                     ScanningHandler.getInstance().sceneObjectFromCentralRepo[sceneObject.ipAddress] = sceneObject
+
+//                    TunnelingControl(sceneObject?.ipAddress).sendCommand(PayloadType.DEVICE_VOLUME,(seekBar.progress/5).toByte())
                 }
             })
 
@@ -365,6 +370,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                             || sceneObject.currentSource == Constants.TUNEIN_SOURCE
                             || sceneObject.currentSource == Constants.BT_SOURCE
                             || sceneObject.currentSource == Constants.AUX_SOURCE
+                            || sceneObject.currentSource == Constants.EXTERNAL_SOURCE
                             || sceneObject.currentSource == Constants.NO_SOURCE
                             || sceneObject.currentSource == Constants.GCAST_SOURCE)) {
                 itemView.iv_play_pause.isEnabled = false
@@ -392,6 +398,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
             Log.d("updateViews","current source = ${sceneObject?.currentSource}")
 
             itemView?.iv_current_source?.visibility = View.GONE
+            itemView.iv_aux_bt?.visibility = View.GONE
             when (sceneObject?.currentSource) {
 
                 Constants.NO_SOURCE,
@@ -410,19 +417,23 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     itemView.seek_bar_song.isEnabled = false
                 }
 
-                Constants.AUX_SOURCE -> {
-                    itemView.iv_play_pause.setImageResource(R.drawable.play_white)
+                /*For Riva Tunneling, When switched to Aux, its External Source*/
+                Constants.AUX_SOURCE,Constants.EXTERNAL_SOURCE -> {
+                    /*itemView.iv_play_pause.setImageResource(R.drawable.play_white)
                     itemView?.seek_bar_song?.visibility = View.VISIBLE
                     itemView.seek_bar_song.progress = 0
                     itemView.seek_bar_song.isEnabled = false
 
                     itemView.tv_track_name.text = context.getText(R.string.aux)
                     itemView.tv_album_name.visibility = View.GONE
-                    itemView.iv_album_art.visibility = View.GONE
+                    itemView.iv_album_art.visibility = View.GONE*/
+                    handleAlexaViews(sceneObject)
+                    itemView.iv_aux_bt?.visibility = View.VISIBLE
+                    itemView.iv_aux_bt?.setImageResource(R.drawable.ic_aux_in)
                 }
 
                 Constants.BT_SOURCE -> {
-                    itemView.tv_track_name.text = context.getText(R.string.bluetooth)
+                    /*itemView.tv_track_name.text = context.getText(R.string.bluetooth)
                     itemView.tv_album_name.visibility = View.GONE
                     itemView.iv_album_art.visibility = View.GONE
                     itemView.seek_bar_song.progress = 0
@@ -433,7 +444,11 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     LibreLogger.d(this, "BT controller value in sceneobject " + mNode.bT_CONTROLLER)
                     if (mNode.bT_CONTROLLER != 1 && mNode.bT_CONTROLLER != 2 && mNode.bT_CONTROLLER != 3) {
                         itemView.iv_play_pause.setImageResource(R.drawable.play_white)
-                    }
+                    }*/
+
+                    handleAlexaViews(sceneObject)
+                    itemView.iv_aux_bt?.visibility = View.VISIBLE
+                    itemView.iv_aux_bt?.setImageResource(R.drawable.ic_bt_on)
 
                 }
                 Constants.GCAST_SOURCE -> {

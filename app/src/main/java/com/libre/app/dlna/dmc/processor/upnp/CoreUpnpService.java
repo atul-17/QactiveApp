@@ -7,11 +7,14 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.wifi.WifiManager;
 import android.net.wifi.WifiManager.WifiLock;
+import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.AppUtils;
+import com.cumulations.libreV2.tcp_tunneling.TunnelingClientRunnable;
+import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
 import com.libre.LibreApplication;
 import com.libre.Ls9Sac.GcastUpdateData;
 import com.libre.Scanning.ScanningHandler;
@@ -44,6 +47,7 @@ import org.fourthline.cling.controlpoint.ControlPoint;
 import org.fourthline.cling.protocol.ProtocolFactory;
 import org.fourthline.cling.registry.Registry;
 import org.fourthline.cling.registry.RegistryListener;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -70,30 +74,23 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
     @Override
     public void onCreate() {
         super.onCreate();
-        WifiManager m_wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        m_wifiLock = m_wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "UpnpWifiLock");
-        m_wifiLock.acquire();
-        //HTTPServerData.HOST = Utility.intToIp(m_wifiManager.getDhcpInfo().ipAddress);
-
-	/*	m_notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-		m_httpThread = new HttpThread();
-		m_httpThread.start();*/
+        LibreLogger.d(this, "CoreUpnpService is getting created");
 
         upnpService = new UpnpServiceImpl(createConfiguration());
         try {
+
+            WifiManager m_wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+            m_wifiLock = m_wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL, "UpnpWifiLock");
+            m_wifiLock.acquire();
+
             BusProvider.getInstance().register(busEventListener);
-        } catch (Exception e) {
 
-        }
-        LibreLogger.d(this, "CoreUpnpService is getting created");
-
-        try {
             multicastLock = m_wifiManager.createMulticastLock("multicastLock");
             multicastLock.setReferenceCounted(true);
             multicastLock.acquire();
         } catch (Exception e) {
             multicastLock = null;
+            e.printStackTrace();
         }
     }
 
@@ -268,12 +265,21 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
 
         @Subscribe
         public void newDeviceFound(final LSSDPNodes nodes) {
-
+            LibreLogger.d(this,"newDeviceFound, node = "+nodes.getFriendlyname());
             /* This below if loop is introduced to handle the case where Device state from the DUT could be Null sometimes
              * Ideally the device state should not be null but we are just handling it to make sure it will not result in any crash!
              *
              * */
-            checkForUPnPReinitialization();
+            new Handler().post(new Runnable() {
+                @Override
+                public void run() {
+                    checkForUPnPReinitialization();
+                }
+            });
+
+            if (!TunnelingControl.isTunnelingClientPresent(nodes.getIP())) {
+                createTunnelingClient(nodes);
+            }
 
             if (nodes == null || nodes.getDeviceState() == null) {
                 Toast.makeText(CoreUpnpService.this, "Alert! Device State is null " + nodes.getDeviceState(), Toast.LENGTH_SHORT).show();
@@ -464,7 +470,7 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
                 String msg = new String(packet.getpayload());
                 try {
                     LibreLogger.d(this, "Scene Name updation in CTDeviceDiscoveryActivity");
-                         /* if Command Type 1 , then Scene Name information will be come in the same packet
+                         /* if command Type 1 , then Scene Name information will be come in the same packet
 if command type 2 and command status is 1 , then data will be empty., at that time we should not update the value .*/
                     if (packet.getCommandStatus() == 1
                             && packet.getCommandType() == 2)
@@ -603,7 +609,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
                     LibreLogger.d(this, "Exception occurred in newMessageReceived");
                 }
             }
-            /* Sending Whenver a Command 3 When i got Zero From Device */
+            /* Sending Whenver a command 3 When i got Zero From Device */
             if (packet.getCommand() == 0) {
                 new LUCIControl(nettyData.getRemotedeviceIp()).sendAsynchronousCommandSpecificPlaces();
             }
@@ -614,11 +620,72 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
         @Subscribe
         public void deviceGotRemoved(String ipaddress) {
             LibreLogger.d(this, "deviceGotRemoved, ip " + ipaddress);
+            TunnelingControl.removeTunnelingClient(ipaddress);
             GoAndRemoveTheDevice(ipaddress);
         }
-
-
     };
+
+    private void createTunnelingClient(@NotNull final LSSDPNodes nodes) {
+
+        /*new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Socket clientSocket;
+                try {
+                    clientSocket = new Socket(InetAddress.getByName(nodes.getIP()), TunnelingControl.TUNNELING_CLIENT_PORT);
+                    LibreLogger.d(this, "createTunnelingClient, socket connected "
+                            + clientSocket.isConnected() + " for "
+                            + clientSocket.getInetAddress().getHostAddress() + " port "
+                            + clientSocket.getPort());
+
+                    clientSocket.setSoTimeout(60*1000);
+                    clientSocket.setKeepAlive(true);
+
+                    LibreLogger.d(this,"createTunnelingClient, clientSocket isConnected = "+clientSocket.isConnected());
+                    if (clientSocket.isConnected()) {
+                        if (!TunnelingControl.tunnelingClientsMap.containsKey(nodes.getIP())) {
+                            Log.e("tunnelingClientsMap", "inserting " + nodes.getIP());
+                            TunnelingControl.tunnelingClientsMap.put(nodes.getIP(), clientSocket);
+
+                            /*Requesting Data Mode from Host (Speaker)/*
+                            new TunnelingControl(clientSocket.getInetAddress().getHostAddress()).sendDataModeCommand();
+                        }
+
+                        /*Reading byte[] from socket/*
+                        DataInputStream dIn = new DataInputStream(clientSocket.getInputStream());
+
+                        while (true) {
+                            int length = dIn.available();  // read length of incoming message
+                            if (length > 0) {
+                                LibreLogger.d(this,"createTunnelingClient, dIn length = "+length);
+                                byte[] message = new byte[length];
+//                                dIn.read(message);
+                                dIn.readFully(message); // read the message
+                                /*Prints in Decimal system/*
+//                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ Arrays.toString(message));
+//                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ Hex.bytesToStringUppercase(message));
+
+                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ TunnelingControl.getReadableHexByteArray(message));
+
+                                TunnelingData tunnelingData = new TunnelingData(nodes.getIP(), message);
+                                BusProvider.getInstance().post(tunnelingData);
+                            }
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Log.e("createTunnelingClient","exception "+e.getMessage());
+                    if (TunnelingControl.tunnelingClientsMap.containsKey(nodes.getIP())) {
+                        Log.e("tunnelingClientsMap", "removing " + nodes.getIP());
+                        TunnelingControl.tunnelingClientsMap.remove(nodes.getIP());
+                    }
+                }
+            }
+        }).start();*/
+
+        TunnelingClientRunnable tunnelingClientRunnable = new TunnelingClientRunnable(nodes.getIP());
+        new Thread(tunnelingClientRunnable).start();
+    }
 
 
     private synchronized void checkForUPnPReinitialization() {
