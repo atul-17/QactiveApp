@@ -690,8 +690,8 @@ public class ConnectingToMainNetwork extends CTDeviceDiscoveryActivity implement
     }
     private void callGoogleCastUpdateScreen(){
         ActivityCompat.finishAffinity(this);
-        if(LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.containsKey(mSACConfiguredIpAddress)){
-            LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.remove(mSACConfiguredIpAddress);
+        if(LibreApplication.FW_UPDATE_AVAILABLE_LIST.containsKey(mSACConfiguredIpAddress)){
+            LibreApplication.FW_UPDATE_AVAILABLE_LIST.remove(mSACConfiguredIpAddress);
         }
         startActivity(new Intent(ConnectingToMainNetwork.this, GoogleCastUpdateAfterSac.class)
                 .putExtra(SAC_CURRENT_IPADDRESS, mSACConfiguredIpAddress));

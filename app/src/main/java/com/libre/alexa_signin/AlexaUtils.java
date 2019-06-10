@@ -16,5 +16,5 @@ public class AlexaUtils {
     }
 
     public static void sendAlexaRefreshTokenRequest(String ipAddress){
-        new LUCIControl(ipAddress).SendCommand(MIDCONST.READ_ALEXA_REFRESH_TOKEN_CMD, LUCIMESSAGES.READ_ALEXA_REFRESH_TOKEN_MSG, LSSDPCONST.LUCI_GET);    }
+        new LUCIControl(ipAddress).SendCommand(MIDCONST.MID_ENV_READ, LUCIMESSAGES.READ_ALEXA_REFRESH_TOKEN_MSG, LSSDPCONST.LUCI_GET);    }
 }

@@ -182,7 +182,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
 
     private void send223MsgBoxToKnowGcastStatus() {
         new LUCIControl(mLs9DeviceIpAddressForCastUpdate).SendCommand(
-                MIDCONST.GCAST_UPDATE_AVAILABLE,
+                MIDCONST.FW_UPGRADE_INTERNET_LS9,
                 "",
                 LSSDPCONST.LUCI_GET
         );
@@ -247,7 +247,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
 
         }
         switch(mPacket.getCommand()){
-            case MIDCONST.GCAST_UPDATE_AVAILABLE:{
+            case MIDCONST.FW_UPGRADE_INTERNET_LS9:{
                 try{
                     String mGcastUpdateAvailablity = new String(mPacket.getpayload());
                     if(!mGcastUpdateAvailablity.equalsIgnoreCase("")){
@@ -268,20 +268,20 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                     }catch(Exception e) {
                         e.printStackTrace();
                     }
-                    if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.GCAST_UPDATE_STARTED)){
+                    if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.UPDATE_STARTED)){
                         mGoogleCastUpdateBar.setVisibility(View.VISIBLE);
                         mGoogleCastDetails.setText(getString(R.string.downloadingtheFirmare));
-                    }else if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.GCAST_NO_UPDATE)){
+                    }else if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.NO_UPDATE)){
                         btnDone.setVisibility(View.VISIBLE);
                         mGoogleCastUpdateBar.setVisibility(View.GONE);
                         mGoogleCastDetails.setText(getString(R.string.noupdateAvailable));
-                    }else if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.GCAST_UPDATE_IMAGE_AVAILABLE)){
+                    }else if(mGcastUpdateAvailablity.equalsIgnoreCase(Constants.UPDATE_IMAGE_AVAILABLE)){
                         mGoogleCastUpdateBar.setVisibility(View.VISIBLE);
                         mGoogleCastUpdateBar.setProgress(0);
                         mGoogleCastDetails.setText(getString(R.string.upgrading));
                     }
 
-                    LibreLogger.d(this, "GCAST_UPDATE_AVAILABLE Gcast Update Progress Status " + mGcastUpdateAvailablity);
+                    LibreLogger.d(this, "FW_UPGRADE_INTERNET_LS9 Gcast Update Progress Status " + mGcastUpdateAvailablity);
 
                 }catch(Exception e){
                     mGoogleCastDetails.setText("Exception");
@@ -289,10 +289,10 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                 }
             }
                 break;
-            case MIDCONST.GCAST_PROGRESS_STATUS:
+            case MIDCONST.FW_UPGRADE_PROGRESS:
                 try{
                     String mGcastProgresStatus = new String(mPacket.getpayload());
-                    LibreLogger.d(this,"GCAST_PROGRESS_STATUS Gcast Update Progress Status " + mGcastProgresStatus);
+                    LibreLogger.d(this,"FW_UPGRADE_PROGRESS Gcast Update Progress Status " + mGcastProgresStatus);
                     int mProgressValue = 0;
                     try {
                         mProgressValue = Integer.parseInt(mGcastProgresStatus);
@@ -305,7 +305,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                         btnDone.setVisibility(View.VISIBLE);
                         mGoogleCastDetails.setText(getString(R.string.gcast_update_done) + " , Setup is Complete " );
                     }else if(mProgressValue == 255){
-                        showDialogFirmwareUpgradeUploaded(getString(R.string.gcastFailed));
+                        showDialogFirmwareUpgradeUploaded(getString(R.string.fwUpdateFailed));
                     }
                 }catch(Exception e){
                     e.printStackTrace();

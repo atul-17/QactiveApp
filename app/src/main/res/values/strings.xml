@@ -173,7 +173,7 @@
     <string name="discardChanges">Discard The Changes</string>
     <string name="learnMore">Learn more</string>
     <string name="noThanks">No Thanks</string>
-    <string name="checkingDeviceAvailability">Checking Speaker Availablitiy.....</string>
+    <string name="checkingDeviceAvailability">Checking Speaker Availability.....</string>
     <string name="connecting">Please wait we are connecting</string>
     <string name="noSacDevices">No sac devices available</string>
     <string name="httpFailed">HTTP Connection Failed.....</string>
@@ -182,17 +182,17 @@
     <string name="permissionMsg">Permission is required to get Wifi Scan Results. Please go to Settings and enable Location Services</string>
     <string name="gotoSettings">Go To Setting</string>
     <string name="Settings">Settings</string>
-    <string name="restartAfterPermit">After Chaning the Permission, Please Restart the App</string>
-    <string name="cantConfigSAC">SAC you cant Configure , Please go and enable it in Settings</string>
+    <string name="restartAfterPermit">After Changing the Permission, Please Restart the App</string>
+    <string name="cantConfigSAC">SAC you can\'t Configure , Please go and enable it in Settings</string>
     <string name="networkChangeRestartApp">Network change happened \nApp will Restart</string>
     <string name="connectedtoSAC">Connected to SAC : </string>
-    <string name="deviceSuccesfullyConfig">Speaker is Succesfully Configured : </string>
+    <string name="deviceSuccesfullyConfig">Speaker is Successfully Configured : </string>
     <string name="status">Status: </string>
     <string name="wifiError">WifiConnection Error!!!</string>
     <string name="selectedConfigMsg">You have selected following configuration </string>
     <string name="confirm">Confirm</string>
     <string name="deviceNamecannotBeEmpty">Speaker Name Cannot Be an Empty</string>
-    <string name="deviceRebooting">Speaker is Rebooting....</string>
+    <string name="deviceRebooting">Speaker is Rebooting…</string>
     <string name="changingNetwork">Changing the network</string>
     <string name="httpPostFailed">HTTP Post Got Failed , please Retry By Clicking Save</string>
     <string name="deviceStateChangingTitle">The Device State Will Change</string>
@@ -208,7 +208,7 @@
     <string name="cannotPlayCast">Please note that this zone cannot play Cast source. Cast groups can be managed only from the Google cast App</string>
     <string name="dontShowAgain">Dont Show Again</string>
     <string name="deviceRemoved">Speaker got removed</string>
-    <string name="prepareingToPlay">Preparing to play...</string>
+    <string name="prepareingToPlay">Preparing to play…</string>
     <string name="speakers">Speakers:</string>
     <string name="AUXPlaying">Aux is Playing</string>
     <string name="BTNotplaying">BT is Not Playing</string>
@@ -228,7 +228,7 @@
     <string name="removeDeviceMsg">Do You Want To Remove The Speaker   </string>
     <string name="releaseMsgTitle">Do You Want To Release the Scene ?   </string>
     <string name="removeDeviceMsg2"> from the List ??</string>
-    <string name="removedDeviceCancel">Device Will be Available in List but it cant be communicated </string>
+    <string name="removedDeviceCancel">Device Will be Available in List but it cannot be communicated </string>
     <string name="deviceStateNull">Alert! Device State is null</string>
     <string name="GcastSupport">Google Cast Groups is supported through Google cast App</string>
     <string name="launchGcast">Launch Google Cast</string>
@@ -300,9 +300,9 @@
     <string name="speaker_setup">Speaker to be Setup</string>
 
     <!-- gCast -->
-    <string name="license">Legal documents and open source licenses<a href="google.com" target="_top"></a></string>
+    <string name="license">Legal documents and open source licenses<a href="google.com" target="_top" /></string>
     <string name="title_activity_gcast">Google Cast Settings</string>
-    <string name="learn_cast">Learn about Cast Privacy<a href="google.com" target="_top"></a></string>
+    <string name="learn_cast">Learn about Cast Privacy<a href="google.com" target="_top" /></string>
     <string name="learn_how">Learn how to Cast<a href="google.com" target="_top">  </a></string>
     <string name="discover_cast">Discover all cast devices </string>
 
@@ -382,10 +382,10 @@ The Google Privacy Policy describes the information that Google collects during 
     <string name="gcast_update_done">Firmware Upgrade Completed
         \nDevice is now Restarting </string>
     <string name="title_activity_gcast_update_status_available">Firmware Update Status</string>
-    <string name="gcastFailed">Firmware Update Failed</string>
+    <string name="fwUpdateFailed">Firmware Update Failed</string>
     <string name="no_update_gcast">No Update Available</string>
-    <string name="downloadingtheFirmare">Downloading the update</string>
-    <string name="noupdateAvailable">No Update , Setup is Complete</string>
+    <string name="downloadingtheFirmare">Downloading the firmware update</string>
+    <string name="noupdateAvailable">No update available, setup is completed</string>
     <string name="upgrading">Upgrading</string>
     <string name="noDeviceUpdating">No device under update. </string>
 
@@ -474,11 +474,11 @@ The Google Privacy Policy describes the information that Google collects during 
     <string name="master">Master</string>
     <string name="free">Free</string>
     <string name="slave">Slave</string>
-    <string name="connectingLoader">Connecting....</string>
+    <string name="connectingLoader">Connecting…</string>
     <string name="setupHomegrp">Setup Home Group : Currently Not Active</string>
     <string name="deviceUnreachable">Device Unreachable</string>
-    <string name="retrieving">Please wait we are Retriving Speaker Information</string>
-    <string name="retrying">Retrying..</string>
+    <string name="retrieving">Please wait we are Retrieving Speaker Information</string>
+    <string name="retrying">Retrying…</string>
     <string name="fetching">Fetching , Device Name Got failed</string>
     <string name="startedConnecting">Started connecting</string>
     <string name="wifiConnectMsg1">Status : Connected to </string>
@@ -722,10 +722,14 @@ performance.</string>
     <string name="lastSongPlayed">No next song. End of playlist</string>
     <string name="onlyOneSong">No previous song available</string>
     <string name="loading_next_items">Loading next items..</string>
-    <string name="loading_prev_items">Loading previous items...</string>
+    <string name="loading_prev_items">Loading previous items…</string>
     <string name="select_audio_output">Select audio output</string>
     <string name="trillium">Trillium</string>
     <string name="power">Power</string>
     <string name="select_media_server">Please select the media server:</string>
+    <string name="mb223_update_started">Internet firmware update started…</string>
+    <string name="mb223_update_download">Firmware image downloading started</string>
+    <string name="mb223_update_image_available">Firmware image downloaded from server and ready to update speaker</string>
+    <string name="mb223_download_fail">Downloading of firmware image from server failed</string>
 
 </resources>

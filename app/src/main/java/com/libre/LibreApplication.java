@@ -27,7 +27,7 @@ import com.crashlytics.android.Crashlytics;
 import com.cumulations.libreV2.AppUtils;
 import com.cumulations.libreV2.receiver.GpsStateReceiver;
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
-import com.libre.Ls9Sac.GcastUpdateData;
+import com.libre.Ls9Sac.FwUpgradeData;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanThread;
 import com.libre.Scanning.ScanningHandler;
@@ -74,7 +74,7 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
 
     public static HashMap<String, GoogleTOSTimeZone> GOOGLE_TIMEZONE_MAP= new HashMap<>();
 
-    public static LinkedHashMap<String,GcastUpdateData> GCAST_UPDATE_AVAILABE_LIST_DATA = new LinkedHashMap<>();
+    public static LinkedHashMap<String, FwUpgradeData> FW_UPDATE_AVAILABLE_LIST = new LinkedHashMap<>();
 
     /*this map is having zone volume(219) only for master to avoid flickering in active scene*/
     public static HashMap<String, Integer> ZONE_VOLUME_MAP = new HashMap<>();

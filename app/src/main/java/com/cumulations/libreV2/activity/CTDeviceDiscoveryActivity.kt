@@ -13,7 +13,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
 import android.net.wifi.ScanResult
-import android.net.wifi.SupplicantState
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -45,7 +44,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.libre.LErrorHandeling.LibreError
-import com.libre.Ls9Sac.GcastUpdateData
+import com.libre.Ls9Sac.FwUpgradeData
 import com.libre.Ls9Sac.GcastUpdateStatusAvailableListView
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
@@ -165,7 +164,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                     libreDeviceInteractionListner!!.messageRecieved(nettyData)
             }
 
-            handleTheGoogleCastMessages(nettyData)
+            handleGCastMessage(nettyData)
             parseMessageForMusicPlayer(nettyData)
         }
 
@@ -197,10 +196,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
 
         @Subscribe
-        fun gcastNewInernetFirmwareFound(mData: GcastUpdateData) {
-            Log.d(TAG, "gcastNewInernetFirmwareFound() called with: " +
-                    "isGcastInternet = [" + mData.getmDeviceName() + "]"
-                    + LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.keys.toString())
+        fun fwUpdateInternetFound(fwUpgradeData: FwUpgradeData) {
+            Log.d(TAG, "fwUpdateInternetFound, device = " + fwUpgradeData.getmDeviceName()
+                    + ",[" + LibreApplication.FW_UPDATE_AVAILABLE_LIST.keys.toString()+"]")
             val intent = Intent(this@CTDeviceDiscoveryActivity, GcastUpdateStatusAvailableListView::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
@@ -257,7 +255,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     val upnpBinder: CoreUpnpService.Binder?
         get() = upnpProcessor!!.binder
     private var sAcalertDialog: AlertDialog? = null
-    private var gCastUpdateAlertDialog: AlertDialog? = null
+    private var fwUpdateAlertDialog: AlertDialog? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -979,139 +977,107 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
     }
 
-    private fun handleTheGoogleCastMessages(nettyData: NettyData) {
+    private fun handleGCastMessage(nettyData: NettyData) {
 
         val packet = LUCIPacket(nettyData.getMessage())
-        val dummyPacket = LUCIPacket(nettyData.getMessage())
+        val msg = String(packet.getpayload())
+        val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
 
-        if (packet.command == MIDCONST.GCAST_MANUAL_UPGRADE.toInt()) {
-            var msg = String(packet.getpayload())
-            val mLssdpNodeDb = LSSDPNodeDB.getInstance()
-            val mNode = mLssdpNodeDb.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-            /* if I am Getting Manual Upgrade for Sacc DEvice we should Discard it */
-            if (mNode != null && mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true))
-                return
-            /* if NO Update is coming for Any Device We are Just Showing the Dialog as NO Update Available  */
-            if (msg.equals(Constants.GCAST_NO_UPDATE, ignoreCase = true)) {
-                showAlertDialogMessageForGCastMsgBoxes("No Update Available", mNode)
-            } else if (msg.equals(Constants.GCAST_UPDATE_STARTED, ignoreCase = true)) {
-                /* if Update is Started For any of Other Device We are creating a pbject and putting it in Hashmap  */
-                msg = applicationContext.getString(R.string.downloadingtheFirmare)
-                val mGcastData = GcastUpdateData(
-                        mNode!!.ip,
-                        mNode.friendlyname,
-                        msg,
-                        0
-                )
-                LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA[mNode.ip] = mGcastData
-                showAlertDialogForGcastUpdate(mNode, mGcastData)
-            }
+        LibreLogger.d(this, "handleGCastMessage MB = "
+                + packet.command
+                + ", Ip = " + nettyData.remotedeviceIp
+                +" msg = "+msg)
 
-        }
-        if (packet.command == MIDCONST.GCAST_PROGRESS_STATUS.toInt()) { // 66 Message Box
-
-            val msg = String(packet.getpayload())
-            LibreLogger.d(this, "GCAST_PROGRESS_STATUS " +
-                    nettyData.getRemotedeviceIp() +
-                    "Message " +
-                    msg + " command " + dummyPacket.command)
-
-            val mLssdpNodeDb = LSSDPNodeDB.getInstance()
-            val mNode = mLssdpNodeDb.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-            var mGcastData: GcastUpdateData? = LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA[nettyData.getRemotedeviceIp()]
-            if (mNode == null)
-                return
-            var mNewData = false
-            if (mGcastData == null) {
-                mGcastData = GcastUpdateData(
-                        mNode.ip,
-                        mNode.friendlyname,
-                        "",
-                        0
-                )
-                mNewData = true
-                LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA[mNode.ip] = mGcastData
-            }
-
-            /*if Gcast COmplete State or For SAC Device then we are showing Device will reboot
-             * because after firmwareupgraade COmpleted we are giving ok and coming back to PlayNEwScreen */
-            if (msg.equals(Constants.GCAST_COMPLETE, ignoreCase = true)
-                    && mNode != null &&
-                    !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
-                mGcastData.setmProgressValue(100)
-                mGcastData.setmGcastUpdate(applicationContext.getString(R.string.gcast_update_done))
-                showAlertDialogMessageForGCastMsgBoxes("Firmware Update Completed For ", mNode, "," + applicationContext.getString(R.string.deviceRebooting))
-                return
-            }
-
-            /*if Gcast FaileState  back to PlayNEwScreen */
-            if (msg.equals("255", ignoreCase = true)
-                    && mNode != null &&
-                    !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
-                showAlertDialogMessageForGCastMsgBoxes("Firmware Update Failed For ", mNode)
-                mGcastData.setmGcastUpdate(applicationContext.getString(R.string.gcastFailed))
-                return
-            }
-
-            try {
-                mGcastData.setmProgressValue(Integer.valueOf(msg))
-            } catch (e: Exception) {
-                e.printStackTrace()
-
-            }
-
-            if (mNewData)
-                showAlertDialogForGcastUpdate(mNode, mGcastData)
-
-
-        }
-
-        /**for GCAST internet upgrade */
-        if (packet.command == MIDCONST.GCAST_UPDATE_MSGBOX.toInt()) {
-
-            val msg = String(packet.getpayload())
-            LibreLogger.d(this, "GCAST_UPDATE_MSGBOX " + nettyData.getRemotedeviceIp() +
-                    "Message " +
-                    msg + " command " + dummyPacket.command)
-
-            val mLssdpNodeDb = LSSDPNodeDB.getInstance()
-            val mNode = mLssdpNodeDb.getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-            if (mNode != null && !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
-                if (msg.equals(Constants.GCAST_NO_UPDATE, ignoreCase = true)) {
-                    return
-                }
-                var mGcastData: GcastUpdateData? = LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA[nettyData.getRemotedeviceIp()]
+        when(packet.command){
+            MIDCONST.FW_UPGRADE_PROGRESS.toInt() -> {
                 if (mNode == null)
                     return
+                var fwUpgradeData: FwUpgradeData? = LibreApplication.FW_UPDATE_AVAILABLE_LIST[nettyData.getRemotedeviceIp()]
                 var mNewData = false
-                if (mGcastData == null) {
-                    mGcastData = GcastUpdateData(
+                if (fwUpgradeData == null) {
+                    fwUpgradeData = FwUpgradeData(
                             mNode.ip,
                             mNode.friendlyname,
                             "",
                             0
                     )
                     mNewData = true
-                    LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA[mNode.ip] = mGcastData
+                    LibreApplication.FW_UPDATE_AVAILABLE_LIST[mNode.ip] = fwUpgradeData
                 }
-                if (msg.equals(Constants.GCAST_UPDATE_STARTED, ignoreCase = true)) {
-                    mGcastData.setmGcastUpdate(applicationContext.getString(R.string.downloadingtheFirmare))
-                } else if (msg.equals(Constants.GCAST_NO_UPDATE, ignoreCase = true)) {
-                    mGcastData.setmGcastUpdate(applicationContext.getString(R.string.noupdateAvailable))
-                } else if (msg.equals(Constants.GCAST_UPDATE_IMAGE_AVAILABLE, ignoreCase = true)) {
-                    mGcastData.setmGcastUpdate(applicationContext.getString(R.string.upgrading))
-                } else {
-                    try {
-                        val mProgressValue = Integer.valueOf(msg)
-                        mGcastData.setmGcastUpdate(applicationContext.getString(R.string.downloadingtheFirmare))
-                        mGcastData.setmProgressValue(mProgressValue)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+
+                /*if Gcast COmplete State or For SAC Device then we are showing Device will reboot
+                 * because after firmwareupgraade COmpleted we are giving ok and coming back to PlayNEwScreen */
+                if (msg.equals(Constants.GCAST_COMPLETE, ignoreCase = true)
+                        && !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
+                    fwUpgradeData.setmProgressValue(100)
+                    fwUpgradeData.updateMsg = getString(R.string.gcast_update_done)
+
+
+                    showAlertForFwMsgBox(
+                            "Firmware update completed for ",
+                            mNode,
+                            ", " + getString(R.string.deviceRebooting))
+                    return
+                }
+
+                /*if Gcast Failed State  back to PlayNEwScreen */
+                if (msg.equals("255", ignoreCase = true)
+                        && !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
+                    showAlertForFwMsgBox("Firmware Update Failed For ", mNode)
+                    fwUpgradeData.updateMsg = getString(R.string.fwUpdateFailed)
+                    return
+                }
+
+                try {
+                    fwUpgradeData.setmProgressValue(Integer.valueOf(msg))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                if (mNewData)
+                    showAlertForFirmwareUpgrade(mNode, fwUpgradeData)
+            }
+
+            MIDCONST.FW_UPGRADE_INTERNET_LS9.toInt() -> {
+                if (mNode == null)
+                    return
+
+                if (!mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
+                    if (msg.equals(Constants.NO_UPDATE, ignoreCase = true)) {
+                        return
+                    }
+                    var fwUpgradeData: FwUpgradeData? = LibreApplication.FW_UPDATE_AVAILABLE_LIST[nettyData.getRemotedeviceIp()]
+                    var mNewData = false
+                    if (fwUpgradeData == null) {
+                        fwUpgradeData = FwUpgradeData(
+                                mNode.ip,
+                                mNode.friendlyname,
+                                "",
+                                0
+                        )
+                        mNewData = true
+                        LibreApplication.FW_UPDATE_AVAILABLE_LIST[mNode.ip] = fwUpgradeData
                     }
 
+                    when {
+                        msg.equals(Constants.UPDATE_STARTED, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.mb223_update_started)
+                        msg.equals(Constants.UPDATE_DOWNLOAD, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.mb223_update_download)
+                        msg.equals(Constants.UPDATE_IMAGE_AVAILABLE, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.mb223_update_image_available)
+                        msg.equals(Constants.NO_UPDATE, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.noupdateAvailable)
+                        msg.equals(Constants.DOWNLOAD_FAIL, ignoreCase = true)
+                                || msg.equals(Constants.CRC_CHECK_ERROR, ignoreCase = true)-> fwUpgradeData.updateMsg = getString(R.string.mb223_download_fail)
+                        else -> try {
+                            val mProgressValue = Integer.valueOf(msg)
+                            fwUpgradeData.updateMsg = getString(R.string.downloadingtheFirmare)
+                            fwUpgradeData.setmProgressValue(mProgressValue)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    if (mNewData)
+                        showAlertForFirmwareUpgrade(mNode, fwUpgradeData)
                 }
-                if (mNewData)
-                    showAlertDialogForGcastUpdate(mNode, mGcastData)
             }
         }
     }
@@ -1689,8 +1655,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
 
             LibreApplication.thisSACDeviceNeeds226 = node.friendlyname
-            if (LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.containsKey(node.ip))
-                LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.remove(node.ip)
+            if (LibreApplication.FW_UPDATE_AVAILABLE_LIST.containsKey(node.ip))
+                LibreApplication.FW_UPDATE_AVAILABLE_LIST.remove(node.ip)
 
             val alertDialogBuilder = AlertDialog.Builder(
                     this)
@@ -1720,7 +1686,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
     }
 
-    private fun showAlertDialogMessageForGCastMsgBoxes(Message: String, node: LSSDPNodes?) {
+    private fun showAlertForFwMsgBox(Message: String, node: LSSDPNodes?) {
         if (!LibreApplication.sacDeviceNameSetFromTheApp.equals("", ignoreCase = true))
             return
 
@@ -1749,51 +1715,41 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     // overloaded this method because, on success we have to show "Device is Rebooting(an extra text at the end)
-    private fun showAlertDialogMessageForGCastMsgBoxes(Message: String, node: LSSDPNodes, Message2: String) {
+    private fun showAlertForFwMsgBox(Message: String, node: LSSDPNodes, Message2: String) {
         if (!LibreApplication.sacDeviceNameSetFromTheApp.equals("", ignoreCase = true))
             return
 
         val alertDialogBuilder = AlertDialog.Builder(
                 this@CTDeviceDiscoveryActivity)
-
-        // set title
         alertDialogBuilder.setTitle("Firmware Upgrade")
-
-        // set dialog message
         alertDialogBuilder
                 .setMessage(Message + node.friendlyname.toString() + Message2)
                 .setCancelable(false)
                 .setPositiveButton("OK") { dialog, id -> sAcalertDialog = null }
         if (sAcalertDialog == null)
             sAcalertDialog = alertDialogBuilder.create()
-
-
         sAcalertDialog!!.show()
     }
 
-    private fun showAlertDialogForGcastUpdate(mNode: LSSDPNodes, mGcastData: GcastUpdateData) {
+    private fun showAlertForFirmwareUpgrade(mNode: LSSDPNodes, fwUpgradeData: FwUpgradeData) {
         if (!LibreApplication.sacDeviceNameSetFromTheApp.equals("", ignoreCase = true))
             return
         val builder = AlertDialog.Builder(this@CTDeviceDiscoveryActivity)
         // set title
         builder.setTitle("Firmware Upgrade")
-        builder.setMessage(mNode.friendlyname + " New Update is available. firmware upgrade in progress with New Update")
+        builder.setMessage(mNode.friendlyname + ": New update available. Firmware is upgrading with new update")
                 .setCancelable(false)
                 .setPositiveButton("OK") { dialog, id ->
                     dialog.dismiss()
-                    gCastUpdateAlertDialog = null
-                    /**which means you have got
-                     * for current master and navigate to ActiveScene */
-                    /**which means you have got
-                     * for current master and navigate to ActiveScene */
-                    BusProvider.getInstance().post(mGcastData)
+                    fwUpdateAlertDialog = null
+                    BusProvider.getInstance().post(fwUpgradeData)
                 }
         // create alertDialog1 dialog
 
-        if (gCastUpdateAlertDialog == null)
-            gCastUpdateAlertDialog = builder.create()
-        if (!gCastUpdateAlertDialog?.isShowing!!)
-            gCastUpdateAlertDialog!!.show()
+        if (fwUpdateAlertDialog == null)
+            fwUpdateAlertDialog = builder.create()
+        if (!fwUpdateAlertDialog?.isShowing!!)
+            fwUpdateAlertDialog!!.show()
     }
 
     fun showToast(message: String) {

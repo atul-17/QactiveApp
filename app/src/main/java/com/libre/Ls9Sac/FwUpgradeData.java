@@ -3,16 +3,16 @@ package com.libre.Ls9Sac;
 /**
  * Created by karunakaran on 7/17/2016.
  */
-public class GcastUpdateData {
-    private String mGcastUpdate;
+public class FwUpgradeData {
+    private String updateMsg;
     private int mProgressValue;
     private String mIPAddress;
     private String mDeviceName;
 
-    public GcastUpdateData(String mIpadddress,String mDeviceName ,String GcastUpdate, int ProgressValue) {
+    public FwUpgradeData(String mIpadddress, String mDeviceName , String updateMsg, int ProgressValue) {
         this.mIPAddress = mIpadddress;
         this.mDeviceName = mDeviceName;
-        this.mGcastUpdate = GcastUpdate;
+        this.updateMsg = updateMsg;
         this.mProgressValue = ProgressValue;
     }
 
@@ -24,12 +24,12 @@ public class GcastUpdateData {
         this.mDeviceName = mDeviceName;
     }
 
-    public String getmGcastUpdate() {
-        return mGcastUpdate;
+    public String getUpdateMsg() {
+        return updateMsg;
     }
 
-    public void setmGcastUpdate(String mGcastUpdate) {
-        this.mGcastUpdate = mGcastUpdate;
+    public void setUpdateMsg(String updateMsg) {
+        this.updateMsg = updateMsg;
     }
 
     public int getmProgressValue() {

@@ -188,9 +188,13 @@ public class Constants {
     public static final String ERROR_NOURL = NO_URL_ALERT_TEXT;
     public static final String ERROR_LASTSONG = NO_NEXT_SONG_ALERT_TEXT;
 
-    public static final String GCAST_UPDATE_IMAGE_AVAILABLE = "UPDATE_IMAGE_AVAILABLE";
-    public static final String GCAST_NO_UPDATE = "NO_UPDATE";
-    public static final String GCAST_UPDATE_STARTED = "UPDATE_STARTED";
+    public static final String UPDATE_IMAGE_AVAILABLE = "UPDATE_IMAGE_AVAILABLE";
+    public static final String NO_UPDATE = "NO_UPDATE";
+    public static final String UPDATE_STARTED = "UPDATE_STARTED";
+    public static final String UPDATE_DOWNLOAD = "UPDATE_DOWNLOAD";
+    public static final String CRC_CHECK_ERROR = "CRC_CHECK_ERROR";
+    public static final String DOWNLOAD_FAIL = "DOWNLOAD_FAIL";
+
 
     public static final String GCAST_COMPLETE = "complete";
     public static final String GCAST_START = "start";

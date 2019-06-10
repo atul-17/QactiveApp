@@ -25,7 +25,7 @@ public class GcastUpdateAdapter extends BaseAdapter{
     @Override
     public int getCount() {
         try {
-            return LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.keySet().toArray().length;
+            return LibreApplication.FW_UPDATE_AVAILABLE_LIST.keySet().toArray().length;
         } catch (Exception e) {
             return 0;
         }
@@ -51,8 +51,8 @@ public class GcastUpdateAdapter extends BaseAdapter{
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         GcastHolder mGcastHolder;
-        final String ipAddress = (String) LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.keySet().toArray()[position];
-        LibreLogger.d(this, "Whole Key" + LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.keySet().toString());
+        final String ipAddress = (String) LibreApplication.FW_UPDATE_AVAILABLE_LIST.keySet().toArray()[position];
+        LibreLogger.d(this, "Whole Key" + LibreApplication.FW_UPDATE_AVAILABLE_LIST.keySet().toString());
         LibreLogger.d(this, "IP " + ipAddress);
 
 
@@ -70,12 +70,12 @@ public class GcastUpdateAdapter extends BaseAdapter{
         }
         mGcastHolder = (GcastHolder)convertView.getTag();
 
-        GcastUpdateData mGcastData = LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.get(ipAddress);
+        FwUpgradeData mGcastData = LibreApplication.FW_UPDATE_AVAILABLE_LIST.get(ipAddress);
         if(mGcastData!=null){
             mGcastHolder.DeviceName.setText(mGcastData.getmDeviceName());
-            mGcastHolder.msgCastUpdate.setText(mGcastData.getmGcastUpdate());
+            mGcastHolder.msgCastUpdate.setText(mGcastData.getUpdateMsg());
             if(mGcastData.getmProgressValue()==255){
-                mGcastHolder.mPercentageToDisplay.setText(mContext.getString(R.string.gcastFailed));
+                mGcastHolder.mPercentageToDisplay.setText(mContext.getString(R.string.fwUpdateFailed));
                 mGcastHolder.proloader.setEnabled(false);
             }else {
                 mGcastHolder.mPercentageToDisplay.setText(mGcastData.getmProgressValue() + " %");

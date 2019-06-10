@@ -92,7 +92,7 @@ public class GcastUpdateStatusAvailableListView extends CTDeviceDiscoveryActivit
     @Override
     public void newDeviceFound(LSSDPNodes node) {
         mGcastAdapter.notifyDataSetChanged();
-        if(LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.keySet().size()==0)
+        if(LibreApplication.FW_UPDATE_AVAILABLE_LIST.keySet().size()==0)
             showDialogifNoDeviceFound(getResources().getString(R.string.noDeviceUpdating));
 
 
@@ -107,7 +107,7 @@ public class GcastUpdateStatusAvailableListView extends CTDeviceDiscoveryActivit
     public void messageRecieved(NettyData packet) {
         LUCIPacket mLuciPacket = new LUCIPacket(packet.getMessage());
         switch(mLuciPacket.getCommand()){
-            case MIDCONST.GCAST_PROGRESS_STATUS:{
+            case MIDCONST.FW_UPGRADE_PROGRESS:{
 
                 String msg = new String (mLuciPacket.getpayload());
                 if (msg!=null&&msg.equalsIgnoreCase("255")){
@@ -119,7 +119,7 @@ public class GcastUpdateStatusAvailableListView extends CTDeviceDiscoveryActivit
                 break;
             }
 
-            case MIDCONST.GCAST_UPDATE_AVAILABLE: {
+            case MIDCONST.FW_UPGRADE_INTERNET_LS9: {
                 mGcastAdapter.notifyDataSetChanged();
                 break;
             }
@@ -139,7 +139,7 @@ public class GcastUpdateStatusAvailableListView extends CTDeviceDiscoveryActivit
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             NoDeviceFoundalert.dismiss();
-                            if(LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.size()==0) {
+                            if(LibreApplication.FW_UPDATE_AVAILABLE_LIST.size()==0) {
                                 Intent ssid = new Intent(GcastUpdateStatusAvailableListView.this,
                                         PlayNewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(ssid);

@@ -16,7 +16,7 @@ import com.cumulations.libreV2.AppUtils;
 import com.cumulations.libreV2.tcp_tunneling.TunnelingClientRunnable;
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
 import com.libre.LibreApplication;
-import com.libre.Ls9Sac.GcastUpdateData;
+import com.libre.Ls9Sac.FwUpgradeData;
 import com.libre.Scanning.ScanningHandler;
 import com.libre.SceneObject;
 import com.libre.app.dlna.dmc.processor.http.HttpThread;
@@ -284,9 +284,9 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
             if (nodes == null || nodes.getDeviceState() == null) {
                 Toast.makeText(CoreUpnpService.this, "Alert! Device State is null " + nodes.getDeviceState(), Toast.LENGTH_SHORT).show();
             } else if (nodes.getDeviceState() != null) {
-                GcastUpdateData mGCastData = LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.get(nodes.getIP());
+                FwUpgradeData mGCastData = LibreApplication.FW_UPDATE_AVAILABLE_LIST.get(nodes.getIP());
                 if (mGCastData != null) {
-                    LibreApplication.GCAST_UPDATE_AVAILABE_LIST_DATA.remove(nodes.getIP());
+                    LibreApplication.FW_UPDATE_AVAILABLE_LIST.remove(nodes.getIP());
                 }
                 ArrayList<LUCIPacket> luciPackets = new ArrayList<LUCIPacket>();
                 LUCIControl control = new LUCIControl(nodes.getIP());

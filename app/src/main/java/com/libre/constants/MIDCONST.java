@@ -77,13 +77,11 @@ public class MIDCONST {
     public static final short MID_VOLUME = 64;
 
     public static final short MID_FAVOURITE = 70;
-    public static final short GCAST_COMMAND = 222;
-    public static final short GCAST_UPDATE_AVAILABLE = 223;
+    public static final short FW_UPGRADE_INTERNET_LS9 = 223;
 
-    public static final short GCAST_UPDATE_MSGBOX = 223;
     public static final short GCAST_TOS_SHARE_COMMAND = 226;
-    public static final short GCAST_PROGRESS_STATUS = 66;
-    public static final short GCAST_MANUAL_UPGRADE = 65;
+    public static final short FW_UPGRADE_PROGRESS = 66;
+    public static final short FW_UPGRADE_REQUEST = 65;
 
     public static final short ALEXA_COMMAND = 234;
     public static final int GCAST_SOURCE = 24;
@@ -91,5 +89,4 @@ public class MIDCONST {
     public static final int MID_IOT_CONTROL = 207;
     public static final int MID_ALEXA_CONTACTS = 235;
     public static final int MID_MIC = 233;
-    public static final int READ_ALEXA_REFRESH_TOKEN_CMD = 208;
 }
