@@ -106,10 +106,6 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
     ScanThread wt = null;
     Thread scanThread = null;
 
-    public void initiateServices() {
-        initLUCIServices();
-    }
-
     public static boolean getIs3PDAEnabled(){
         return is3PDAEnabled;
     }
@@ -176,12 +172,12 @@ public class LibreApplication extends Application implements MicTcpServer.MicTcp
                     }
 
                     LibreApplication.LOCAL_IP = AppUtils.INSTANCE.getWifiIp(LibreApplication.this);
-                    initiateServices();
+                    initLUCIServices();
                 }
             });
         } else {
             LibreApplication.LOCAL_IP = AppUtils.INSTANCE.getWifiIp(LibreApplication.this);
-            initiateServices();
+            initLUCIServices();
         }
     }
 

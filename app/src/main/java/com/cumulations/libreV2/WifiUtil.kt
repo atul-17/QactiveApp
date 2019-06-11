@@ -33,7 +33,7 @@ class WifiUtil(private val context: Context) {
     private val myBroadCastReceiver: MyBroadcastReceiver = MyBroadcastReceiver()
 
     fun isWifiOn():Boolean{
-        return wifiManager.isWifiEnabled && wifiManager?.connectionInfo?.supplicantState == SupplicantState.COMPLETED
+        return /*wifiManager.isWifiEnabled &&*/ wifiManager?.connectionInfo?.supplicantState == SupplicantState.COMPLETED
     }
 
     fun getWifiSupplicantState():SupplicantState{

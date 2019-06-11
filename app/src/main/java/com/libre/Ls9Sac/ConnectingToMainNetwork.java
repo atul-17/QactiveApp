@@ -130,7 +130,7 @@ public class ConnectingToMainNetwork extends CTDeviceDiscoveryActivity implement
                         LSSDPNodeDB.getInstance().clearDB();
                         LibreApplication.LOCAL_IP="";
                         LibreApplication.mCleanUpIsDoneButNotRestarted = false;
-                        mRestartOfAllSockets = restartAllSockets(ConnectingToMainNetwork.this);
+                        mRestartOfAllSockets = restartAllSockets();
                         mHandler.sendEmptyMessageDelayed(Constants.SEARCHING_FOR_DEVICE,500);
                     }
                 } else {

@@ -408,7 +408,9 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         val remotedeviceIp = nettyData.getRemotedeviceIp()
 
         val luciPacket = LUCIPacket(nettyData.getMessage())
-        LibreLogger.d(this, "Message recieved for ipaddress " + remotedeviceIp + "Command is " + luciPacket.command)
+        LibreLogger.d(this, "Message received for " + remotedeviceIp
+                + "\tCommand is " + luciPacket.command
+                + "\tmsg is " + String(luciPacket.getpayload()))
 
         val currentNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(remotedeviceIp)
         val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(remotedeviceIp)

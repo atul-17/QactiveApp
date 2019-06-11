@@ -4,11 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
 import android.app.*
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.content.IntentSender
+import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
@@ -1173,15 +1169,15 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         if (LSSDPNodeDB.getInstance().GetDB().size > 0) {
             //            newIntent = new Intent(context, ActiveScenesListActivity.class);
             newIntent = Intent(context, CTHomeTabsActivity::class.java)
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK)
             newIntent.putExtra(AppConstants.LOAD_FRAGMENT, CTActiveDevicesFragment::class.java.simpleName)
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(newIntent)
             finish()
         } else {
             //            newIntent = new Intent(context, ConfigureActivity.class);
             newIntent = Intent(context, CTHomeTabsActivity::class.java)
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK)
             newIntent.putExtra(AppConstants.LOAD_FRAGMENT, CTNoDeviceFragment::class.java.simpleName)
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(newIntent)
             finish()
         }
@@ -1201,8 +1197,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
 
         if (LibreApplication.mCleanUpIsDoneButNotRestarted) {
-            restartApp(this@CTDeviceDiscoveryActivity)
             LibreApplication.mCleanUpIsDoneButNotRestarted = false
+//            restartApp(this@CTDeviceDiscoveryActivity)
         }
 
         try {
@@ -1219,7 +1215,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
         if (mWifi != null && mWifi.isConnected && MicTcpServer.MIC_TCP_SERVER_PORT == 0
                 && getConnectedSSIDName(this) != null
-                && !getConnectedSSIDName(this)!!.contains(Constants.RIVAA_WAC_SSID)) {
+                && !getConnectedSSIDName(this)?.contains(Constants.RIVAA_WAC_SSID)) {
             try {
                 libreApplication.restart()
                 libreApplication.micTcpStart()
@@ -1278,6 +1274,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             connectivityOnReceiveCalled(context, intent)
 
             val wifiUtil = WifiUtil(this@CTDeviceDiscoveryActivity)
+            val supplicantState = wifiUtil.getWifiSupplicantState()
             if (!wifiUtil.isWifiOn() /*&& isNetworkOffCallBackEnabled*/) {
                 if (activeSSID != null && activeSSID != "") {
                     LibreApplication.mActiveSSIDBeforeWifiOff = activeSSID
@@ -1294,7 +1291,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             if (intent.action != null && intent.action == ConnectivityManager.CONNECTIVITY_ACTION) {
                 val networkInfo = intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
 
-                Log.e("onReceive", "type = " + networkInfo.typeName + ", isConnected = " + networkInfo.isConnected)
+                Log.e("onReceive", "type = " + networkInfo.typeName
+                        + ", isConnected = " + networkInfo.isConnected
+                        + ", supplicantState = $supplicantState")
 
                 if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
                     connectedSSID = AppUtils.getConnectedSSID(this@CTDeviceDiscoveryActivity)
@@ -1320,27 +1319,30 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                             showNetworkChangeRestartAppAlert()
                         } else
                             wifiConnected(true)
-                    }
+                    } else wifiConnected(false)
                 } else if (networkInfo.type == ConnectivityManager.TYPE_MOBILE || networkInfo.type == ConnectivityManager.TYPE_MOBILE_HIPRI) {
-                    Log.e("onReceive", "TYPE_MOBILE, isConnected = " + networkInfo.isConnected)
-                    val supplicantState = wifiUtil.getWifiSupplicantState()
                     Log.e("onReceive","TYPE_MOBILE networkInfo.isConnected = ${networkInfo.isConnected}, "
                             + "wifi Supplicant name = ${supplicantState.name}")
 
                     if (networkInfo.isConnected) {
-                        if (wifiUtil.isWifiOn())
-                            wifiConnected(connected = true)
-                    } else wifiConnected(connected = false)
+                        /*if (wifiUtil.isWifiOn())
+                            wifiConnected(connected = true)*/
+                        wifiConnected(connected = false)
+                    } else wifiConnected(wifiUtil.isWifiOn())
                 }
             }
         }
     }//m_nwStateListener = nwStateListener;
 
     open fun wifiConnected(connected: Boolean) {
+        LibreLogger.d(this,"wifiConnected $connected")
         if (!connected){
-            /*clearing data*/
-//            libreApplication?.clearApplicationCollections()
+//            clearing data
+            cleanUpCode(false)
+        } else {
+            restartAllSockets()
         }
+//        if (!connected) libreApplication?.clearApplicationCollections()
     }
 
     fun showNetworkChangeRestartAppAlert() {
@@ -1588,15 +1590,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 200, mPendingIntent)
     }
 
-    /* Restarting Alll my Sockets whenever Configuring a SAC Device to SAME AP .,
-     * * Till i HAave to Analyse more on this code */
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    fun restartAllSockets(context: Context): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            LibreLogger.d(this, "Karuna 2" + "App Called Here Device 1")
-            val application = application as LibreApplication
-            application.initiateServices()
-        }
+    fun restartAllSockets(): Boolean {
+        libreApplication?.initLUCIServices()
         return true
     }
 

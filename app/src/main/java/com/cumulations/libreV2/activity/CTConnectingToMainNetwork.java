@@ -108,9 +108,13 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
     @Override
     protected void onStart() {
         super.onStart();
+        LibreLogger.d(this, "onStart");
+        showProgressDialog();
+        /*Get Connected Ssid Name */
         if (getConnectedSSIDName(this).equalsIgnoreCase(wifiConnect.getMainSSID())) {
-            LibreLogger.d(this, "onStart CONNECTED_TO_MAIN_SSID_SUCCESS");
             mHandler.sendEmptyMessage(Constants.CONNECTED_TO_MAIN_SSID_SUCCESS);
+        } else {
+            mHandler.sendEmptyMessage(Constants.HTTP_POST_DONE_SUCCESSFULLY);
         }
     }
 
@@ -145,13 +149,13 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                 if (getConnectedSSIDName(CTConnectingToMainNetwork.this).equals(wifiConnect.getMainSSID())) {
                     LibreLogger.d(this, "Connected To Main SSID " + wifiConnect.getMainSSID() + mRestartOfAllSockets);
                     LibreApplication.activeSSID = wifiConnect.getMainSSID();
-                    if (!mRestartOfAllSockets) {
+//                    if (!mRestartOfAllSockets) {
                         LSSDPNodeDB.getInstance().clearDB();
                         LibreApplication.LOCAL_IP = "";
                         LibreApplication.mCleanUpIsDoneButNotRestarted = false;
-                        mRestartOfAllSockets = restartAllSockets(CTConnectingToMainNetwork.this);
+                        /*mRestartOfAllSockets = */restartAllSockets();
                         mHandler.sendEmptyMessageDelayed(Constants.SEARCHING_FOR_DEVICE, 500);
-                    }
+//                    }
                 } else {
                     showAlertDialogForClickingWrongNetwork();
                 }

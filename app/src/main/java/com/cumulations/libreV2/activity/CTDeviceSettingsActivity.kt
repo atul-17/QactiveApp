@@ -2,6 +2,7 @@ package com.cumulations.libreV2.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
 import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
@@ -66,6 +67,17 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
         showLoader(login_progress_bar.id)
         showLoader(locale_progress_bar.id)
 //        showLoader(soft_update_progress_bar.id)
+
+        Handler().postDelayed({
+            if (isFinishing)
+                return@postDelayed
+            closeLoader(audio_progress_bar.id)
+            closeLoader(system_firmware_progress_bar.id)
+            closeLoader(host_firmware_progress_bar.id)
+            closeLoader(network_name_progress_bar.id)
+            closeLoader(login_progress_bar.id)
+            closeLoader(locale_progress_bar.id)
+        },Constants.ITEM_CLICKED_TIMEOUT.toLong())
 
         currentDeviceNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentDeviceIp)
 

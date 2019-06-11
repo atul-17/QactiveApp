@@ -229,6 +229,8 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
     }
 
     override fun wifiConnected(connected: Boolean) {
+        /*making method to be called in parent activity as well*/
+        super.wifiConnected(connected)
         /*Avoid changing when activity is not visible i.e when user goes to wifi settings
         * and stays in that screen for a while*/
         if (!isActivityVisible)
