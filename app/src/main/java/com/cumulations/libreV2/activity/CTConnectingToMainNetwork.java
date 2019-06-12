@@ -1,7 +1,6 @@
 package com.cumulations.libreV2.activity;
 
 import android.annotation.SuppressLint;
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -15,6 +14,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
@@ -110,6 +110,7 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
         super.onStart();
         LibreLogger.d(this, "onStart");
         showProgressDialog();
+        LibreApplication.isSacFlowStarted = true;
         /*Get Connected Ssid Name */
         if (getConnectedSSIDName(this).equalsIgnoreCase(wifiConnect.getMainSSID())) {
             mHandler.sendEmptyMessage(Constants.CONNECTED_TO_MAIN_SSID_SUCCESS);
@@ -382,7 +383,6 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                                 intentToHome(CTConnectingToMainNetwork.this);
                             }
 
-                            LibreApplication.isSacFlowStarted = false;
                             try {
                                 getLibreApplication().restart();
                                 getLibreApplication().micTcpStart();

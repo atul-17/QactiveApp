@@ -1,7 +1,6 @@
 package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
@@ -11,6 +10,7 @@ import android.os.Message
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -514,12 +514,12 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
             dmsDeviceUDN = LibreApplication.LOCAL_UDN.trim()
         }
 
-        dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(dmsDeviceUDN!!, ignoreCase = true))
-            DMSBrowseHelper(true, dmsDeviceUDN)
-        else
-            DMSBrowseHelper(false, dmsDeviceUDN)
-
-        if (dmsBrowseHelper == null) return
+        if (dmsBrowseHelper == null) {
+            dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(dmsDeviceUDN!!, ignoreCase = true))
+                DMSBrowseHelper(true, dmsDeviceUDN)
+            else
+                DMSBrowseHelper(false, dmsDeviceUDN)
+        }
 
         val dmsDevice = dmsBrowseHelper!!.getDevice(UpnpDeviceManager.getInstance())
         didlObjectStack = dmsBrowseHelper!!.browseObjectStack.clone() as Stack<DIDLObject>

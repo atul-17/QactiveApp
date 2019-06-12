@@ -1,5 +1,7 @@
 package com.cumulations.libreV2.activity
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.support.v4.app.Fragment
@@ -14,6 +16,7 @@ import com.libre.LibreApplication
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
+import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService
 import com.libre.luci.LSSDPNodeDB
 import com.libre.luci.LSSDPNodes
 import com.libre.netty.LibreDeviceInteractionListner
@@ -73,8 +76,15 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
         LibreLogger.d(this,"onStart, bottom_navigation?.selectedItemId = ${bottom_navigation.selectedItemId}")
         LibreLogger.d(this,"onStart, tabSelected = $tabSelected")
         if (tabSelected == CTActiveDevicesFragment::class.java.simpleName){
+            if (supportFragmentManager?.findFragmentByTag(tabSelected) == null)
+                return
             val ctActiveDevicesFragment = supportFragmentManager?.findFragmentByTag(tabSelected) as CTActiveDevicesFragment
             ctActiveDevicesFragment?.updateFromCentralRepositryDeviceList()
+        }
+
+        if (LibreApplication.isSacFlowStarted){
+            bottom_navigation?.selectedItemId = R.id.action_discover
+            LibreApplication.isSacFlowStarted = false
         }
     }
 
@@ -283,5 +293,29 @@ class CTHomeTabsActivity : CTDeviceDiscoveryActivity(),LibreDeviceInteractionLis
 
     fun removeTunnelFragmentListener(){
         tunnelingFragmentListener = null
+    }
+
+    private fun initSplashScreen(){
+        getSharedPreferences(Constants.SHOWN_GOOGLE_TOS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(Constants.SHOWN_GOOGLE_TOS, "Yes")
+                .apply()
+        LibreApplication.GOOGLE_TOS_ACCEPTED = true
+        if (libreApplication.scanThread != null) {
+            libreApplication.scanThread.clearNodes()
+            libreApplication.scanThread.UpdateNodes()
+            mTaskHandlerForSendingMSearch.postDelayed(mMyTaskRunnableForMSearch, 1000)
+            mTaskHandlerForSendingMSearch.postDelayed(mMyTaskRunnableForMSearch, 2000)
+            mTaskHandlerForSendingMSearch.postDelayed(mMyTaskRunnableForMSearch, 3000)
+            mTaskHandlerForSendingMSearch.postDelayed(mMyTaskRunnableForMSearch, 4000)
+        }
+        /* initiating the search DMR */
+        upnpProcessor?.searchDMR()
+
+        if (!LibreApplication.LOCAL_IP.isNullOrEmpty()) {
+            startService(Intent(this@CTHomeTabsActivity, LoadLocalContentService::class.java))
+        }
+        LibreApplication.activeSSID = getConnectedSSIDName(this@CTHomeTabsActivity)
+        LibreApplication.mActiveSSIDBeforeWifiOff = LibreApplication.activeSSID
     }
 }

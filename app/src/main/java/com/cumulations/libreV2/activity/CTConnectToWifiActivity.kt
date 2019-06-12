@@ -2,11 +2,11 @@ package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.v7.app.AlertDialog
 import android.util.Log
 import android.view.View
 import com.cumulations.libreV2.AppConstants

@@ -1077,6 +1077,27 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
         updateAlbumArt()
         setTheSourceIconFromCurrentSceneObject()
+        setControlsForAlexaSource(currentSceneObject)
+    }
+
+    private fun setControlsForAlexaSource(currentSceneObject: SceneObject?) {
+        LibreLogger.d(this,"setControlsForAlexaSource playUrl = ${currentSceneObject?.playUrl}")
+        iv_source_icon.visibility = View.VISIBLE
+
+        setControlIconsForAlexa(currentSceneObject, iv_play_pause, iv_next, iv_previous)
+
+        /* String alexaSourceURL = currentSceneObject.getAlexaSourceImageURL();
+        if (alexaSourceURL!=null){
+            setImageFromURL(alexaSourceURL,R.drawable.default_album_art,alexaSourceImage);
+        }*/
+
+        when {
+            currentSceneObject?.playUrl?.toLowerCase()?.contains("tunein",false)!! -> iv_source_icon.setImageResource(R.drawable.tunein_image2)
+            currentSceneObject?.playUrl?.toLowerCase()?.contains("iheartradio",false)!! -> iv_source_icon.setImageResource(R.drawable.iheartradio_image2)
+            currentSceneObject?.playUrl?.toLowerCase()?.contains("amazon music",false)!! -> iv_source_icon.setImageResource(R.drawable.amazon_image2)
+            currentSceneObject?.playUrl?.toLowerCase()?.contains("siriusxm",false)!! -> iv_source_icon.setImageResource(R.drawable.sirius_image2)
+            else -> iv_source_icon.setImageResource(R.drawable.alexa_blue_white_100px)
+        }
     }
 
     private fun updateAlbumArt() {
@@ -1143,7 +1164,8 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
     /* This function takes care of setting the image next to sources button depending on the
     current source that is being played.
     */
-    private fun setTheSourceIconFromCurrentSceneObject() {
+    private fun
+            setTheSourceIconFromCurrentSceneObject() {
 
         if (currentSceneObject == null)
             return
@@ -1154,7 +1176,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
         when(currentSceneObject?.currentSource){
             DMR_SOURCE -> {
-                imgResId = R.mipmap.dmr_icon
+                imgResId = R.drawable.my_device_enabled
                 tv_source_type.text = getText(R.string.my_device)
             }
             DMP_SOURCE -> {
@@ -1187,14 +1209,14 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             }
 
             AUX_SOURCE -> {
-                imgResId = R.mipmap.aux_in
+                imgResId = R.drawable.ic_aux_in
                 tv_source_type.text = getText(R.string.aux)
                 /* added to make sure we dont show the album art during aux */
                 disableViews(currentSceneObject!!.currentSource, getString(R.string.aux))
             }
 
             BT_SOURCE -> {
-                imgResId = R.mipmap.bluetooth
+                imgResId = R.drawable.ic_bt_on
                 tv_source_type.text = getText(R.string.btOn)
                 when {
                     currentSceneObject!!.playstatus == SceneObject.CURRENTLY_STOPPED -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))

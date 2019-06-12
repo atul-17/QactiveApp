@@ -299,7 +299,7 @@
 
         <!-- Cumulations -->
         <activity
-            android:name="com.cumulations.libreV2.activity.CTSplashScreenActivity"
+            android:name="com.cumulations.libreV2.activity.CTSplashScreenActivityV2"
             android:label="@string/title_activity_welcome"
             android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">

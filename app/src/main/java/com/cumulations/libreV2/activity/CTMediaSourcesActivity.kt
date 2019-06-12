@@ -1,12 +1,12 @@
 package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -108,7 +108,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             }
             if (msg.what == AUX_BT_TIMEOUT) {
                 closeLoader()
-                val error = LibreError(currentIpAddress, Constants.INTERNET_ITEM_SELECTED_TIMEOUT_MESSAGE)
+                val error = LibreError(currentIpAddress, getString(R.string.requestTimeout))
                 showErrorMessage(error)
             }
             if (msg.what == ALEXA_REFRESH_TOKEN_TIMER) {
@@ -554,9 +554,12 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                             /**Closing loader after 1.5 second */
                             if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) {
                                 timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
-                                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
+//                                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
+                                Handler().postDelayed({
+                                    runOnUiThread { closeLoader() }
+                                },1500)
                             }
-                            closeLoader()
+//                            closeLoader()
                             iv_toggle_bluetooth!!.isChecked = false
                             iv_toggle_aux.isChecked = false
                         }
@@ -623,7 +626,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                         intent.putExtra(Constants.CURRENT_SOURCE_INDEX_SELECTED, currentSourceIndexSelected)
                         LibreLogger.d(this, "removing handler message")
                         startActivity(intent)
-                        finish()
+//                        finish()
                     }
                 }
             } catch (e: Exception) {
@@ -707,13 +710,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                                 return@setOnClickListener
                             }
 
-//                            showLoader()
-                            val localIntent = Intent(this@CTMediaSourcesActivity, CTDMSBrowserActivityV2::class.java)
-                            localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true)
-                            localIntent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN)
-                            localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
-                            startActivity(localIntent)
-//                            finish()
+//                            openDmsBrowser()
                         }
 
                         context.getString(R.string.usb_storage) -> {
@@ -758,6 +755,14 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         }
     }
 
+    private fun openDmsBrowser() {
+        val localIntent = Intent(this@CTMediaSourcesActivity, CTDMSBrowserActivityV2::class.java)
+        localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true)
+        localIntent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN)
+        localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+        startActivity(localIntent)
+    }
+
     override fun tunnelDataReceived(tunnelingData: TunnelingData) {
         if (tunnelingData.remoteClientIp == currentIpAddress && tunnelingData.remoteMessage.size >= 24) {
             val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
@@ -776,13 +781,25 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             }*/
 
             when {
-                tcpTunnelPacket.currentSource == Constants.BT_SOURCE -> iv_toggle_bluetooth?.isChecked = true
-                tcpTunnelPacket.currentSource == Constants.AUX_SOURCE -> iv_toggle_aux?.isChecked = true
+                tcpTunnelPacket.currentSource == Constants.BT_SOURCE -> {
+                    iv_toggle_bluetooth?.isChecked = true
+                    if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) timeOutHandler.removeMessages(AUX_BT_TIMEOUT)
+                }
+                tcpTunnelPacket.currentSource == Constants.AUX_SOURCE -> {
+                    iv_toggle_aux?.isChecked = true
+                    if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) timeOutHandler.removeMessages(AUX_BT_TIMEOUT)
+                }
                 tcpTunnelPacket.currentSource == Constants.NO_SOURCE -> {
                     iv_toggle_aux?.isChecked = false
                     iv_toggle_bluetooth?.isChecked = false
+                    if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) timeOutHandler.removeMessages(AUX_BT_TIMEOUT)
                 }
             }
         }
+    }
+
+    override fun storagePermissionAvailable() {
+        super.storagePermissionAvailable()
+        openDmsBrowser()
     }
 }

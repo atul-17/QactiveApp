@@ -3,7 +3,10 @@ package com.cumulations.libreV2.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.*
+import android.app.Activity
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.ProgressDialog
 import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
@@ -14,6 +17,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatImageButton
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.AppCompatSeekBar
@@ -296,6 +300,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
     }
 
+    open fun storagePermissionAvailable(){}
+
     fun checkReadStoragePermission():Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && !AppUtils.isPermissionGranted(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -304,6 +310,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             return false
         } else {
             Log.d("checkStoragePermission", "Permission already granted.")
+            storagePermissionAvailable()
         }
         return true
     }
@@ -466,7 +473,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             if (alertDialog1 == null) {
                 alertDialog1 = builder.create()
                 val messageView = alertDialog1!!.findViewById<TextView>(android.R.id.message)
-                messageView.gravity = Gravity.CENTER
+                messageView?.gravity = Gravity.CENTER
             }
             alertDialog1!!.show()
 
@@ -749,7 +756,11 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 songSeekBar?.isEnabled = false
             }
 
-            Constants.ALEXA_SOURCE, Constants.DMR_SOURCE,Constants.DMP_SOURCE,Constants.SPOTIFY_SOURCE -> {
+            Constants.ALEXA_SOURCE,
+            Constants.DMR_SOURCE,
+            Constants.DMP_SOURCE,
+            Constants.SPOTIFY_SOURCE,
+            Constants.USB_SOURCE -> {
                 if (!sceneObject?.trackName.isNullOrEmpty()){
                     playPauseView?.visibility = View.VISIBLE
                     trackNameView?.visibility = View.VISIBLE
@@ -959,17 +970,17 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         next.isEnabled = controlsArr[1]
         next.isClickable = controlsArr[1]
         if (controlsArr[1]) {
-            next.setImageResource(R.mipmap.prev_with_glow)
+            next.setImageResource(R.drawable.prev_enabled)
         } else {
-            next.setImageResource(R.mipmap.prev_without_glow)
+            next.setImageResource(R.drawable.prev_disabled)
         }
 
         previous.isEnabled = controlsArr[2]
         previous.isClickable = controlsArr[2]
         if (controlsArr[2]) {
-            next.setImageResource(R.mipmap.next_with_glow)
+            next.setImageResource(R.drawable.next_enabled)
         } else {
-            next.setImageResource(R.mipmap.next_without_glow)
+            next.setImageResource(R.drawable.next_disabled)
         }
     }
 

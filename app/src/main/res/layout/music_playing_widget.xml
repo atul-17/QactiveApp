@@ -5,7 +5,7 @@
     android:id="@+id/fl_music_play_widget"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/screen_bg_light">
+    android:background="@color/riva_logo_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,6 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:focusable="false"
+            android:clickable="false"
             android:layout_marginTop="-3dp"
             android:paddingBottom="-1dp"
             android:max="100"

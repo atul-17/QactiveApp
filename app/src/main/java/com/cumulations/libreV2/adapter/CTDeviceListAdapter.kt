@@ -233,7 +233,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 }
             }
 
-            itemView?.iv_album_art?.setOnClickListener {
+            itemView?.fl_music_play_widget?.setOnClickListener {
                 context.startActivity(Intent(context,CTNowPlayingActivity::class.java).apply {
                     putExtra(Constants.CURRENT_DEVICE_IP,sceneObject?.ipAddress)
                 })
@@ -463,7 +463,11 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     itemView.seek_bar_song.isEnabled = false
                 }
 
-                Constants.ALEXA_SOURCE, Constants.DMR_SOURCE,Constants.DMP_SOURCE,Constants.SPOTIFY_SOURCE -> {
+                Constants.ALEXA_SOURCE,
+                Constants.DMR_SOURCE,
+                Constants.DMP_SOURCE,
+                Constants.SPOTIFY_SOURCE,
+                Constants.USB_SOURCE -> {
                     if (!sceneObject?.trackName.isNullOrEmpty()){
                         itemView?.iv_play_pause?.visibility = View.VISIBLE
                         itemView?.tv_track_name?.visibility = View.VISIBLE

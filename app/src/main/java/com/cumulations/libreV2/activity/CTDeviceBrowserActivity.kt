@@ -1,13 +1,13 @@
 package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
@@ -28,6 +28,7 @@ import com.libre.Scanning.Constants.NETWORK_TIMEOUT
 import com.libre.Scanning.ScanningHandler
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
+import com.libre.constants.LUCIMESSAGES.BACK
 import com.libre.constants.MIDCONST
 import com.libre.luci.LSSDPNodes
 import com.libre.luci.LUCIControl
@@ -55,7 +56,6 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
         const val TAG_ITEM_FAVORITE = "Favorite"
         const val TAG_ITEM_ALBUMURL = "StationImage"
 
-        const val BACK = "BACK"
         const val GET_PLAY = "GETUI:PLAY"
     }
 
@@ -191,6 +191,12 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
         super.onStart()
         val musicPlayerView = findViewById<FrameLayout>(R.id.fl_music_play_widget)
         setMusicPlayerWidget(musicPlayerView, currentIpaddress!!)
+        if (isSongSelected){
+            deviceBrowserListAdapter?.dataItemList?.clear()
+            deviceBrowserListAdapter?.notifyDataSetChanged()
+            isSongSelected = false
+            onBackPressed()
+        }
     }
 
     override fun onResume() {
@@ -310,7 +316,6 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                     val message = String(packet.getpayload())
                     LibreLogger.d(this, " message 42 recieved  $message")
                     try {
-                        closeLoader()
                         presentJsonHashCode = message.hashCode()
                         LibreLogger.d(this, " present hash code : the hash code for $message is $presentJsonHashCode")
                         parseJsonAndReflectInUI(message)
@@ -318,7 +323,7 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                     } catch (e: JSONException) {
                         e.printStackTrace()
                         LibreLogger.d(this, " Json exception ")
-
+                        closeLoader()
                     }
 
                 }
@@ -328,21 +333,20 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                     try {
                         var error: LibreError? = null
                         when {
-                            message.contains(Constants.FAIL) -> {
-                                error = LibreError(currentIpaddress, Constants.FAIL_ALERT_TEXT)
-                                runOnUiThread {
-                                    closeLoader()
-                                    handler.removeMessages(NETWORK_TIMEOUT)
-                                }
-
+                            message.contains(Constants.FAIL) -> error = LibreError(currentIpaddress, Constants.FAIL_ALERT_TEXT)
+                            message.contains(Constants.SUCCESS) -> {
+                                closeLoader()
+                                handler.removeMessages(NETWORK_TIMEOUT)
                             }
-                            message.contains(Constants.SUCCESS) -> closeLoader()
                             message.contains(Constants.NO_URL) -> error = LibreError(currentIpaddress, getString(R.string.NO_URL_ALERT_TEXT))
                             message.contains(Constants.NO_PREV_SONG) -> error = LibreError(currentIpaddress, getString(R.string.NO_PREV_SONG_ALERT_TEXT))
                             message.contains(Constants.NO_NEXT_SONG) -> error = LibreError(currentIpaddress, getString(R.string.NO_NEXT_SONG_ALERT_TEXT))
                         }
-                        if (error != null)
+                        if (error != null){
+                            closeLoader()
+                            handler.removeMessages(NETWORK_TIMEOUT)
                             showErrorMessage(error)
+                        }
 
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -364,22 +368,14 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
         LibreLogger.d(this, "Json Recieved from remote device $jsonStr")
         if (jsonStr != null) {
             try {
-                if (!isSongSelected) {
-                    runOnUiThread {
-                        closeLoader()
-                        handler.removeMessages(NETWORK_TIMEOUT)
-                    }
-                }
                 val root = JSONObject(jsonStr)
                 val cmd_id = root.getInt(TAG_CMD_ID)
                 val window = root.getJSONObject(TAG_WINDOW_CONTENT)
                 LibreLogger.d(this, "Command Id$cmd_id")
 
                 if (cmd_id == 3) {
-                    runOnUiThread {
-                        closeLoader()
-                        handler.removeMessages(NETWORK_TIMEOUT)
-                    }
+                    closeLoader()
+                    handler.removeMessages(NETWORK_TIMEOUT)
                     /* This means user has selected the song to be playing and hence we will need to navigate
                      him to the Active scene list
                       */
@@ -405,6 +401,8 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                     val item_count = window.getInt(TAG_ITEM_COUNT)
 
                     if (browser.equals("HOME", ignoreCase = true)) {
+                        closeLoader()
+                        handler.removeMessages(NETWORK_TIMEOUT)
                         /* This means we have reached the home collection and hence we need to lauch the SourcesOptionEntry Activity */
                         unRegisterForDeviceEvents()
                         val intent = Intent(this@CTDeviceBrowserActivity, CTMediaSourcesActivity::class.java)
@@ -420,6 +418,8 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                     if (item_count == 0) {
                         val error = LibreError(currentIpaddress, getString(R.string.no_item_empty))
                         showErrorMessage(error)
+                        closeLoader()
+                        handler.removeMessages(NETWORK_TIMEOUT)
                         tv_no_data?.visibility = View.VISIBLE
                     } else {
                         tv_no_data?.visibility = View.GONE
@@ -437,13 +437,8 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                         dataItem.itemName = item.getString(TAG_ITEM_NAME)
                         dataItem.favorite = item.getInt(TAG_ITEM_FAVORITE)
 
-
-                        /* Accomudating older version of tidal implementation from device side */
-                        if (current_source_index_selected == 6 && item.has(TAG_ITEM_ALBUMURL)) {
-                            dataItem.itemAlbumURL = item.getString(TAG_ITEM_ALBUMURL)
-                        }
-
-                        if (item.has(TAG_ITEM_ALBUMURL) && item.getString(TAG_ITEM_ALBUMURL) != null
+                        if (item.has(TAG_ITEM_ALBUMURL)
+                                && item.getString(TAG_ITEM_ALBUMURL) != null
                                 && item.getString(TAG_ITEM_ALBUMURL).isNotEmpty()) {
                             dataItem.itemAlbumURL = item.getString(TAG_ITEM_ALBUMURL)
                         }
@@ -466,23 +461,25 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                         tempDataItem.add(dataItem)
                     }
 
-                    runOnUiThread {
-                        dataItems!!.clear()
-                        dataItems!!.addAll(tempDataItem)
-                        deviceBrowserListAdapter?.updateList(dataItems)
-                        if (gotolastpostion)
-                            mLayoutManager!!.scrollToPosition(49)
-                        else
-                            mLayoutManager!!.scrollToPosition(0)
-                        gotolastpostion = false
-                    }
+                    dataItems!!.clear()
+                    dataItems!!.addAll(tempDataItem)
+                    deviceBrowserListAdapter?.updateList(dataItems)
+                    if (gotolastpostion)
+                        mLayoutManager!!.scrollToPosition(49)
+                    else
+                        mLayoutManager!!.scrollToPosition(0)
+                    gotolastpostion = false
+
+                    if (handler.hasMessages(NETWORK_TIMEOUT)) handler.removeMessages(NETWORK_TIMEOUT)
+                    closeLoader()
 
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                closeLoader()
             }
 
-        }
+        } else closeLoader()
 
 
     }
@@ -510,8 +507,8 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
 
     override fun onBackPressed() {
         /* Sends the back command issues*/
-        luciControl!!.SendCommand(MIDCONST.MID_REMOTE_UI.toInt(), BACK, LSSDPCONST.LUCI_SET)
         showLoader(R.string.loading_prev_items)
+        luciControl!!.SendCommand(MIDCONST.MID_REMOTE_UI.toInt(), BACK, LSSDPCONST.LUCI_SET)
 
         //////////// timeout for dialog - showLoader() ///////////////////
         if (current_source_index_selected == 0) {

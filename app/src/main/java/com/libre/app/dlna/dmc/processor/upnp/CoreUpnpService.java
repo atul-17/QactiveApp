@@ -53,7 +53,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class CoreUpnpService extends AndroidUpnpServiceImpl {
     private static final int NOTIFICATION = 1500;
@@ -181,7 +180,7 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
             return upnpService.getControlPoint();
         }
 
-        public void renew() {
+        public void renewUpnpBinder() {
 
 
             Collection<RegistryListener> listeners = upnpService.getRegistry().getListeners();
@@ -208,16 +207,10 @@ public class CoreUpnpService extends AndroidUpnpServiceImpl {
 
             upnpService = new UpnpServiceImpl(createConfiguration());
             upnpService.getRegistry().removeAllRemoteDevices();
-            Iterator<RegistryListener> iterator = listeners.iterator();
 
-            while (iterator.hasNext()) {
-                RegistryListener list = iterator.next();
+            for (RegistryListener list : listeners) {
                 upnpService.getRegistry().addListener(list);
             }
-
-
-            return;
-
         }
 
 
@@ -626,63 +619,6 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
     };
 
     private void createTunnelingClient(@NotNull final LSSDPNodes nodes) {
-
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Socket clientSocket;
-                try {
-                    clientSocket = new Socket(InetAddress.getByName(nodes.getIP()), TunnelingControl.TUNNELING_CLIENT_PORT);
-                    LibreLogger.d(this, "createTunnelingClient, socket connected "
-                            + clientSocket.isConnected() + " for "
-                            + clientSocket.getInetAddress().getHostAddress() + " port "
-                            + clientSocket.getPort());
-
-                    clientSocket.setSoTimeout(60*1000);
-                    clientSocket.setKeepAlive(true);
-
-                    LibreLogger.d(this,"createTunnelingClient, clientSocket isConnected = "+clientSocket.isConnected());
-                    if (clientSocket.isConnected()) {
-                        if (!TunnelingControl.tunnelingClientsMap.containsKey(nodes.getIP())) {
-                            Log.e("tunnelingClientsMap", "inserting " + nodes.getIP());
-                            TunnelingControl.tunnelingClientsMap.put(nodes.getIP(), clientSocket);
-
-                            /*Requesting Data Mode from Host (Speaker)/*
-                            new TunnelingControl(clientSocket.getInetAddress().getHostAddress()).sendDataModeCommand();
-                        }
-
-                        /*Reading byte[] from socket/*
-                        DataInputStream dIn = new DataInputStream(clientSocket.getInputStream());
-
-                        while (true) {
-                            int length = dIn.available();  // read length of incoming message
-                            if (length > 0) {
-                                LibreLogger.d(this,"createTunnelingClient, dIn length = "+length);
-                                byte[] message = new byte[length];
-//                                dIn.read(message);
-                                dIn.readFully(message); // read the message
-                                /*Prints in Decimal system/*
-//                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ Arrays.toString(message));
-//                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ Hex.bytesToStringUppercase(message));
-
-                                LibreLogger.d(this,"createTunnelingClient, message[] = "+ TunnelingControl.getReadableHexByteArray(message));
-
-                                TunnelingData tunnelingData = new TunnelingData(nodes.getIP(), message);
-                                BusProvider.getInstance().post(tunnelingData);
-                            }
-                        }
-                    }
-
-                } catch (Exception e) {
-                    Log.e("createTunnelingClient","exception "+e.getMessage());
-                    if (TunnelingControl.tunnelingClientsMap.containsKey(nodes.getIP())) {
-                        Log.e("tunnelingClientsMap", "removing " + nodes.getIP());
-                        TunnelingControl.tunnelingClientsMap.remove(nodes.getIP());
-                    }
-                }
-            }
-        }).start();*/
-
         TunnelingClientRunnable tunnelingClientRunnable = new TunnelingClientRunnable(nodes.getIP());
         new Thread(tunnelingClientRunnable).start();
     }
@@ -698,7 +634,7 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
 
                 LibreLogger.d(this, "Phone ip and upnp ip is different");
                 LibreApplication.LOCAL_IP = localIpAddress;
-                binder.renew();
+                binder.renewUpnpBinder();
                 MusicServer ms = MusicServer.getMusicServer();
                 ms.clearMediaServer();
                 UpnpDeviceManager.getInstance().clearMaps();

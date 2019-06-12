@@ -42,7 +42,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     private Context mContext;
 
 
-    private static CoreUpnpService.Binder m_upnpService;
+    private static CoreUpnpService.Binder upnpServiceBinder;
 
     private ServiceConnection m_serviceConnection;
 
@@ -73,13 +73,13 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
             public void onServiceDisconnected(ComponentName name) {
                 Log.d(TAG, "Upnp Service is Null");
-                m_upnpService = null;
+                upnpServiceBinder = null;
             }
 
             public void onServiceConnected(ComponentName name, IBinder service) {
                 Log.d(TAG, "Upnp Service Ready");
-                m_upnpService = (CoreUpnpService.Binder) service;
-                m_upnpService.getRegistry().addListener(UpnpProcessorImpl.this);
+                upnpServiceBinder = (CoreUpnpService.Binder) service;
+                upnpServiceBinder.getRegistry().addListener(UpnpProcessorImpl.this);
 
                 fireOnStartCompleteEvent();
             }
@@ -97,7 +97,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
     public void unbindUpnpService() {
         Log.d(TAG, "Unbind to service");
-        if (m_upnpService != null) {
+        if (upnpServiceBinder != null) {
             try {
                 if(m_serviceConnection!=null && mContext!=null) /*We Got the Crash in the CrashAnalaytics*/
 				   mContext.unbindService(m_serviceConnection);
@@ -120,8 +120,8 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     public void searchAll() {
 
         Log.d(TAG, "Search invoke");
-        m_upnpService.getRegistry().removeAllRemoteDevices();
-        m_upnpService.getControlPoint().search();
+        upnpServiceBinder.getRegistry().removeAllRemoteDevices();
+        upnpServiceBinder.getControlPoint().search();
 
     }
 
@@ -147,12 +147,12 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     }
 
     public ControlPoint getControlPoint() {
-        return m_upnpService.getControlPoint();
+        return upnpServiceBinder.getControlPoint();
     }
 
     @Override
     public RemoteDevice getRemoteDevice(String UDN) {
-        for (RemoteDevice device : m_upnpService.getRegistry().getRemoteDevices()) {
+        for (RemoteDevice device : upnpServiceBinder.getRegistry().getRemoteDevices()) {
             if (device.getIdentity().getUdn().toString().equals(UDN))
                 return device;
         }
@@ -161,24 +161,24 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     }
 
     public Collection<LocalDevice> getLocalDevices() {
-        if (m_upnpService != null)
-            return m_upnpService.getRegistry().getLocalDevices();
+        if (upnpServiceBinder != null)
+            return upnpServiceBinder.getRegistry().getLocalDevices();
 
         return null;
     }
 
     public Collection<RemoteDevice> getRemoteDevices() {
-        if (m_upnpService != null)
-            return m_upnpService.getRegistry().getRemoteDevices();
+        if (upnpServiceBinder != null)
+            return upnpServiceBinder.getRegistry().getRemoteDevices();
         return null;
     }
 
     @SuppressWarnings("rawtypes")
     public Collection<RemoteDevice> getRemoteDMS() {
         DeviceType dmstype = new DeviceType(DMS_NAMESPACE, DMS_TYPE, 1);
-        if (m_upnpService == null) return null;
+        if (upnpServiceBinder == null) return null;
 
-        Collection<Device> devices = m_upnpService.getRegistry().getDevices(dmstype);
+        Collection<Device> devices = upnpServiceBinder.getRegistry().getDevices(dmstype);
         if (devices == null) return null;
 
         ArrayList<RemoteDevice> remoteDev = new ArrayList<RemoteDevice>();
@@ -193,9 +193,9 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     @SuppressWarnings("rawtypes")
     public Collection<RemoteDevice> getRemoteDMR() {
         DeviceType dmrtype = new DeviceType(DMR_NAMESPACE, DMR_TYPE, 1);
-        if (m_upnpService == null) return null;
+        if (upnpServiceBinder == null) return null;
 
-        Collection<Device> devices = m_upnpService.getRegistry().getDevices(dmrtype);
+        Collection<Device> devices = upnpServiceBinder.getRegistry().getDevices(dmrtype);
         if (devices == null) return null;
 
         ArrayList<RemoteDevice> remoteDev = new ArrayList<RemoteDevice>();
@@ -209,7 +209,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
     public LocalDevice getLocalDevice(String UDN) {
 
-        for (LocalDevice device : m_upnpService.getRegistry().getLocalDevices()) {
+        for (LocalDevice device : upnpServiceBinder.getRegistry().getLocalDevices()) {
             Log.i(TAG, "Local device:" + device.getDetails().getFriendlyName() + "," + device.getIdentity().getUdn().toString());
             if (device.getIdentity().getUdn().toString().compareTo(UDN) == 0)
                 return device;
@@ -242,8 +242,8 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
         {
             Log.d(TAG, "SearchDMS invoke");
             DeviceType type = new DeviceType(DMS_NAMESPACE, DMS_TYPE, 1);
-            if (m_upnpService != null) {
-                m_upnpService.getControlPoint().search(new DeviceTypeHeader(type));
+            if (upnpServiceBinder != null) {
+                upnpServiceBinder.getControlPoint().search(new DeviceTypeHeader(type));
             } else {
                 Log.w(TAG, "UPnP Service is null");
             }
@@ -256,9 +256,9 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
         Log.d(TAG, "SearchDMR invoke");
         DeviceType type = new DeviceType(DMR_NAMESPACE, DMR_TYPE, 1);
-        if (m_upnpService != null) {
-            //m_upnpService.getRegistry().removeAllRemoteDevices();
-            m_upnpService.getControlPoint().search(new DeviceTypeHeader(type));
+        if (upnpServiceBinder != null) {
+            //upnpServiceBinder.getRegistry().removeAllRemoteDevices();
+            upnpServiceBinder.getControlPoint().search(new DeviceTypeHeader(type));
         } else {
             Log.w(TAG, "UPnP Service is null");
         }
@@ -267,9 +267,9 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
     public void ClearAll() {
         Log.d(TAG, "SearchDMR invoke");
-        if (m_upnpService != null) {
-            m_upnpService.getRegistry().removeAllRemoteDevices();
-//				m_upnpService.getControlPoint().search(new DeviceTypeHeader(type));
+        if (upnpServiceBinder != null) {
+            upnpServiceBinder.getRegistry().removeAllRemoteDevices();
+//				upnpServiceBinder.getControlPoint().search(new DeviceTypeHeader(type));
         } else {
             Log.w(TAG, "UPnP Service is null");
         }
@@ -280,7 +280,7 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
     public RemoteDevice getTheRendererFromRegistryIp(String ipAdd) {
 
-        for (RemoteDevice device : m_upnpService.getRegistry().getRemoteDevices()) {
+        for (RemoteDevice device : upnpServiceBinder.getRegistry().getRemoteDevices()) {
 
             String ip = device.getIdentity().getDescriptorURL().getHost();
 
@@ -382,17 +382,17 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
 
 
     public void renew() {
-        m_upnpService.renew();
+        upnpServiceBinder.renewUpnpBinder();
         ms = MusicServer.getMusicServer();
         ms.clearMediaServer();
         UpnpDeviceManager.getInstance().clearMaps();
         LibreApplication.PLAYBACK_HELPER_MAP = new HashMap<String, PlaybackHelper>();
 
-        m_upnpService.getRegistry().addDevice(ms.getMediaServer().getDevice());
+        upnpServiceBinder.getRegistry().addDevice(ms.getMediaServer().getDevice());
         LibreApplication.LOCAL_UDN = ms.getMediaServer().getDevice().getIdentity().getUdn().toString();
 
         if(m_activity!=null)
-//        ((LibreApplication) m_activity.getApplication()).setControlPoint(m_upnpService.getControlPoint());
+//        ((LibreApplication) m_activity.getApplication()).setControlPoint(upnpServiceBinder.getControlPoint());
 
         unbindUpnpService();
         bindUpnpService();
@@ -400,6 +400,6 @@ public class UpnpProcessorImpl implements UpnpProcessor, RegistryListener {
     }
 
     public CoreUpnpService.Binder getBinder() {
-        return m_upnpService;
+        return upnpServiceBinder;
     }
 }

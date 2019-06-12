@@ -129,7 +129,12 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ct_activity_file_browser)
-//        setViews()
+        setViews()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
     }
 
     override fun onStartComplete() {
@@ -139,14 +144,12 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
 
         deviceUDN = intent?.getStringExtra(DEVICE_UDN)
 
-        dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(deviceUDN!!, ignoreCase = true))
-            DMSBrowseHelper(true, deviceUDN)
-        else
-            DMSBrowseHelper(false, deviceUDN)
-
         if (dmsBrowseHelper == null) {
             LibreLogger.d(this,"dmsBrowseHelper null")
-            return
+            dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(deviceUDN!!, ignoreCase = true))
+                DMSBrowseHelper(true, deviceUDN)
+            else
+                DMSBrowseHelper(false, deviceUDN)
         }
 
         val dmsDevice = dmsBrowseHelper!!.getDevice(UpnpDeviceManager.getInstance())
@@ -189,17 +192,11 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
             }
         }
     }
-
-    override fun onStart() {
-        super.onStart()
-        setViews()
-    }
     
     private fun setViews(){
         toolbar?.title = ""
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
-        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
 
         if (intent?.getStringExtra(DIDL_TITLE)!=null)
             updateTitle(intent?.getStringExtra(DIDL_TITLE)!!)
@@ -408,18 +405,6 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         }
     }
 
-    private fun handleBackPress(){
-        closeKeyboard(this, currentFocus)
-        if (intent?.getStringExtra(DIDL_TITLE)!=null && intent?.getStringExtra(DIDL_TITLE)!! == tv_folder_name?.text?.toString()!!) {
-            onBackPressed()
-        } else {
-            didlObjectStack!!.pop()
-            if (!didlObjectStack!!.isEmpty()) {
-                browse(didlObjectStack!!.peek())
-            }
-        }
-    }
-
     override fun onRemoteDeviceAdded(device: RemoteDevice) {
         super.onRemoteDeviceAdded(device)
         val ip = device.identity.descriptorURL.host
@@ -512,6 +497,6 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         /* This change is done to make sure that album art is reflectd after source swithing from Aux to other*- END*/
         intent.putExtra(CURRENT_DEVICE_IP, currentIpAddress)
         startActivity(intent)
-        finish()
+//        finish()
     }
 }
