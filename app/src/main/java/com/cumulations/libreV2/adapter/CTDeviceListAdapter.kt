@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -19,8 +18,7 @@ import com.cumulations.libreV2.activity.CTMediaSourcesActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.cumulations.libreV2.activity.CTNowPlayingActivity
 import com.cumulations.libreV2.fragments.CTActiveDevicesFragment
-import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
-import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.*
 import com.libre.LErrorHandeling.LibreError
 import com.libre.Scanning.Constants
@@ -29,7 +27,6 @@ import com.libre.alexa.AudioRecordCallback
 import com.libre.alexa.AudioRecordUtil
 import com.libre.alexa.MicExceptionListener
 import com.libre.alexa.MicTcpServer
-import com.libre.constants.CommandType
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
@@ -39,7 +36,6 @@ import com.libre.luci.Utils
 import com.libre.netty.BusProvider
 import com.libre.util.LibreLogger
 import com.libre.util.PicassoTrustCertificates
-import com.squareup.picasso.MemoryPolicy
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.ct_list_item_speakers.view.*
 import kotlinx.android.synthetic.main.music_playing_widget.view.*
@@ -47,7 +43,7 @@ import java.util.concurrent.ConcurrentMap
 
 class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerView.ViewHolder>(),
         AudioRecordCallback, MicExceptionListener {
-    private var sceneObjectMap:LinkedHashMap<String,SceneObject> = LinkedHashMap()
+    private var sceneObjectMap:LinkedHashMap<String, SceneObject> = LinkedHashMap()
     var audioRecordUtil: AudioRecordUtil? = null
     private var micTcpServer: MicTcpServer? = null
 
@@ -278,13 +274,13 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 LibreLogger.d(this, "current source is not DMR" + sceneObject!!.currentSource)
 
                 if (sceneObject!!.playstatus == SceneObject.CURRENTLY_PLAYING) {
-                    LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, CommandType.SET, sceneObject.ipAddress)
+                    LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, LSSDPCONST.LUCI_SET, sceneObject.ipAddress)
                     itemView.iv_play_pause.setImageResource(R.drawable.play_orange)
                 } else {
                     if (sceneObject!!.currentSource == Constants.BT_SOURCE) { /* Change Done By Karuna, Because for BT Source there is no RESUME*/
-                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, CommandType.SET, sceneObject.ipAddress)
+                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, LSSDPCONST.LUCI_SET, sceneObject.ipAddress)
                     } else {
-                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, CommandType.SET, sceneObject.ipAddress)
+                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET, sceneObject.ipAddress)
                     }
                     itemView.iv_play_pause.setImageResource(R.drawable.pause_orange)
                 }
@@ -307,7 +303,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                         itemView?.iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
                     } else itemView?.iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
-                    LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject?.ipAddress)
+                    LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, LSSDPCONST.LUCI_SET, sceneObject?.ipAddress)
 
                     sceneObject!!.volumeValueInPercentage = seekBar.progress
                     ScanningHandler.getInstance().sceneObjectFromCentralRepo[sceneObject.ipAddress] = sceneObject
@@ -564,7 +560,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
         notifyItemChanged(pos,sceneObject)
     }
 
-    fun getDeviceSceneFromAdapter(deviceIp:String):SceneObject? {
+    fun getDeviceSceneFromAdapter(deviceIp:String): SceneObject? {
         Log.d("getDevice","ip $deviceIp")
         return sceneObjectMap[deviceIp]
     }
@@ -575,7 +571,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
         notifyDataSetChanged()
     }
 
-    fun addAllDevices(sceneObjectConcurrentMap: ConcurrentMap<String,SceneObject>) {
+    fun addAllDevices(sceneObjectConcurrentMap: ConcurrentMap<String, SceneObject>) {
 
         sceneObjectMap.clear()
         sceneObjectConcurrentMap.forEach { (ipAddress,sceneObject) ->

@@ -21,7 +21,7 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.adapter.CTDeviceBrowserListAdapter
 import com.cumulations.libreV2.closeKeyboard
 import com.libre.LErrorHandeling.LibreError
-import com.libre.ManageDevice.DataItem
+import com.cumulations.libreV2.model.DataItem
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.Constants.NETWORK_TIMEOUT

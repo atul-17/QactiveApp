@@ -16,6 +16,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.cumulations.libreV2.model.SceneObject;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
 import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl;
@@ -55,7 +56,7 @@ public class ForegroundService extends Service {
         String ipAddress = m_myApp.getDeviceIpAddress();
 
         if (intent == null || intent.getAction() == null)
-            return 0;
+            return Service.START_STICKY_COMPATIBILITY;
 
         m_upnpProcessor = new UpnpProcessorImpl(this);
         m_upnpProcessor.bindUpnpService();
@@ -145,7 +146,7 @@ public class ForegroundService extends Service {
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             mNotificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
             if (m_myApp.getDeviceIpAddress() == null || m_myApp.getDeviceIpAddress().equalsIgnoreCase(""))
-                return 0;
+                return Service.START_STICKY_COMPATIBILITY;
 
             LUCIControl luciControl = new LUCIControl(m_myApp.getDeviceIpAddress());
             luciControl.SendCommand(MIDCONST.MID_PLAYCONTROL, LUCIMESSAGES.PLAY_PREV, LSSDPCONST.LUCI_SET);
@@ -156,7 +157,7 @@ public class ForegroundService extends Service {
             mNotificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
 
             if (m_myApp.getDeviceIpAddress() == null || m_myApp.getDeviceIpAddress().equalsIgnoreCase(""))
-                return 0;
+                return Service.START_STICKY_COMPATIBILITY;
 
             LUCIControl luciControl = new LUCIControl(m_myApp.getDeviceIpAddress());
             luciControl.SendCommand(MIDCONST.MID_PLAYCONTROL, LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET);
@@ -167,7 +168,7 @@ public class ForegroundService extends Service {
             mNotificationManager.cancel(Constants.NOTIFICATION_ID.FOREGROUND_SERVICE);
 
             if (m_myApp.getDeviceIpAddress() == null || m_myApp.getDeviceIpAddress().equalsIgnoreCase(""))
-                return 0;
+                return Service.START_STICKY_COMPATIBILITY;
             LUCIControl luciControl = new LUCIControl(m_myApp.getDeviceIpAddress());
             luciControl.SendCommand(MIDCONST.MID_PLAYCONTROL, LUCIMESSAGES.PLAY_NEXT, LSSDPCONST.LUCI_SET);
 

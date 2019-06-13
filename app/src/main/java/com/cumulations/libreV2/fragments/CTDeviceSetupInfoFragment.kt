@@ -18,10 +18,9 @@ import com.cumulations.libreV2.toHtmlSpanned
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.libre.LErrorHandeling.LibreError
 import com.libre.LibreApplication
-import com.libre.Network.WifiConnection
+import com.cumulations.libreV2.model.WifiConnection
 import com.libre.R
 import com.libre.Scanning.Constants
-import com.libre.Scanning.Utils
 import com.libre.serviceinterface.LSDeviceClient
 import com.libre.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_fragment_device_setup_instructions.*

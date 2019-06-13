@@ -21,6 +21,8 @@ import android.util.Log;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.cumulations.libreV2.activity.CTHomeTabsActivity;
+import com.cumulations.libreV2.model.SceneObject;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanThread;
 import com.libre.Scanning.ScanningHandler;
@@ -30,7 +32,7 @@ import com.libre.app.dlna.dmc.server.ContentTree;
 import com.libre.app.dlna.dmc.utility.DMRControlHelper;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
-import com.libre.constants.CommandType;
+import com.libre.constants.LSSDPCONST;
 import com.libre.constants.LUCIMESSAGES;
 import com.libre.constants.MIDCONST;
 import com.libre.luci.LSSDPNodeDB;
@@ -81,14 +83,8 @@ public class DMRDeviceListenerForegroundService extends Service implements UpnpP
 
     private PendingIntent getNotificationPendingIntent() {
 
-//        Intent activeScene = new Intent(this, ActiveScenesListActivity.class);
-//        activeScene.setAction(Constants.ACTION.MAIN_ACTION);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, activeScene,
-//                PendingIntent.FLAG_UPDATE_CURRENT);
-
-
         // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, ActiveScenesListActivity.class);
+        Intent resultIntent = new Intent(this, CTHomeTabsActivity.class);
         resultIntent.setAction(Constants.ACTION.MAIN_ACTION);
         // The stack builder object will contain an artificial back stack for the
         // started Activity.
@@ -112,10 +108,9 @@ public class DMRDeviceListenerForegroundService extends Service implements UpnpP
 
         Log.d(LOG_TAG, "Called onStartCommand");
 
-        String ipAddress = m_myApp.getDeviceIpAddress();
 
         if (intent == null || intent.getAction() == null)
-            return 0;
+            return Service.START_STICKY_COMPATIBILITY;
 
 
         if (intent.getAction().equals(Constants.ACTION.STARTFOREGROUND_ACTION)) {
@@ -129,7 +124,7 @@ public class DMRDeviceListenerForegroundService extends Service implements UpnpP
             setListeners(contentView);
 
 
-            Intent activeScene = new Intent(this, ActiveScenesListActivity.class);
+            Intent activeScene = new Intent(this, CTHomeTabsActivity.class);
             activeScene.setAction(Constants.ACTION.MAIN_ACTION);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, activeScene,
                     PendingIntent.FLAG_UPDATE_CURRENT);
@@ -234,7 +229,7 @@ public class DMRDeviceListenerForegroundService extends Service implements UpnpP
                 ) {
 
                     LUCIControl control = new LUCIControl(currentSceneObject.getIpAddress());
-                    control.SendCommand(MIDCONST.MID_PLAYCONTROL, LUCIMESSAGES.STOP, CommandType.SET);
+                    control.SendCommand(MIDCONST.MID_PLAYCONTROL, LUCIMESSAGES.STOP, LSSDPCONST.LUCI_SET);
 
                 }
             } catch (Exception e) {

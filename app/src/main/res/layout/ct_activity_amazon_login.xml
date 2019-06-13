@@ -71,24 +71,13 @@
             android:layout_height="wrap_content"
             android:indeterminate="true" />
 
-        <LinearLayout
+        <android.support.v7.widget.AppCompatImageView
             android:layout_marginTop="36dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <android.support.v7.widget.AppCompatImageView
-                android:scaleType="fitXY"
-                app:srcCompat="@drawable/ic_alexa_small"
-                android:layout_width="?attr/actionBarSize"
-                android:layout_height="?attr/actionBarSize" />
-            <android.support.v7.widget.AppCompatTextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="32sp"
-                android:text="@string/amazon_alexa"
-                android:textColor="@color/white" />
-        </LinearLayout>
+            android:scaleType="fitCenter"
+            android:padding="5dp"
+            app:srcCompat="@drawable/amazon_default"
+            android:layout_width="wrap_content"
+            android:layout_height="?attr/actionBarSize" />
 
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="wrap_content"

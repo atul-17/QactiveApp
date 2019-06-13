@@ -13,8 +13,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
+import com.cumulations.libreV2.activity.CTHomeTabsActivity;
 import com.libre.LibreApplication;
-import com.libre.PlayNewActivity;
 import com.libre.R;
 import com.libre.constants.MIDCONST;
 import com.libre.luci.LSSDPNodes;
@@ -140,10 +140,7 @@ public class GcastUpdateStatusAvailableListView extends CTDeviceDiscoveryActivit
                         public void onClick(DialogInterface dialog, int id) {
                             NoDeviceFoundalert.dismiss();
                             if(LibreApplication.FW_UPDATE_AVAILABLE_LIST.size()==0) {
-                                Intent ssid = new Intent(GcastUpdateStatusAvailableListView.this,
-                                        PlayNewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                startActivity(ssid);
-                                finish();
+                                intentToHome(GcastUpdateStatusAvailableListView.this);
                             }
                         }
                     });

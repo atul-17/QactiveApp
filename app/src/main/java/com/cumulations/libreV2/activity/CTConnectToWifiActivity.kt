@@ -14,7 +14,7 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.model.ScanResultItem
 import com.libre.LErrorHandeling.LibreError
 import com.libre.LibreApplication
-import com.libre.Network.WifiConnection
+import com.cumulations.libreV2.model.WifiConnection
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.netty.BusProvider

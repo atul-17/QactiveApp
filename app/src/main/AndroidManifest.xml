@@ -32,176 +32,16 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme"
         tools:replace="android:allowBackup">
-        <activity
-            android:name=".ConfigureActivity"
-            android:label="@string/title_activity_configure"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".PlayNewActivity"
-            android:label="@string/title_activity_configure"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ActiveScenesListActivity"
-            android:label="@string/title_activity_active_scenes_list"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Network.SacListActivity"
-            android:label="@string/title_activity_sac_list_speakers"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Network.ssid_configuration"
-            android:label="@string/title_activity_speakers_setup"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ManageDevice.ManageDevices"
-            android:label="@string/title_activity_manage_device"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" /> <!-- receiver for hardware volume -->
-        <!-- <receiver android:name=".VolumeReceiver"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="android.media.VOLUME_CHANGED_ACTION" /> -->
-        <!-- </intent-filter> -->
-        <!-- </receiver> -->
-        <!-- <service android:name=".ForegroundService" /> -->
-        <!-- added new activity -->
-        <activity
-            android:name=".NewManageDevices.NewManageDevices"
-            android:label="@string/title_activity_manage_device"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ManageDevice.CreateNewScene"
-            android:label="@string/title_activity_select_source_device"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".nowplaying.NowPlayingActivity"
-            android:label="@string/title_now_playing"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Network.LSSDPDeviceNetworkSettings"
-            android:label="@string/title_activity_lssdp_network_Settings"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".nowplaying.DeviceList"
-            android:label="@string/title_activity_device_list"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".RemoteSourcesList"
-            android:label="@string/title_activity_remote_sources_list"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".TuneInRemoteSourcesList"
-            android:label="@string/title_activity_remote_sources_list"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SourcesOptionActivity"
-            android:label="@string/title_activity_sources_option"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".app.dlna.dmc.DMSBrowserActivity"
-            android:label="@string/dmsbrowseractivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".app.dlna.dmc.DMSDeviceListActivity"
-            android:label="@string/title_activity_dmsdevice_list"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".led.LedActivity"
-            android:hardwareAccelerated="false"
-            android:label="@string/led_controller"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".app.dlna.dmc.LocalDMSActivity"
-            android:label="@string/dmsbrowseractivity"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
 
         <service android:name=".app.dlna.dmc.processor.upnp.CoreUpnpService" />
         <service
             android:name=".app.dlna.dmc.processor.upnp.LoadLocalContentService"
             android:exported="false" />
 
-        <activity
-            android:name=".Network.NewSacActivity"
-            android:label="@string/title_activity_new_sac"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".BassEffectActivity"
-            android:label="@string/title_activity_bass_effect"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Gcast"
-            android:label="@string/title_activity_gcast"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".GcastSources"
-            android:label="@string/title_activity_gcast"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name=".Network.NewSacDevicesActivity"
-            android:label="@string/speaker_setup_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SacSettingsOption"
-            android:label="@string/speaker_setup_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".SacSettingsPairShare"
-            android:label="@string/pair_share_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Network.SacSettingsPairShareScreen2"
-            android:label="@string/speaker_setup_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Network.SacInstructionsActivity"
-            android:label="@string/speaker_setup_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".LibreWebViewActivity"
-            android:label="@string/speaker_setup_title"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity android:name=".StaticInstructions.spotifyInstructions" />
-
         <service
             android:name=".DMRDeviceListenerForegroundService"
             android:exported="false" />
 
-        <activity
-            android:name=".Network.SacActivityScreenForLaunchWifiSettings"
-            android:label="@string/title_activity_sac_activity_screen_for_launch_wifi_settings"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".Ls9Sac.ConnectingToMainNetwork"
-            android:label="@string/title_activity_connecting_to_main_network"
-            android:parentActivityName="com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity"
-            android:screenOrientation="portrait">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity" />
-        </activity>
         <activity
             android:name=".Ls9Sac.GoogleCastUpdateAfterSac"
             android:label="@string/title_activity_google_cast_update_after_sac"
@@ -211,12 +51,6 @@
             android:name=".Ls9Sac.GcastUpdateStatusAvailableListView"
             android:label="@string/title_activity_gcast_update_status_available"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".alexa_signin.AlexaSignInActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".alexa_signin.AlexaThingsToTryDoneActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name="com.amazon.identity.auth.device.authorization.AuthorizationActivity"
@@ -235,66 +69,6 @@
                     android:scheme="amzn" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".alexa_signin.AlexaContactsActivity"
-            android:label="@string/alexa_contacts_title"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".alexa_signin.AlexaLangUpdateActivity"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".alexa.userpoolManager.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.UserActivity"
-            android:label="@string/title_activity_user"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.RegisterUser"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.AboutApp"
-            android:label="@string/title_activity_about_app"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.SignUpConfirm"
-            android:label="@string/title_activity_sign_up_confirm"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.MFAActivity"
-            android:label="@string/title_activity_mfa"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.ForgotPasswordActivity"
-            android:label="@string/title_activity_forgot_password"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.ChangePasswordActivity"
-            android:label="@string/title_activity_change_password"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.VerifyActivity"
-            android:label="@string/title_activity_verify"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.AddAttributeActivity"
-            android:label="@string/title_activity_add_attribute"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.DeviceSettings"
-            android:label="@string/title_activity_device_settings"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.userpoolManager.NewPassword"
-            android:label="@string/title_activity_new_password"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".alexa.AudioRecordDemoActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
 
 
         <!-- Cumulations -->

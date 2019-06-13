@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cumulations.libreV2.activity.CTDeviceBrowserActivity
-import com.libre.ManageDevice.DataItem
+import com.cumulations.libreV2.model.DataItem
 import com.libre.R
 import com.libre.util.PicassoTrustCertificates
 import kotlinx.android.synthetic.main.ct_remotecommand_item.view.*

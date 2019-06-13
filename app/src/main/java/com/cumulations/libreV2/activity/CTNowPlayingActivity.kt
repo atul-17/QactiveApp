@@ -20,10 +20,9 @@ import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.Constants.*
 import com.libre.Scanning.ScanningHandler
-import com.libre.SceneObject
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.app.dlna.dmc.processor.interfaces.DMRProcessor
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager
-import com.libre.constants.CommandType
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
@@ -34,7 +33,6 @@ import com.libre.luci.LUCIPacket
 import com.libre.netty.BusProvider
 import com.libre.netty.LibreDeviceInteractionListner
 import com.libre.netty.NettyData
-import com.libre.nowplaying.NowPlayingActivity
 import com.libre.util.LibreLogger
 import com.libre.util.PicassoTrustCertificates
 import com.squareup.picasso.Picasso
@@ -461,7 +459,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
                     val control = LUCIControl(currentSceneObject!!.ipAddress)
                     if (currentSceneObject!!.playstatus == SceneObject.CURRENTLY_PLAYING) {
-                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, CommandType.SET)
+                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, LSSDPCONST.LUCI_SET)
                         isStillPlaying = false
                         iv_play_pause!!.setImageResource(R.drawable.play_white)
                         iv_next!!.setImageResource(R.drawable.next_disabled)
@@ -469,9 +467,9 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                     } else {
                         isStillPlaying = true
                         if (currentSceneObject!!.currentSource == BT_SOURCE) {
-                            control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, CommandType.SET)
+                            control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, LSSDPCONST.LUCI_SET)
                         } else {
-                            control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, CommandType.SET)
+                            control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET)
                         }
                         iv_play_pause!!.setImageResource(R.drawable.pause_orange)
                         iv_next!!.setImageResource(R.drawable.next_enabled)
@@ -1425,9 +1423,9 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             }
             val control = LUCIControl(currentSceneObject!!.ipAddress)
             if (isNextPressed)
-                control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY_NEXT, CommandType.SET)
+                control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY_NEXT, LSSDPCONST.LUCI_SET)
             else
-                control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY_PREV, CommandType.SET)
+                control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY_PREV, LSSDPCONST.LUCI_SET)
         }
 
 
@@ -1469,16 +1467,13 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
     internal fun doVolumeChange(currentVolumePosition: Int): Boolean {
         /* We can make use of CurrentIpAddress instead of CurrenScneObject.getIpAddress*/
         val control = LUCIControl(currentIpAddress)
-        control.SendCommand(MIDCONST.VOLUME_CONTROL, "" + currentVolumePosition, CommandType.SET)
+        control.SendCommand(MIDCONST.VOLUME_CONTROL, "" + currentVolumePosition, LSSDPCONST.LUCI_SET)
         currentSceneObject!!.volumeValueInPercentage = currentVolumePosition
         mScanHandler!!.putSceneObjectToCentralRepo(currentIpAddress, currentSceneObject)
         return true
     }
 
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-
-        /* Added to avoid user pressing the volume change when user is getting call*/
-        if (NowPlayingActivity.isPhoneCallbeingReceived) return true
 
         val action = event.action
         val keyCode = event.keyCode
@@ -1487,9 +1482,9 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             KeyEvent.KEYCODE_VOLUME_UP -> {
                 if (action == KeyEvent.ACTION_DOWN) {
                     if (seek_bar_volume!!.progress > 85) {
-                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 100, CommandType.SET)
+                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 100, LSSDPCONST.LUCI_SET)
                     } else {
-                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress + 6), CommandType.SET)
+                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress + 6), LSSDPCONST.LUCI_SET)
                     }
                 }
                 return true
@@ -1497,9 +1492,9 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             KeyEvent.KEYCODE_VOLUME_DOWN -> {
                 if (action == KeyEvent.ACTION_DOWN) {
                     if (seek_bar_volume!!.progress < 15) {
-                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 0, CommandType.SET)
+                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 0, LSSDPCONST.LUCI_SET)
                     } else {
-                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress - 6), CommandType.SET)
+                        volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress - 6), LSSDPCONST.LUCI_SET)
                     }
                 }
                 return true

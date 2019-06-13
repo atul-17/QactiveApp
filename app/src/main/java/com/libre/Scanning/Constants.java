@@ -223,4 +223,6 @@ public class Constants {
     public static final String USB_DEFAULT_FILE_PATH_PREFIX = "/media/usb/";
     public static final String REPEAT = "_repeat";
     public static final String SHUFFLE = "_shuffle";
+
+    public static final int PREPARATION_INIT = 0x77;
 }

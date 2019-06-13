@@ -52,13 +52,11 @@ import com.libre.alexa.AudioRecordCallback
 import com.libre.alexa.AudioRecordUtil
 import com.libre.alexa.MicExceptionListener
 import com.libre.alexa.MicTcpServer
-import com.libre.alexa.userpoolManager.AlexaListeners.AlexaLoginListener
 import com.libre.app.dlna.dmc.gui.abstractactivity.UpnpListenerActivity
 import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl
 import com.libre.app.dlna.dmc.processor.upnp.CoreUpnpService
 import com.libre.app.dlna.dmc.server.ContentTree
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager
-import com.libre.constants.CommandType
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
@@ -86,12 +84,13 @@ import com.cumulations.libreV2.AppConstants.MICROPHONE_PERM_SETTINGS_REQUEST_COD
 import com.cumulations.libreV2.AppConstants.READ_STORAGE_REQUEST_CODE
 import com.cumulations.libreV2.AppConstants.STORAGE_PERM_SETTINGS_REQUEST_CODE
 import com.cumulations.libreV2.AppConstants.WIFI_SETTINGS_REQUEST_CODE
+import com.cumulations.libreV2.model.SceneObject
 import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
 import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
 import com.libre.*
 import com.libre.LibreApplication.activeSSID
-import com.libre.alexa_signin.AlexaUtils
+import com.libre.alexa.AlexaUtils
 import com.libre.util.PicassoTrustCertificates
 import com.squareup.picasso.Picasso
 import java.util.*
@@ -118,8 +117,6 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     protected var alertDialog1: AlertDialog? = null
     private var alertRestartApp: AlertDialog? = null
     private var isActivityPaused = false
-    var alexaLoginListener: AlexaLoginListener? = null
-        private set
     lateinit var libreApplication: LibreApplication
 
     private var mandateDialog: AlertDialog? = null
@@ -545,13 +542,13 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 }
 
                 if (musicSceneObject.playstatus == SceneObject.CURRENTLY_PLAYING) {
-                    control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, CommandType.SET)
+                    control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, LSSDPCONST.LUCI_SET)
                     playPauseView?.setImageResource(R.drawable.play_orange)
                 } else {
                     if (musicSceneObject.currentSource == Constants.BT_SOURCE) {
-                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, CommandType.SET)
+                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, LSSDPCONST.LUCI_SET)
                     } else {
-                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, CommandType.SET)
+                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET)
                     }
                     // musicSceneObject.setPlaystatus(SceneObject.CURRENTLY_PLAYING);
                     playPauseView?.setImageResource(R.drawable.pause_orange)
@@ -1166,14 +1163,6 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         this.libreDeviceInteractionListner = null
     }
 
-    fun registerAlexaLoginListener(alexaLoginListener: AlexaLoginListener) {
-        this.alexaLoginListener = alexaLoginListener
-    }
-
-    fun unRegisterAlexaLoginListener() {
-        this.alexaLoginListener = null
-    }
-
     fun intentToHome(context: Context) {
         Log.d("intentToHome","called by "+context::class.java.simpleName)
         val newIntent: Intent
@@ -1594,7 +1583,6 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         Log.e("restartSplashScreen", "starting")
         val mStartActivity = Intent(this, CTSplashScreenActivity::class.java)
         /*sending to let user know that app is restarting*/
-        mStartActivity.putExtra(SpalshScreenActivity.APP_RESTARTING, true)
         val mPendingIntentId = 123456
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
         val alarmManager = this.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager

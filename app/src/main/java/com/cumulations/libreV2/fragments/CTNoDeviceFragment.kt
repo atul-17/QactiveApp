@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.*
 import com.libre.Scanning.ScanningHandler
 import com.libre.luci.LSSDPNodeDB

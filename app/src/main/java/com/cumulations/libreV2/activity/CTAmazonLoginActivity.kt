@@ -17,11 +17,11 @@ import com.cumulations.libreV2.AppConstants
 import com.libre.LErrorHandeling.LibreError
 import com.libre.R
 import com.libre.Scanning.Constants
+import com.libre.alexa.AlexaUtils
 import com.libre.alexa.CompanionProvisioningInfo
 import com.libre.alexa.DeviceProvisioningInfo
 import com.libre.alexa.LibreAlexaConstants.*
-import com.libre.alexa.userpoolManager.AlexaUtils.AlexaConstants
-import com.libre.alexa_signin.AlexaUtils
+import com.libre.constants.AlexaConstants
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST

@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.libre.app.dlna.dmc.processor.interfaces.DMRProcessor;
-import com.libre.nowplaying.NowPlayingFragment;
 import com.libre.util.LibreLogger;
 
 import org.fourthline.cling.model.ModelUtil;
@@ -16,6 +15,9 @@ import org.fourthline.cling.support.model.item.Item;
 
 import java.util.List;
 import java.util.Random;
+
+import static com.cumulations.libreV2.activity.CTNowPlayingActivity.REPEAT_ALL;
+import static com.cumulations.libreV2.activity.CTNowPlayingActivity.REPEAT_ONE;
 
 
 public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
@@ -222,7 +224,7 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
         /*changed to support shuffle for local content as we we have to give random position*/
         int nextPosition;
         if (isShuffleOn) {
-            if (repeatState == NowPlayingFragment.REPEAT_ONE) {
+            if (repeatState == REPEAT_ONE) {
                 /*assigning same position every time*/
                 nextPosition = currPosition;
             } else {
@@ -232,10 +234,10 @@ public class PlaybackHelper implements DMRProcessor.DMRProcessorListener {
             Log.d(TAG, "playNextSong: shuffle is on" + nextPosition);
         } else {
             /*which means shuffle is off*/
-            if (repeatState == NowPlayingFragment.REPEAT_ONE) {
+            if (repeatState == REPEAT_ONE) {
                 /*assigning same position every time*/
                 nextPosition = currPosition;
-            } else if (repeatState == NowPlayingFragment.REPEAT_ALL) {
+            } else if (repeatState == REPEAT_ALL) {
                 /*if both counts are equal sending it to previous position*/
                 if (totalCount == currPosition + 1) {
                     nextPosition = 0;

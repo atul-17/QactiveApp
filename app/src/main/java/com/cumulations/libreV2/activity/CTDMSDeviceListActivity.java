@@ -7,15 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.cumulations.libreV2.AppConstants;
 import com.libre.LibreApplication;
 import com.libre.R;
 import com.libre.Scanning.Constants;
-import com.libre.app.dlna.dmc.DMSBrowserActivity;
 import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
 import com.libre.util.LibreLogger;

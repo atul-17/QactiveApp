@@ -18,9 +18,9 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.cumulations.libreV2.activity.CTConnectingToMainNetwork;
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity;
 import com.libre.LibreApplication;
-import com.libre.PlayNewActivity;
 import com.libre.R;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
@@ -129,10 +129,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                 LibreLogger.d(this, "goNext comitted");
                 LibreApplication.sacDeviceNameSetFromTheApp = "";
                 removeTheDeviceFromRepo(mLs9DeviceIpAddressForCastUpdate);
-                Intent ssid = new Intent(GoogleCastUpdateAfterSac.this,
-                        PlayNewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(ssid);
-                finish();
+                intentToHome(GoogleCastUpdateAfterSac.this);
             }
         });
 
@@ -141,7 +138,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
         /**sending delayed message to close progress bar*/
         handler.sendEmptyMessage(Constants.PREPARATION_INITIATED);
         handler.sendEmptyMessageDelayed(Constants.PREPARATION_TIMEOUT, TIMEOUT_FOR_GET_UPDATE_STATUS);
-        mLs9DeviceIpAddressForCastUpdate =  getIntent().getExtras().getString(ConnectingToMainNetwork.SAC_CURRENT_IPADDRESS);
+        mLs9DeviceIpAddressForCastUpdate =  getIntent().getExtras().getString(CTConnectingToMainNetwork.SAC_CURRENT_IPADDRESS);
         send223MsgBoxToKnowGcastStatus();
 
     }
@@ -152,7 +149,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
         disableNetworkChangeCallBack();
         disableNetworkOffCallBack();
         registerForDeviceEvents(this);
-        mLs9DeviceIpAddressForCastUpdate =  getIntent().getExtras().getString(ConnectingToMainNetwork.SAC_CURRENT_IPADDRESS);
+        mLs9DeviceIpAddressForCastUpdate =  getIntent().getExtras().getString(CTConnectingToMainNetwork.SAC_CURRENT_IPADDRESS);
         super.onResume();
     }
     private void showProgressDialog() {
@@ -347,10 +344,7 @@ public class GoogleCastUpdateAfterSac extends CTDeviceDiscoveryActivity implemen
                             if(handler.hasMessages(Constants.DOWNLOADING_UPDATE_MESSAGE_TIMEOUT))
                                 handler.removeMessages(Constants.DOWNLOADING_UPDATE_MESSAGE_TIMEOUT);
                             removeTheDeviceFromRepo(mLs9DeviceIpAddressForCastUpdate);
-                            Intent ssid = new Intent(GoogleCastUpdateAfterSac.this,
-                                    PlayNewActivity.class).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(ssid);
-                            finish();
+                            intentToHome(GoogleCastUpdateAfterSac.this);
                         }
                     });
 

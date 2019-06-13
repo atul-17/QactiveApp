@@ -15,7 +15,7 @@ import com.cumulations.libreV2.adapter.CTWifiListAdapter
 import com.cumulations.libreV2.model.ScanResultItem
 import com.cumulations.libreV2.model.ScanResultResponse
 import com.cumulations.libreV2.toHtmlSpanned
-import com.libre.Network.WifiConnection
+import com.cumulations.libreV2.model.WifiConnection
 import com.libre.Scanning.Constants
 import com.libre.serviceinterface.LSDeviceClient
 import kotlinx.android.synthetic.main.ct_activity_wifi_list.*

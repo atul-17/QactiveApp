@@ -4,7 +4,7 @@ import android.util.Log;
 
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
-import com.libre.SceneObject;
+import com.cumulations.libreV2.model.SceneObject;
 import com.libre.app.dlna.dmc.processor.interfaces.DMRProcessor;
 import com.libre.util.LibreLogger;
 

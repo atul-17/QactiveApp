@@ -14,7 +14,7 @@ import android.util.Patterns
 import com.cumulations.libreV2.activity.CTWifiListActivity
 import com.libre.R
 import com.libre.Scanning.Constants
-import com.libre.SceneObject
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.alexa.ControlConstants
 import com.libre.util.LibreLogger
 import org.json.JSONArray
@@ -105,7 +105,7 @@ object AppUtils {
         }
     }
     
-    fun updateSceneObjectWithPlayJsonWindow(window:JSONObject,oldSceneObject: SceneObject):SceneObject{
+    fun updateSceneObjectWithPlayJsonWindow(window:JSONObject,oldSceneObject: SceneObject): SceneObject {
         oldSceneObject?.trackName = window.getString("TrackName")
         oldSceneObject?.album_art = window.getString("CoverArtUrl")
         oldSceneObject?.playstatus = window.getInt("PlayState")

@@ -3,7 +3,6 @@
 
 
 import com.libre.app.dlna.dmc.server.ContentTree;
-import com.libre.nowplaying.NowPlayingFragment;
 
 import org.fourthline.cling.model.meta.Device;
 import org.fourthline.cling.support.model.DIDLObject;
@@ -12,7 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class DMSBrowseHelper implements Cloneable {
+import static com.cumulations.libreV2.activity.CTNowPlayingActivity.REPEAT_ALL;
+import static com.cumulations.libreV2.activity.CTNowPlayingActivity.REPEAT_OFF;
+
+	public class DMSBrowseHelper implements Cloneable {
 	
 	@SuppressWarnings("rawtypes")
 	public Device getDevice(UpnpDeviceManager deviceManager) {
@@ -49,7 +51,7 @@ public class DMSBrowseHelper implements Cloneable {
 
 	public DIDLObject getNextDIDLObject(int repeatState){
 
-		if (repeatState== NowPlayingFragment.REPEAT_ALL ){
+		if (repeatState== REPEAT_ALL ){
 
 			int mNewAdapterPosition = (adapterPosition+1) % didlList.size();
 			if (didlList != null &&
@@ -60,7 +62,7 @@ public class DMSBrowseHelper implements Cloneable {
 
 			}
 
-		}else if (repeatState== NowPlayingFragment.REPEAT_OFF){
+		}else if (repeatState== REPEAT_OFF){
 
 			int mNewAdapterPosition = adapterPosition+1;
 			if (didlList != null &&

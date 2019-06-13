@@ -13,13 +13,11 @@ import com.cumulations.libreV2.AppConstants.MEDIA_PROCESS_DONE
 import com.cumulations.libreV2.AppConstants.MEDIA_PROCESS_INIT
 import com.cumulations.libreV2.AppConstants.MSEARCH_REQUEST
 import com.cumulations.libreV2.AppConstants.TIME_EXPIRED
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.LibreApplication
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
-import com.libre.SceneObject
-import com.libre.alexa.userpoolManager.AlexaUtils.AlexaConstants
-import com.libre.alexa.userpoolManager.MainActivity
 import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService
 import com.libre.luci.LSSDPNodes
 import com.libre.netty.LibreDeviceInteractionListner
@@ -165,17 +163,12 @@ class CTSplashScreenActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         loader.visibility = View.GONE
         if (!LibreApplication.getIs3PDAEnabled()) {
             intentToHome(this)
-        } else {
-            val intent = Intent(this@CTSplashScreenActivity, MainActivity::class.java)
-            intent.putExtra(AlexaConstants.INTENT_FROM_ACTIVITY, AlexaConstants.INTENT_FROM_ACTIVITY_SPLASH_SCREEN)
-            startActivity(intent)
         }
     }
 
     override fun onStop() {
         super.onStop()
         unRegisterForDeviceEvents()
-        unRegisterAlexaLoginListener()
     }
 
     override fun onBackPressed() {

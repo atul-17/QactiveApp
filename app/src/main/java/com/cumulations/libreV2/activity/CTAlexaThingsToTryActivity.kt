@@ -5,7 +5,7 @@ import android.view.View
 import com.cumulations.libreV2.launchTheApp
 import com.libre.R
 import com.libre.Scanning.Constants
-import com.libre.alexa_signin.AlexaUtils
+import com.libre.alexa.AlexaUtils
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST

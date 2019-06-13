@@ -18,7 +18,7 @@ import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
 import com.libre.LibreApplication;
 import com.libre.Ls9Sac.FwUpgradeData;
 import com.libre.Scanning.ScanningHandler;
-import com.libre.SceneObject;
+import com.cumulations.libreV2.model.SceneObject;
 import com.libre.app.dlna.dmc.processor.http.HttpThread;
 import com.libre.app.dlna.dmc.server.MusicServer;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;

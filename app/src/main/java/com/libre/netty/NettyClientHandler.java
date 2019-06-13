@@ -8,7 +8,7 @@ import android.os.Message;
 import com.libre.LibreApplication;
 import com.libre.Scanning.Constants;
 import com.libre.Scanning.ScanningHandler;
-import com.libre.SceneObject;
+import com.cumulations.libreV2.model.SceneObject;
 import com.libre.app.dlna.dmc.server.ContentTree;
 import com.libre.app.dlna.dmc.utility.PlaybackHelper;
 import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;

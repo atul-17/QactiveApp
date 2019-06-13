@@ -15,11 +15,11 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.libre.LibreApplication
-import com.libre.Network.WifiConnection
+import com.cumulations.libreV2.model.WifiConnection
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
-import com.libre.SceneObject
+import com.cumulations.libreV2.model.SceneObject
 import com.libre.luci.LSSDPNodeDB
 import com.libre.luci.LSSDPNodes
 import com.libre.netty.LibreDeviceInteractionListner

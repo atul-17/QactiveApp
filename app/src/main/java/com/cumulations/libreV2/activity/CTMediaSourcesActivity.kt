@@ -16,20 +16,17 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.SharedPreferenceHelper
-import com.cumulations.libreV2.fragments.CTMediaServerListFragment
+import com.cumulations.libreV2.model.SceneObject
 import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
-import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
+import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
 import com.libre.LErrorHandeling.LibreError
 import com.libre.LibreApplication
 import com.libre.R
 import com.libre.Scanning.Constants
 import com.libre.Scanning.ScanningHandler
-import com.libre.SceneObject
-import com.libre.StaticInstructions.spotifyInstructions
-import com.libre.alexa_signin.AlexaUtils
-import com.libre.constants.CommandType
+import com.libre.alexa.AlexaUtils
 import com.libre.constants.LSSDPCONST
 import com.libre.constants.LUCIMESSAGES
 import com.libre.constants.MIDCONST
@@ -224,7 +221,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                 } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
                 val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
-                LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, CommandType.SET, sceneObject?.ipAddress)
+                LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, LSSDPCONST.LUCI_SET, sceneObject?.ipAddress)
                 sceneObject?.volumeValueInPercentage = seekBar.progress
                 mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
 
@@ -698,12 +695,6 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     }
 
                     when (source) {
-                        context.getString(R.string.spotify) -> {
-                            val spotifyIntent = Intent(this@CTMediaSourcesActivity, spotifyInstructions::class.java)
-                            spotifyIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
-                            spotifyIntent.putExtra(Constants.CURRENT_SOURCE, currentSource)
-                            startActivity(spotifyIntent)
-                        }
 
                         context.getString(R.string.my_device) -> {
                             if (!checkReadStoragePermission()){
