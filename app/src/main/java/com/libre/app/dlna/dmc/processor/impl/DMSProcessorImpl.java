@@ -32,7 +32,6 @@ public class DMSProcessorImpl implements DMSProcessor {
 	private static final String TAG = DMSProcessorImpl.class.getName();
 	private Device m_server;
 	private ControlPoint m_controlPoint;
-	private Map<String, List<? extends DIDLObject>> m_result;
 	private List<DMSProcessorListener> m_listeners;
 
 	public DMSProcessorImpl(Device device, ControlPoint controlPoint) {
@@ -44,7 +43,6 @@ public class DMSProcessorImpl implements DMSProcessor {
 
 	@SuppressWarnings("unchecked")
 	public void browse(final String objectID) {
-		m_result = new HashMap<String, List<? extends DIDLObject>>();
 		Service cds = m_server.findService(new ServiceType(UpnpProcessorImpl.DMS_NAMESPACE, "ContentDirectory"));
 
 		if (cds != null) {
@@ -65,7 +63,9 @@ public class DMSProcessorImpl implements DMSProcessor {
 					try {
 						DIDLParser parser = new DIDLParser();
 						DIDLContent content = parser.parse(invocation.getOutput("Result").toString());
-						
+
+						HashMap<String, List<? extends DIDLObject>> m_result = new HashMap<>();
+
 						for (Container container : content.getContainers()) {
 							Log.d(TAG, "Container: " + container.getTitle() + ", Id is =" + container.getId());
 						}
@@ -78,7 +78,7 @@ public class DMSProcessorImpl implements DMSProcessor {
 
 						m_result.put("Items", content.getItems());
 
-						fireOnBrowseCompleteEvent(objectID);
+						fireOnBrowseCompleteEvent(objectID,m_result);
 
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -117,7 +117,7 @@ public class DMSProcessorImpl implements DMSProcessor {
 		}
 	}
 
-	private void fireOnBrowseCompleteEvent(String parentObjectId) {
+	private void fireOnBrowseCompleteEvent(String parentObjectId, HashMap<String, List<? extends DIDLObject>> m_result) {
 		synchronized (m_listeners) {
 			for (DMSProcessorListener listener : m_listeners) {
 				listener.onBrowseComplete(parentObjectId,m_result);

@@ -13,8 +13,10 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.cumulations.libreV2.AppUtils;
+import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket;
 import com.cumulations.libreV2.tcp_tunneling.TunnelingClientRunnable;
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
+import com.cumulations.libreV2.tcp_tunneling.TunnelingData;
 import com.libre.LibreApplication;
 import com.libre.Ls9Sac.FwUpgradeData;
 import com.libre.Scanning.ScanningHandler;
@@ -613,8 +615,27 @@ if command type 2 and command status is 1 , then data will be empty., at that ti
         @Subscribe
         public void deviceGotRemoved(String ipaddress) {
             LibreLogger.d(this, "deviceGotRemoved, ip " + ipaddress);
-            TunnelingControl.removeTunnelingClient(ipaddress);
             GoAndRemoveTheDevice(ipaddress);
+        }
+
+        @Subscribe
+        public void tunnelingMessageReceived(TunnelingData tunnelingData){
+            LibreLogger.d(this,"tunnelingMessageReceived, data = ${TunnelingControl.getReadableHexByteArray(tunnelingData.remoteMessage)}");
+
+            if (tunnelingData.getRemoteMessage().length == 4){
+                /*Model Id only when 0x01 0x05 0x05 0x01~0x08*/
+                byte[] byteArray = tunnelingData.getRemoteMessage();
+                if (byteArray[0] == 0x01 && byteArray[1] == 0x05 && byteArray[2] == 0x05) {
+                    TCPTunnelPacket tcpTunnelPacket = new TCPTunnelPacket(tunnelingData.getRemoteMessage(), tunnelingData.getRemoteMessage().length);
+                    if (tcpTunnelPacket.getModelId() != null) {
+                        LSSDPNodes lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(tunnelingData.getRemoteClientIp());
+                        if (lssdpNodes!=null){
+                            lssdpNodes.setModelId(tcpTunnelPacket.getModelId());
+                        }
+                        LibreLogger.d(this, "tunnelingMessageReceived, modelId = ${tcpTunnelPacket.modelId}");
+                    }
+                }
+            }
         }
     };
 

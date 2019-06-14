@@ -64,13 +64,14 @@
         app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
 
         <android.support.v7.widget.AppCompatImageView
-            android:scaleType="fitCenter"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
             android:layout_above="@+id/tv_setup_info"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
-            app:srcCompat="@drawable/speaker_setup"
-            android:layout_width="144dp"
-            android:layout_height="144dp" />
+            app:srcCompat="@drawable/speaker_setup_libre"
+            android:layout_width="196dp"
+            android:layout_height="196dp" />
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tv_setup_info"

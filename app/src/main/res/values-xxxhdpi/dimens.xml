@@ -7,5 +7,5 @@
     <dimen name="small_text">12sp</dimen>
     <dimen name="medium_text">18sp</dimen>
     <dimen name="top_margin">10dp</dimen>
-    <dimen name="wifi_router_padding">32dp</dimen>
+    <dimen name="wifi_router_padding">48dp</dimen>
 </resources>

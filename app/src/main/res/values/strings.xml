@@ -216,7 +216,7 @@
     <string name="speaker_ready_for_cmds">Speaker is ready for commands</string>
     <string name="listening">Listening …</string>
     <string name="login_with_amazon_warn">You need to login to Amazon to enable speech commands</string>
-    <string name="riva_tutorial_url">https://rivaaudio.com/Alexa-tutorial/en/index.html</string>
+    <string name="riva_tutorial_url">https://rivaaudio.com/alexa-tutorial/en/index.html</string>
     <string name="version_only">Version</string>
     <string name="language">Language</string>
     <string name="english">English</string>

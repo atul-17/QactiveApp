@@ -289,7 +289,7 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
 
     override fun deviceGotRemoved(ipaddress: String?) {
         if (ipaddress != null && currentDeviceIp != null && ipaddress == currentDeviceIp) {
-            onBackPressed()
+            intentToHome(this)
         }
     }
 

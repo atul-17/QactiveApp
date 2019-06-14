@@ -247,6 +247,7 @@ public class ScanningHandler {
     }
 
     public void putSceneObjectToCentralRepo(String nodeMasterIp, SceneObject mScene) {
+        /*Filtering for only Concert and Stadium devices*/
         centralSceneObjectRepo.put(nodeMasterIp, mScene);
     }
 

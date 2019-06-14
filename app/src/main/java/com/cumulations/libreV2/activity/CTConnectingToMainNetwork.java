@@ -164,7 +164,7 @@ public class CTConnectingToMainNetwork extends CTDeviceDiscoveryActivity impleme
                 Toast.makeText(CTConnectingToMainNetwork.this, getString(R.string.httpPostFailed), Toast.LENGTH_LONG).show();
             } else if (msg.what == Constants.SEARCHING_FOR_DEVICE) {
                 sendMSearchInIntervalOfTime();
-                mHandler.sendEmptyMessageDelayed(Constants.TIMEOUT_FOR_SEARCHING_DEVICE, 70000);
+                mHandler.sendEmptyMessageDelayed(Constants.TIMEOUT_FOR_SEARCHING_DEVICE, Constants.SEARCH_DEVICE_TIMEOUT);
                 LibreLogger.d(this, "Searching For The Device " + LibreApplication.sacDeviceNameSetFromTheApp);
                 setSetupInfoText(getString(R.string.mSearchingTheDevce) + "\n" + LibreApplication.sacDeviceNameSetFromTheApp);
             } else if (msg.what == Constants.TIMEOUT_FOR_SEARCHING_DEVICE) {

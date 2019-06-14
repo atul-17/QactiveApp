@@ -23,6 +23,11 @@ class CTAmazonInfoActivity : CTDeviceDiscoveryActivity(), View.OnClickListener {
 
     private var speakerNode: LSSDPNodes? = null
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        this.intent = intent
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.ct_activity_amazon_signin_setup)
@@ -57,10 +62,7 @@ class CTAmazonInfoActivity : CTDeviceDiscoveryActivity(), View.OnClickListener {
             R.id.iv_back -> intentToHome(this)
 
             R.id.btn_signin_later -> {
-                startActivity(Intent(this, CTAlexaThingsToTryActivity::class.java)
-                        .putExtra(Constants.CURRENT_DEVICE_IP, speakerIpAddress)
-                        .putExtra(Constants.FROM_ACTIVITY, from)
-                        .putExtra(Constants.PREV_SCREEN, CTAmazonInfoActivity::class.java.simpleName))
+                intentToHome(this)
                 finish()
             }
         }

@@ -45,6 +45,14 @@ public class TunnelingControl {
         boolean isSocketPresent = tunnelingClientsMap.containsKey(socketIp);
         Log.d("removeTunnelingClient","isSocketPresent "+isSocketPresent);
         if (isSocketPresent){
+            Socket clientSocket = tunnelingClientsMap.get(socketIp);
+            if (!clientSocket.isClosed() || clientSocket.isConnected()) {
+                try {
+                    clientSocket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             tunnelingClientsMap.remove(socketIp);
         }
     }

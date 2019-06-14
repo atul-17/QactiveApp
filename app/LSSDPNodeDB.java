@@ -201,21 +201,6 @@ public class LSSDPNodeDB {
         return null;
 
     }
-
-    public LSSDPNodes getFilteredNodeFromIpAddress(String ipaddress) {
-        try {
-            for (int i = 0; i < filteredNodesList.size(); i++) {
-                LSSDPNodes mNode = filteredNodesList.get(i);
-                if (mNode.getIP().equals(ipaddress)) {
-                    return mNode;
-                }
-            }
-        } catch (Exception e) {
-            Log.d("EXCEPTION", "Error while returning filtered node from ip address");
-        }
-        return null;
-    }
-
     public boolean isAnyMasterIsAvailableInNetwork(){
 
         for (int i = 0; i < nodelist.size(); i++) {
@@ -231,6 +216,7 @@ public class LSSDPNodeDB {
 
         for (int i = 0; i < nodelist.size(); i++) {
             LSSDPNodes mNode = nodelist.get(i);
+
             if (mNode != null
                     && mNode.getDeviceState() != null
                     && (mNode.getDeviceState().equalsIgnoreCase("M")

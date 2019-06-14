@@ -225,4 +225,5 @@ public class Constants {
     public static final String SHUFFLE = "_shuffle";
 
     public static final int PREPARATION_INIT = 0x77;
+    public static final int SEARCH_DEVICE_TIMEOUT = 2*60*1000;
 }

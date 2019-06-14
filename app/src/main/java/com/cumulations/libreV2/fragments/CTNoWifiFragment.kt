@@ -42,7 +42,7 @@ class CTNoWifiFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickList
 
     private fun setListeners() {
 //        iv_refresh.setOnClickListener(this)
-        ll_wifi_settings.setOnClickListener(this)
+        tv_wifi_settings?.setOnClickListener(this)
     }
 
     private fun initViews() {
@@ -58,7 +58,7 @@ class CTNoWifiFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickList
     override fun onClick(p0: View?) {
         when(p0?.id){
             R.id.iv_refresh -> refreshDevices()
-            R.id.ll_wifi_settings -> {
+            R.id.tv_wifi_settings -> {
                 (activity as CTDeviceDiscoveryActivity).disableNetworkChangeCallBack()
                 (activity as CTDeviceDiscoveryActivity).disableNetworkOffCallBack()
 

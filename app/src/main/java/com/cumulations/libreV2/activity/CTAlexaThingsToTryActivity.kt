@@ -1,5 +1,6 @@
 package com.cumulations.libreV2.activity
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.cumulations.libreV2.launchTheApp
@@ -52,6 +53,11 @@ class CTAlexaThingsToTryActivity : CTDeviceDiscoveryActivity(), View.OnClickList
         tv_done.setOnClickListener(this)
         ll_alexa_app.setOnClickListener(this)
         tv_alexa_app.setOnClickListener(this)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        this.intent = intent
     }
 
     override fun onResume() {

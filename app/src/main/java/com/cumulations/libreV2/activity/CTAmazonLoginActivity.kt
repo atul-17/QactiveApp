@@ -89,6 +89,11 @@ class CTAmazonLoginActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
         tv_skip!!.setOnClickListener(this)
     }
 
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        this.intent = intent
+    }
+
     override fun onResume() {
         super.onResume()
 
