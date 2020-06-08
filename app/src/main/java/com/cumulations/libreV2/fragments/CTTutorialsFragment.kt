@@ -2,26 +2,25 @@ package com.cumulations.libreV2.fragments
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.*
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ProgressBar
-import com.libre.R
-import com.libre.Scanning.ScanningHandler
-import com.libre.util.LibreLogger
+import com.libre.qactive.R
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_fragment_tutorials.*
 
 
-class CTTutorialsFragment:Fragment() {
+class CTTutorialsFragment: Fragment() {
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
             super.onCreateView(inflater, container, savedInstanceState)
         return inflater?.inflate(R.layout.ct_fragment_tutorials,container,false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
     }
@@ -52,7 +51,7 @@ class CTTutorialsFragment:Fragment() {
         }
     }
 
-    internal class MyWebViewClient(var progressBar: ProgressBar) : WebViewClient() {
+    internal class MyWebViewClient(var progressBarGifImageView: ProgressBar) : WebViewClient() {
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             view.loadUrl(url)
             return true
@@ -61,13 +60,14 @@ class CTTutorialsFragment:Fragment() {
         override fun onPageStarted(view: WebView, url: String, favicon: Bitmap?) {
 
             LibreLogger.d(this, "page started")
-            progressBar.visibility = View.VISIBLE
+            //have made the loader invisible as of now.
+            progressBarGifImageView.visibility = View.INVISIBLE
             super.onPageStarted(view, url, favicon)
         }
 
         override fun onPageFinished(view: WebView, url: String) {
             LibreLogger.d(this, "page finished")
-            progressBar.visibility = View.INVISIBLE
+            progressBarGifImageView.visibility = View.INVISIBLE
             super.onPageFinished(view, url)
         }
 

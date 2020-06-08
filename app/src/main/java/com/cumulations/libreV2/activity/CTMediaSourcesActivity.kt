@@ -1,48 +1,67 @@
 package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.SeekBar
-import com.cumulations.libreV2.AppConstants
-import com.cumulations.libreV2.SharedPreferenceHelper
+import com.cumulations.libreV2.*
+import com.cumulations.libreV2.fragments.CTActiveDevicesFragment
 import com.cumulations.libreV2.model.SceneObject
 import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
 import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.ScanningHandler
-import com.libre.alexa.AlexaUtils
-import com.libre.constants.LSSDPCONST
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIControl
-import com.libre.luci.LUCIPacket
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.util.LibreLogger
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.Ls9Sac.FwUpgradeData
+import com.libre.qactive.Ls9Sac.GcastUpdateStatusAvailableListView
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.StaticInstructions.spotifyInstructions
+import com.libre.qactive.alexa.AlexaUtils
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.luci.LUCIControl
+import com.libre.qactive.luci.LUCIPacket
+import com.libre.qactive.netty.BusProvider
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.netty.RemovedLibreDevice
+import com.libre.qactive.util.LibreLogger
+import com.squareup.otto.Subscribe
 import kotlinx.android.synthetic.main.alert_checkbox.view.*
+import kotlinx.android.synthetic.main.ct_acitvity_now_playing.*
 import kotlinx.android.synthetic.main.ct_activity_media_sources.*
+import kotlinx.android.synthetic.main.ct_activity_media_sources.iv_alexa_settings
+import kotlinx.android.synthetic.main.ct_activity_media_sources.iv_back
+import kotlinx.android.synthetic.main.ct_activity_media_sources.iv_device_settings
+import kotlinx.android.synthetic.main.ct_activity_media_sources.seek_bar_volume
+import kotlinx.android.synthetic.main.ct_activity_media_sources.toolbar
+import kotlinx.android.synthetic.main.ct_activity_media_sources.tv_device_name
+import kotlinx.android.synthetic.main.ct_activity_source_selection.*
 import kotlinx.android.synthetic.main.ct_list_item_media_sources.view.*
+import kotlinx.android.synthetic.main.ct_list_item_speakers.view.*
 import kotlinx.android.synthetic.main.music_playing_widget.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.text.DateFormat
 import java.util.*
 
 class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteractionListner {
@@ -79,7 +98,6 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
     private var currentIpAddress: String? = null
     private var currentSource: String? = null
     private var currentSourceIndexSelected = -1
-
     private val mediaSourcesList: MutableList<String> = ArrayList()
 
 
@@ -124,18 +142,31 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
         currentIpAddress = intent.getStringExtra(Constants.CURRENT_DEVICE_IP)
         currentSource = intent.getStringExtra(Constants.CURRENT_SOURCE)
+
+
     }
+
 
     override fun onStart() {
         super.onStart()
         initViews()
-        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
         setListeners()
     }
 
+//    private fun initBusEvent() {
+//        try {
+//            BusProvider.getInstance().register(busEventListener)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+//
+//        if (LibreApplication.mCleanUpIsDoneButNotRestarted) {
+//            LibreApplication.mCleanUpIsDoneButNotRestarted = false
+//        }
+//    }
+
     private fun setListeners() {
         iv_toggle_bluetooth?.setOnClickListener {
-            val luciControl = LUCIControl(currentIpAddress)
             if (iv_toggle_bluetooth?.isChecked!!) {
                 /*if (iv_toggle_aux?.isChecked!!) {
                     /*WiFi == No Source*/
@@ -156,7 +187,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                 timeOutHandler!!.sendMessage(msg)*/
             } else {
 //                luciControl.SendCommand(MIDCONST.MID_BLUETOOTH, BLUETOOTH_ON, LSSDPCONST.LUCI_SET)
-                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x02/*BT*/)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE, 0x02/*BT*/)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
                 val msg = Message().apply {
                     what = BT_AUX_INITIATED
@@ -190,7 +221,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             } else {
                 /* Setting the source to default */
 //                luciControl.SendCommand(MIDCONST.MID_AUX_START, null, LSSDPCONST.LUCI_SET)
-                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE,0x00/*AUX*/)
+                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_SOURCE, 0x00/*AUX*/)
                 timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, Constants.LOADING_TIMEOUT.toLong())
 
                 val msg = Message().apply {
@@ -216,22 +247,62 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
                 LibreLogger.d("onStopTracking", "${seekBar.progress}")
 
-                if (seekBar.progress==0){
+                if (seekBar.progress == 0) {
                     iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
-                } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+                } else
+                    iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
-                val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
+                val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
                 LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, LSSDPCONST.LUCI_SET, sceneObject?.ipAddress)
                 sceneObject?.volumeValueInPercentage = seekBar.progress
                 mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
 
-//                TunnelingControl(currentIpAddress).sendCommand(PayloadType.DEVICE_VOLUME,(seekBar.progress/5).toByte())
+//                TunnelingControl(currentIpAddress).sendCommand(PaysloadType.DEVICE_VOLUME,(seekBar.progress/5).toByte())
             }
         })
+
+//        seek_bar_volume.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+//            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+//                Log.d("onProgressChanged $progress", "fromUser $fromUser")
+//            }
+//
+//            override fun onStartTrackingTouch(seekBar: SeekBar) {
+//                Log.d("onStartTracking", "${seekBar.progress}")
+//            }
+//
+//            override fun onStopTrackingTouch(seekBar: SeekBar) {
+//                if (!doVolumeChange(seekBar.progress))
+//                    showToast(R.string.actionFailed)
+//
+////                LibreLogger.d("onStopTracking", "${seekBar.progress}")
+////
+////                if (seekBar.progress==0){
+////                    iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+////                } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+////
+////                val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
+////                LUCIControl.SendCommandWithIp(MIDCONST.VOLUME_CONTROL, "" + seekBar.progress, LSSDPCONST.LUCI_SET, sceneObject?.ipAddress)
+////                sceneObject?.volumeValueInPercentage = seekBar.progress
+////                mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
+//
+//
+//            }
+//        })
+
 
         iv_back?.setOnClickListener {
             onBackPressed()
         }
+
+        val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentIpAddress)
+
+        if (lssdpNodes.getgCastVerision() != null) {
+            //gcast != null -> hide alexa
+            iv_alexa_settings.visibility = View.GONE
+        }else{
+            iv_alexa_settings.visibility = View.VISIBLE
+        }
+
 
         iv_alexa_settings?.setOnClickListener {
             val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentIpAddress)
@@ -263,7 +334,9 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentIpAddress)
 
         tv_device_name?.text = lssdpNodes?.friendlyname
-
+        tv_device_name?.post {
+            tv_device_name?.isSelected = true
+        }
         adapter = CTSourcesListAdapter(this, mediaSourcesList)
         rv_media_sources_list?.layoutManager = LinearLayoutManager(this)
         rv_media_sources_list?.adapter = adapter
@@ -271,28 +344,24 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         if (lssdpNodes?.getgCastVerision() != null
                 && !lssdpNodes.networkMode.contains("P2P")) {
             mediaSourcesList.clear()
-//            mediaSourcesList.add(spotify)
+            mediaSourcesList.add(spotify)
             adapter.notifyDataSetChanged()
         } else {
             mediaSourcesList.clear()
             mediaSourcesList.add(myDevice)
             mediaSourcesList.add(usbStorage)
             mediaSourcesList.add(mediaServer)
-//            mediaSourcesList.add(spotify)
+            mediaSourcesList.add(spotify)
             adapter.notifyDataSetChanged()
         }
 
-        if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty() && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked(currentIpAddress!!)){
-            showAlexaLoginAlert()
-        }
-
         if (currentSource != null) {
-            val currentSource = Integer.valueOf(currentSource)
-            val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress] ?: return
+            val currentSource = Integer.valueOf(currentSource!!)
+            val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress) ?: return
 
             /* Karuna , if Zone is playing in BT/AUX and We Released the Zone
             and we creating the same Guy as a Master then Aux should not Switch ON as a Default*/
-            if ((currentSource == Constants.AUX_SOURCE || currentSource == Constants.EXTERNAL_SOURCE)
+            if ((currentSource == Constants.AUX_SOURCE /*|| currentSource == Constants.EXTERNAL_SOURCE*/)
                     && (sceneObject.playstatus == SceneObject.CURRENTLY_STOPPED
                             || sceneObject.playstatus == SceneObject.CURRENTLY_NOTPLAYING)) {
                 Log.d("AUXSTATE", "--" + sceneObject.playstatus)
@@ -306,32 +375,70 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             }
         }
 
-        /*For free speakers irrespective of the state use Individual volume*/
-        if (LibreApplication./*ZONE_VOLUME_MAP*/INDIVIDUAL_VOLUME_MAP.containsKey(currentIpAddress)) {
-            seek_bar_volume.progress = LibreApplication.INDIVIDUAL_VOLUME_MAP[currentIpAddress]!!
+//        /*For free speakers irrespective of the state use Individual volume*/
+//        if (LibreApplication./*ZONE_VOLUME_MAP*/INDIVIDUAL_VOLUME_MAP.containsKey(currentIpAddress)) {
+//            seek_bar_volume.progress = LibreApplication.INDIVIDUAL_VOLUME_MAP[currentIpAddress]!!
+//        } else {
+//            LUCIControl(currentIpAddress).SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, null, LSSDPCONST.LUCI_GET)
+//            val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
+//            if (sceneObject?.volumeValueInPercentage!! >= 0)
+//                seek_bar_volume.progress = sceneObject!!.volumeValueInPercentage
+//        }
+//        if (seek_bar_volume.progress==0){
+//            iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+//        } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
+        val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
+
+        if (LibreApplication.INDIVIDUAL_VOLUME_MAP.containsKey(sceneObject!!.ipAddress)) {
+            seek_bar_volume!!.progress = LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress!!]!!
+            seek_bar_volume!!.progress = sceneObject!!.volumeValueInPercentage
+
         } else {
-            LUCIControl(currentIpAddress).SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, null, LSSDPCONST.LUCI_GET)
-            val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
-            if (sceneObject?.volumeValueInPercentage!! >= 0)
-                seek_bar_volume.progress = sceneObject!!.volumeValueInPercentage
+            val control = LUCIControl(sceneObject!!.ipAddress)
+            control.SendCommand(MIDCONST.VOLUME_CONTROL, null, LSSDPCONST.LUCI_GET)
+            if (sceneObject!!.volumeValueInPercentage >= 0)
+                seek_bar_volume!!.progress = sceneObject!!.volumeValueInPercentage
         }
-        if (seek_bar_volume.progress==0){
-            iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
-        } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+
+        if (seek_bar_volume.progress == 0) {
+            iv_volume_down?.setImageResource(R.drawable.ic_volume_mute)
+        } else iv_volume_down?.setImageResource(R.drawable.volume_low_enabled)
+
+        val ssid = AppUtils.getConnectedSSID(this)
+        if (ssid != null && !isConnectedToSAMode(ssid)) {
+            iv_alexa_settings?.visibility = View.VISIBLE
+            if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty() && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked(currentIpAddress!!)) {
+                showAlexaLoginAlert()
+            }
+        } else {
+            iv_alexa_settings?.visibility = View.GONE
+        }
     }
+
+//    internal fun doVolumeChange(currentVolumePosition: Int): Boolean {
+//        /* We can make use of CurrentIpAddress instead of CurrenScneObject.getIpAddress*/
+//        val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
+//
+//        val control = LUCIControl(currentIpAddress)
+//        control.SendCommand(MIDCONST.VOLUME_CONTROL, "" + currentVolumePosition, LSSDPCONST.LUCI_SET)
+//        sceneObject!!.volumeValueInPercentage = currentVolumePosition
+//        mScanHandler!!.putSceneObjectToCentralRepo(currentIpAddress, sceneObject)
+//        return true
+//    }
 
     private fun showAlexaLoginAlert() {
         AlertDialog.Builder(this).apply {
-//            setTitle(R.string.alexa_not_connected)
+            //            setTitle(R.string.alexa_not_connected)
 //            setMessage(getString(R.string.sign_in_az))
 
-            val checkBoxView = View.inflate(this@CTMediaSourcesActivity,R.layout.alert_checkbox,null)
+            val checkBoxView = View.inflate(this@CTMediaSourcesActivity, R.layout.alert_checkbox, null)
             checkBoxView.cb_dont?.setOnCheckedChangeListener { compoundButton, b ->
                 val sharedPreferenceHelper = SharedPreferenceHelper(this@CTMediaSourcesActivity)
-                if (/*compoundButton.isPressed && */b){
-                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!,dontAsk = true)
+                if (/*compoundButton.isPressed && */b) {
+                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!, dontAsk = true)
                 } else {
-                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!,dontAsk = false)
+                    sharedPreferenceHelper.alexaLoginAlertDontAsk(currentIpAddress!!, dontAsk = false)
                 }
             }
             setView(checkBoxView)
@@ -351,7 +458,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         }
     }
 
-    private fun fetchAuxBtStatus(){
+    private fun fetchAuxBtStatus() {
         readBTControllerStatus()
         readBluetoothStatus()
         getAuxStatus()
@@ -397,7 +504,11 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
     }
 
     override fun deviceGotRemoved(mIpAddress: String) {
-
+        if (currentIpAddress != null)
+            if (currentIpAddress!!.equals(mIpAddress)) {
+                val intent = Intent(this@CTMediaSourcesActivity, CTHomeTabsActivity::class.java)
+                startActivity(intent)
+            }
     }
 
     override fun messageRecieved(nettyData: NettyData) {
@@ -432,7 +543,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                 MIDCONST.MID_BLUETOOTH -> {
                     val message = String(luciPacket.getpayload())
                     LibreLogger.d(this, " message 209 is recieved  $message")
-                    when(message){
+                    when (message) {
                         BLUETOOTH_ON -> {
                             timeOutHandler?.removeMessages(AUX_BT_TIMEOUT)
                             closeLoader()
@@ -494,7 +605,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
                         when {
                             sceneObject?.currentSource == Constants.AUX_SOURCE
-                                    || sceneObject?.currentSource == Constants.EXTERNAL_SOURCE-> {
+                                /*|| sceneObject?.currentSource == Constants.EXTERNAL_SOURCE*/ -> {
                                 if (iv_toggle_bluetooth!!.isChecked) {
                                     iv_toggle_bluetooth!!.isChecked = false
                                 }
@@ -525,11 +636,11 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     val currentSource = String(luciPacket.getpayload())
                     LibreLogger.d(this, " message 50 is $currentSource")
                     sceneObject.currentSource = currentSource.toInt()
-                    mScanHandler.sceneObjectFromCentralRepo[currentIpAddress!!] = sceneObject
+                    mScanHandler.putSceneObjectToCentralRepo(currentIpAddress, sceneObject)
                     // Toast.makeText(getApplicationContext(),"Message 50 is Received"+message,Toast.LENGTH_SHORT).show();
                     when {
                         currentSource.contains(Constants.AUX_SOURCE.toString())
-                                || currentSource.contains(Constants.EXTERNAL_SOURCE.toString())-> {
+                            /*|| currentSource.contains(Constants.EXTERNAL_SOURCE.toString())*/ -> {
                             timeOutHandler!!.removeMessages(AUX_BT_TIMEOUT)
                             closeLoader()
 
@@ -554,7 +665,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 //                                timeOutHandler!!.sendEmptyMessageDelayed(AUX_BT_TIMEOUT, 1500)
                                 Handler().postDelayed({
                                     runOnUiThread { closeLoader() }
-                                },1500)
+                                }, 1500)
                             }
 //                            closeLoader()
                             iv_toggle_bluetooth!!.isChecked = false
@@ -569,21 +680,29 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     }
                 }
 
+                /**For RIVA speakers, during AUX we won't get volume in MB 64 for volume changes
+                 * done through speaker hardware buttons**/
                 MIDCONST.VOLUME_CONTROL -> {
                     /*this message box is to get volume*/
                     try {
                         val msg = String(luciPacket.getpayload())
-                        val duration = Integer.parseInt(msg)
-                        if (sceneObject?.volumeValueInPercentage != duration) {
-                            sceneObject?.volumeValueInPercentage = duration
+                        val volume = Integer.parseInt(msg)
+
+
+                        if (sceneObject.currentSource == Constants.AUX_SOURCE)
+                            return
+
+                        LibreLogger.d(this, "VOLUME_CONTROL volume $volume")
+                        if (sceneObject?.volumeValueInPercentage != volume) {
+                            sceneObject?.volumeValueInPercentage = volume
                             mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
-                            LibreLogger.d(this, "Recieved the current volume to be" + sceneObject?.volumeValueInPercentage)
 
                             seek_bar_volume?.progress = sceneObject?.volumeValueInPercentage!!
 
-                            if (seek_bar_volume?.progress==0){
+                            if (seek_bar_volume?.progress == 0) {
                                 iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
-                            } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
+                            } else
+                                iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
                             seek_bar_volume?.max = 100
                         }
@@ -637,6 +756,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         super.onResume()
         /*Registering to receive messages*/
         registerForDeviceEvents(this)
+        setMusicPlayerWidget(fl_music_play_widget, currentIpAddress!!)
         AlexaUtils.sendAlexaRefreshTokenRequest(currentIpAddress)
 //        fetchAuxBtStatus()
         TunnelingControl(currentIpAddress).sendDataModeCommand()
@@ -649,6 +769,13 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
             timeOutHandler!!.removeCallbacksAndMessages(null)
         unRegisterForDeviceEvents()
         closeLoader()
+
+//        try {
+//            BusProvider.getInstance().unregister(busEventListener)
+//        } catch (e: Exception) {
+//            e.printStackTrace()
+//        }
+
     }
 
     internal inner class CTSourcesListAdapter(val context: Context,
@@ -663,8 +790,8 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
         override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
             val sourceItem = sourcesList?.get(position)
-            if (viewHolder is SourceItemViewHolder){
-                viewHolder.bindSourceItem(sourceItem,position)
+            if (viewHolder is SourceItemViewHolder) {
+                viewHolder.bindSourceItem(sourceItem, position)
             }
         }
 
@@ -676,7 +803,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
             fun bindSourceItem(source: String?, position: Int) {
                 itemView.tv_source_type.text = source
-                when(source){
+                when (source) {
                     context.getString(R.string.my_device) -> itemView.iv_source_icon.setImageResource(R.drawable.my_device_enabled)
                     context.getString(R.string.usb_storage) -> itemView.iv_source_icon.setImageResource(R.drawable.usb_storage_enabled)
                     context.getString(R.string.mediaserver) -> itemView.iv_source_icon.setImageResource(R.drawable.media_servers_enabled)
@@ -697,13 +824,22 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     when (source) {
 
                         context.getString(R.string.my_device) -> {
-                            if (!checkReadStoragePermission()){
+                            if (!checkReadStoragePermission()) {
                                 return@setOnClickListener
                             }
 
-//                            openDmsBrowser()
+//                            openLocalDMS()
                         }
 
+                        context.getString(R.string.spotify) -> {
+                            if (this@CTMediaSourcesActivity.isFinishing())
+                                return@setOnClickListener
+
+                            val spotifyIntent = Intent(this@CTMediaSourcesActivity, spotifyInstructions::class.java)
+                            spotifyIntent.putExtra("current_ipaddress", currentIpAddress)
+                            spotifyIntent.putExtra("current_source", "" + currentSource)
+                            startActivity(spotifyIntent)
+                        }
                         context.getString(R.string.usb_storage) -> {
                             currentSourceIndexSelected = 3
                             /*Reset the UI to Home ,, will wait for the confirmation of home command completion and then start the required activity*/
@@ -746,30 +882,23 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         }
     }
 
-    private fun openDmsBrowser() {
-        val localIntent = Intent(this@CTMediaSourcesActivity, CTDMSBrowserActivityV2::class.java)
-        localIntent.putExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, true)
-        localIntent.putExtra(Constants.DEVICE_UDN, LibreApplication.LOCAL_UDN)
+    private fun openLocalDMS() {
+        val localIntent = Intent(this@CTMediaSourcesActivity, CTLocalDMSActivity::class.java)
         localIntent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
         startActivity(localIntent)
     }
 
     override fun tunnelDataReceived(tunnelingData: TunnelingData) {
+        super.tunnelDataReceived(tunnelingData)
         if (tunnelingData.remoteClientIp == currentIpAddress && tunnelingData.remoteMessage.size >= 24) {
             val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
 
-            /*if (tcpTunnelPacket.volume>=0){
-                seek_bar_volume?.progress = tcpTunnelPacket.volume
+            val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(currentIpAddress)
+            seek_bar_volume?.progress = sceneObject?.volumeValueInPercentage!!
 
-                if (seek_bar_volume?.progress == 0){
-                    iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
-                } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
-
-                val sceneObject = mScanHandler.sceneObjectFromCentralRepo[currentIpAddress]
-                sceneObject!!.volumeValueInPercentage = seek_bar_volume?.progress!!
-                LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress] = sceneObject?.volumeValueInPercentage
-                mScanHandler.putSceneObjectToCentralRepo(sceneObject.ipAddress, sceneObject)
-            }*/
+            if (seek_bar_volume?.progress == 0) {
+                iv_volume_mute?.setImageResource(R.drawable.ic_volume_mute)
+            } else iv_volume_mute?.setImageResource(R.drawable.volume_low_enabled)
 
             when {
                 tcpTunnelPacket.currentSource == Constants.BT_SOURCE -> {
@@ -780,7 +909,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
                     iv_toggle_aux?.isChecked = true
                     if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) timeOutHandler.removeMessages(AUX_BT_TIMEOUT)
                 }
-                tcpTunnelPacket.currentSource == Constants.NO_SOURCE -> {
+                tcpTunnelPacket.currentSource == Constants.TUNNELING_WIFI_SOURCE -> {
                     iv_toggle_aux?.isChecked = false
                     iv_toggle_bluetooth?.isChecked = false
                     if (timeOutHandler?.hasMessages(AUX_BT_TIMEOUT)!!) timeOutHandler.removeMessages(AUX_BT_TIMEOUT)
@@ -791,6 +920,32 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
     override fun storagePermissionAvailable() {
         super.storagePermissionAvailable()
-        openDmsBrowser()
+        openLocalDMS()
+    }
+
+    /** Handling volume changes from phone volume hardware buttons
+     * Called only when button is pressed, not when released**/
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        val volumeControl = LUCIControl(currentIpAddress)
+        when (keyCode) {
+            KeyEvent.KEYCODE_VOLUME_UP -> {
+                if (seek_bar_volume!!.progress > 85) {
+                    volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 100, LSSDPCONST.LUCI_SET)
+                } else {
+                    volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress + 5), LSSDPCONST.LUCI_SET)
+                }
+                return true
+            }
+            KeyEvent.KEYCODE_VOLUME_DOWN -> {
+                if (seek_bar_volume!!.progress < 15) {
+                    volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + 0, LSSDPCONST.LUCI_SET)
+                } else {
+                    volumeControl.SendCommand(MIDCONST./*ZONE_VOLUME*/VOLUME_CONTROL, "" + (seek_bar_volume!!.progress - 5), LSSDPCONST.LUCI_SET)
+                }
+                return true
+            }
+            else -> return super.onKeyDown(keyCode, event)
+        }
     }
 }
+

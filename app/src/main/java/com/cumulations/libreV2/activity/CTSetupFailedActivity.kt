@@ -1,7 +1,7 @@
 package com.cumulations.libreV2.activity
 
 import android.os.Bundle
-import com.libre.R
+import com.libre.qactive.R
 import kotlinx.android.synthetic.main.ct_activity_device_setup_failed_info.*
 
 class CTSetupFailedActivity : CTDeviceDiscoveryActivity() {

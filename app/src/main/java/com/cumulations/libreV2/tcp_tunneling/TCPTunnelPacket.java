@@ -4,7 +4,7 @@ import com.cumulations.libreV2.tcp_tunneling.enums.AQModeSelect;
 import com.cumulations.libreV2.tcp_tunneling.enums.BatteryType;
 import com.cumulations.libreV2.tcp_tunneling.enums.ModelId;
 import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType;
-import com.libre.Scanning.Constants;
+import com.libre.qactive.Scanning.Constants;
 
 /**
  * Created by Amit T
@@ -33,17 +33,13 @@ public class TCPTunnelPacket {
     *
     * */
 
-    private static final String TAG = TCPTunnelPacket.class.getSimpleName();
-    private byte commandType;
-    public byte commandMode;
-
     /*Possible CommandType(1 Byte)*/
     public static final byte HOST_COMMAND = 0x01;
-    public static final byte APP_COMMAND = 0x02;
+    static final byte APP_COMMAND = 0x02;
 
     /*Possible Command Mode(1 Byte)*/
-    public static final byte SET_MODE = 0x01;
-    public static final byte GET_MODE = 0x02;
+    static final byte SET_MODE = 0x01;
+    static final byte GET_MODE = 0x02;
 
     private byte batteryPercentagePayload;
 
@@ -52,31 +48,30 @@ public class TCPTunnelPacket {
     private byte aqModePayload;
     private byte bassVolumePayload;     /*0~10 (-5dB ~5dB)*/
     private byte trebleVolumePayload;   /*0~10 (-5dB ~5dB)*/
-    private byte ddmsModePayload;       /*0x00 Home mode 0x01 Away mode*/
 
-    private int MAX_SEND_BYTE_SIZE = 4;
-    public byte[] sendPayload;
-    private byte[] receivedPayload;
+    byte[] sendPayload;
     private byte modelIdByte;
+    private byte batteryStatusPayload;
 
     public TCPTunnelPacket(byte[] rawData) throws IndexOutOfBoundsException {
-        receivedPayload = rawData;
         /*
          * Typically we receive the data mode packets like this (python response in String format)
          * "b'\x01\x02\xff\x00\x00\x00\x08\x00\xff\xff\xff\xff\x00\xff\xff\xff\x03\x07\xff\xff\x00\xff\xff\xff'"
          * */
         //fill default fields:
-        commandType = rawData[0];
-        commandMode = rawData[1];
+        byte commandType = rawData[0];
+        byte commandMode = rawData[1];
 
         //parse individual payload:
-        batteryPercentagePayload = rawData[3];
+        batteryPercentagePayload = rawData[2];
         sourcePayload = rawData[5];
         volumeIndexPayload = rawData[6];
         aqModePayload = rawData[7];
         bassVolumePayload = rawData[16];
         trebleVolumePayload = rawData[17];
-        ddmsModePayload = rawData[20];
+        /*0x00 Home mode 0x01 Away mode*/
+        byte ddmsModePayload = rawData[20];
+        batteryStatusPayload = rawData[3];
     }
 
     public TCPTunnelPacket(byte[] productInfoData,int byteLength) throws IndexOutOfBoundsException {
@@ -86,9 +81,10 @@ public class TCPTunnelPacket {
         }
     }
 
-    public TCPTunnelPacket(byte commandType, byte commandMode, PayloadType payloadType, byte payloadValue) {
+    TCPTunnelPacket(byte commandType, byte commandMode, PayloadType payloadType, byte payloadValue) {
         byte[] packet;
         if (payloadType != PayloadType.GET_DATA_MODE) {
+            int MAX_SEND_BYTE_SIZE = 4;
             packet = new byte[MAX_SEND_BYTE_SIZE];
         } else packet = new byte[3];
 
@@ -171,11 +167,13 @@ public class TCPTunnelPacket {
             case 0x00:
                 return Constants.AUX_SOURCE;
             case 0x01:
-                return Constants.NO_SOURCE;
+                return Constants.TUNNELING_WIFI_SOURCE;
             case 0x02:
                 return Constants.BT_SOURCE;
-            case 0x03:
+            case 0x04:
                 return Constants.USB_SOURCE;
+            case 0x03:
+                return Constants.OPTICAL_SOURCE;
             default:
                 return -1;
         }
@@ -228,5 +226,22 @@ public class TCPTunnelPacket {
         }
 
         return null;
+    }
+
+    public boolean isBatteryPluggedIn() {
+        return isBitSet(batteryStatusPayload,5);
+    }
+
+    public boolean isAuxPluggedIn() {
+        return isBitSet(batteryStatusPayload,7);
+    }
+
+    public boolean isBatteryCharging() {
+        return isBitSet(batteryStatusPayload,6);
+    }
+
+    private boolean isBitSet(byte b, int n) {
+        int mask = 1 << n; // equivalent of 2 to the nth power
+        return (b & mask) != 0;
     }
 }

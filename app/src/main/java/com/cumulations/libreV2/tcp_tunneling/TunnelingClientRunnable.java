@@ -2,13 +2,14 @@ package com.cumulations.libreV2.tcp_tunneling;
 
 import android.util.Log;
 
-import com.libre.netty.BusProvider;
-import com.libre.util.LibreLogger;
+import com.libre.qactive.netty.BusProvider;
+import com.libre.qactive.util.LibreLogger;
 
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.Arrays;
+import java.net.SocketTimeoutException;
 
 public class TunnelingClientRunnable implements Runnable {
     private String speakerIpAddress;
@@ -22,7 +23,7 @@ public class TunnelingClientRunnable implements Runnable {
         Socket clientSocket;
         try {
             clientSocket = new Socket(InetAddress.getByName(speakerIpAddress), TunnelingControl.TUNNELING_CLIENT_PORT);
-            LibreLogger.d(this, "TunnelingClientRunnable, socket connected "
+            LibreLogger.d(this, "run, socket connected "
                     + clientSocket.isConnected() + " for "
                     + clientSocket.getInetAddress().getHostAddress() + " port "
                     + clientSocket.getPort());
@@ -39,42 +40,43 @@ public class TunnelingClientRunnable implements Runnable {
                     /*Requesting Data Mode from Host (Speaker)*/
                     new TunnelingControl(clientSocket.getInetAddress().getHostAddress()).sendDataModeCommand();
 
-                    Thread.sleep(200);
-                    new TunnelingControl(speakerIpAddress).sendGetModelIdCommand();
+//                    Thread.sleep(200);
+//                    new TunnelingControl(speakerIpAddress).sendGetModelIdCommand();
                 }
 
                 DataInputStream dIn = new DataInputStream(clientSocket.getInputStream());
 
-                /*while (true) {
+                while (true) {
                     byte[] message = new byte[32];
                     int byteLengthRead = dIn.read(message);
+                    LibreLogger.d(this, "TunnelingClientRunnable, byteLengthRead = " + byteLengthRead);
                     if (byteLengthRead > 0) {
-                        LibreLogger.d(this, "TunnelingClientRunnable, byteLengthRead = " + byteLengthRead);
-                        LibreLogger.d(this, "TunnelingClientRunnable, message[] = " + TunnelingControl.getReadableHexByteArray(message));
+                        LibreLogger.d(this, "TunnelingClientRunnable, ip = "+ speakerIpAddress +", message[] = " + TunnelingControl.getReadableHexByteArray(message));
                         TunnelingData tunnelingData = new TunnelingData(speakerIpAddress, message);
-                        BusProvider.getInstance().post(tunnelingData);
-                    }
-                }*/
-
-                while (true) {
-                    int length = dIn.available();  // read length of incoming message
-                    if (length > 0) {
-                        LibreLogger.d(this, "TunnelingClientRunnable, dIn length = " + length);
-                        byte[] message = new byte[length];
-                        /*Reading byte[] from socket*/
-                        dIn.readFully(message); // read the message
-
-                        LibreLogger.d(this, "TunnelingClientRunnable, message[] = " + TunnelingControl.getReadableHexByteArray(message));
-
-                        TunnelingData tunnelingData = new TunnelingData(speakerIpAddress, message);
-                        BusProvider.getInstance().post(tunnelingData);
+                        if (!tunnelingData.isACKData()) {
+                            BusProvider.getInstance().post(tunnelingData);
+                        }
+                    } else {
+                        LibreLogger.d(this, "TunnelingClientRunnable, ip = "+ speakerIpAddress +" break");
+                        break;
                     }
                 }
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+//            e.printStackTrace();
             Log.e("TunnelingClientRunnable", "exception " + e.getMessage());
+            if (e instanceof IOException){
+                Socket existingSocket = TunnelingControl.getTunnelingClient(speakerIpAddress);
+                if (existingSocket!=null && !existingSocket.isClosed()){
+                    try {
+                        existingSocket.close();
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    TunnelingControl.removeTunnelingClient(speakerIpAddress);
+                }
+            }
         }
     }
 }

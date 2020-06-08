@@ -7,10 +7,10 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -19,29 +19,30 @@ import android.view.ViewGroup
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.closeKeyboard
 import com.cumulations.libreV2.fragments.CTDMRBrowserFragmentV2
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.Constants.*
-import com.libre.Scanning.ScanningHandler
-import com.libre.app.dlna.dmc.processor.impl.DMSProcessorImpl
-import com.libre.app.dlna.dmc.processor.interfaces.DMSProcessor
-import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService
-import com.libre.app.dlna.dmc.server.ContentTree
-import com.libre.app.dlna.dmc.server.MusicServer
-import com.libre.app.dlna.dmc.server.MusicServer.*
-import com.libre.app.dlna.dmc.utility.DMRControlHelper
-import com.libre.app.dlna.dmc.utility.DMSBrowseHelper
-import com.libre.app.dlna.dmc.utility.PlaybackHelper
-import com.libre.app.dlna.dmc.utility.UpnpDeviceManager
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIPacket
-import com.libre.luci.Utils
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.util.LibreLogger
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.Constants.*
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.app.dlna.dmc.processor.impl.DMSProcessorImpl
+import com.libre.qactive.app.dlna.dmc.processor.interfaces.DMSProcessor
+import com.libre.qactive.app.dlna.dmc.processor.upnp.LoadLocalContentService
+import com.libre.qactive.app.dlna.dmc.server.ContentTree
+import com.libre.qactive.app.dlna.dmc.server.MusicServer
+import com.libre.qactive.app.dlna.dmc.server.MusicServer.*
+import com.libre.qactive.app.dlna.dmc.utility.DMRControlHelper
+import com.libre.qactive.app.dlna.dmc.utility.DMSBrowseHelper
+import com.libre.qactive.app.dlna.dmc.utility.PlaybackHelper
+import com.libre.qactive.app.dlna.dmc.utility.UpnpDeviceManager
+
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.luci.LUCIPacket
+import com.libre.qactive.luci.Utils
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_upnp_browser.*
 import kotlinx.android.synthetic.main.music_playing_widget.*
 import org.fourthline.cling.model.meta.RemoteDevice
@@ -60,6 +61,10 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         private val TAG = CTDMSBrowserActivityV2::class.java.name
     }
 
+    private var albumContainer: DIDLObject? = null
+    private var artistContainer: DIDLObject? = null
+    private var genreContainer: DIDLObject? = null
+    private var songContainer: DIDLObject? = null
     private var currentFragment: CTDMRBrowserFragmentV2? = null
     private val currentIpAddress: String? by lazy {
         intent?.getStringExtra(CURRENT_DEVICE_IP)
@@ -72,17 +77,18 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
     private var needSetListViewScroll = false
     private val searchResultsDIDLObjectList = ArrayList<DIDLObject>()
 
-    private var dmsDeviceUDN: String? = null
     private var selectedDIDLObject: DIDLObject? = null
 
     private val tabTitles = arrayOf(
             ALBUMS,
             ARTISTS,
-            SONGS,
-            GENRES
+            GENRES,
+            SONGS
     )
 
     private val fragmentMap: HashMap<String, CTDMRBrowserFragmentV2> = HashMap()
+    private var remoteDevice: RemoteDevice? = null
+    private var renderingUDN: String? = null
 
     @SuppressLint("HandlerLeak")
     internal var handler: Handler = object : Handler() {
@@ -105,6 +111,7 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
 
                 DO_BACKGROUND_DMR -> {
                     LibreLogger.d(this, "DMR search DO_BACKGROUND_DMR")
+                    showProgressDialog(R.string.searching_renderer)
                     upnpProcessor!!.searchDMR()
 
                     var renderingDevice: RemoteDevice? = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpAddress)
@@ -115,7 +122,7 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
                         /* Special check to make sure we dont have the device in the registry the */
                         renderingDevice = upnpProcessor!!.getTheRendererFromRegistryIp(currentIpAddress)
                         if (renderingDevice != null) {
-                            LibreLogger.d(this, "WOW! We found the device in registry and hence we will start the playback with the new helper")
+                            LibreLogger.d(this, "We found the device in registry and hence we will start the playback with the new helper")
                             dismissDialog()
                             play(selectedDIDLObject!!)
                             this.removeMessages(DO_BACKGROUND_DMR)
@@ -128,7 +135,7 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
                         play(selectedDIDLObject!!)
                         this.removeMessages(DO_BACKGROUND_DMR)
                     } else {
-                        val DO_BACKGROUND_DMR_TIMEOUT = 6000
+                        val DO_BACKGROUND_DMR_TIMEOUT = 10000
                         this.sendEmptyMessageDelayed(DO_BACKGROUND_DMR, DO_BACKGROUND_DMR_TIMEOUT.toLong())
                         LibreLogger.d(this, "DMR search request issued")
                     }
@@ -180,11 +187,13 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
             if (MusicServer.getMusicServer().isMediaServerReady) {
                 handleDIDLObjectClick(adapterClickedPosition)
                 adapterClickedPosition = -1
+                dismissDialog()
                 showToast("Local content loading Done!")
                 return
             }
 
             LibreLogger.d(this, "Loading the Songs..")
+            showProgressDialog("Loading the Songs...")
             /* and here comes the "trick" */
             mTaskHandler!!.postDelayed(this, 100)
 
@@ -200,23 +209,8 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         toolbar?.title = ""
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayShowTitleEnabled(false)
-
-        dmsDeviceUDN = intent?.getStringExtra(DEVICE_UDN)
-
-        if (LibreApplication.LOCAL_UDN.trim().isEmpty()) {
-            LibreLogger.d(this, "start local media loading")
-            /* this is the case where the content is not present and hence we need to load */
-            showProgressDialog(R.string.loadingLocalContent)
-            mediaHandler.sendEmptyMessage(MediaEnum.MEDIA_PROCESS_INIT)
-        }
-
         setupTabsViewPager()
         setListeners()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
     }
 
     private fun setListeners() {
@@ -256,24 +250,22 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         view_pager_tabs.adapter = tabsViewPagerAdapter
         view_pager_tabs.offscreenPageLimit = 4
         tabs_layout_music_type?.setupWithViewPager(view_pager_tabs)
-        tabs_layout_music_type?.setTabTextColors(ContextCompat.getColor(this, R.color.white),
-                ContextCompat.getColor(this, R.color.app_text_color_enabled))
+        tabs_layout_music_type?.setTabTextColors(ContextCompat.getColor(this, R.color.grey_400),
+                ContextCompat.getColor(this, R.color.white))
     }
 
     override fun onResume() {
         Log.d("UpnpSplashScreen", "DMS Resume")
         super.onResume()
         registerForDeviceEvents(this)
-        if (upnpProcessor != null) {
-            upnpProcessor?.addListener(this)
-        }
+        setMusicPlayerWidget(fl_music_play_widget, currentIpAddress!!)
     }
 
     private fun updateTitle(title: String) {
         tv_device_name?.text = title
     }
 
-    fun browse(didlObject: DIDLObject?) {
+    private fun browse(didlObject: DIDLObject?) {
         val id = didlObject!!.id
         Log.i("browse", "Browse id:$id")
         browsingCancelled = false
@@ -301,69 +293,11 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         closeKeyboard(this@CTDMSBrowserActivityV2, currentFocus)
 
         Log.i(javaClass.name, "play, position$position")
-        dmsBrowseHelper!!.saveDidlListAndPosition(currentFragment?.getCurrentDIDLObjectList(), position)
-        dmsBrowseHelper!!.browseObjectStack = didlObjectStack
-        dmsBrowseHelper!!.scrollPosition = currentFragment?.getFirstVisibleItemPosition()!!
-
-        Log.d("play", "didlObjectStack = $didlObjectStack")
-        Log.d("play", "scrollPosition = ${dmsBrowseHelper?.scrollPosition}")
-
-        /* here first find the UDN of the current selected device */
-        var renderingDevice: RemoteDevice? = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpAddress)
-        if (renderingDevice == null && upnpProcessor != null) {
-            renderingDevice = upnpProcessor!!.getTheRendererFromRegistryIp(currentIpAddress)
-            UpnpDeviceManager.getInstance().onRemoteDeviceAdded(renderingDevice)
-        }
-        if (renderingDevice == null) {
-            runOnUiThread { showToast(R.string.deviceNotFound) }
-            return
-        }
-
-        val renderingUDN = renderingDevice.identity.udn.toString()
-        if (LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN] == null) {
-            /* If it is local device then assign local audio manager */
-            if (LibreApplication.LOCAL_UDN.equals(renderingUDN, ignoreCase = true)) {
-                val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-                val dmr = DMRControlHelper(audioManager)
-                val playbackHelper = PlaybackHelper(dmr)
-                LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN] = playbackHelper
-            } else {
-                val service = renderingDevice.findService(ServiceType(DMRControlHelper.SERVICE_NAMESPACE,
-                        DMRControlHelper.SERVICE_AVTRANSPORT_TYPE))
-                if (service == null) {
-                    /*AVTransport not found so showing error to user*/
-                    handler.sendEmptyMessage(SERVICE_NOT_FOUND)
-                    return
-                }
-                /*crash Fix when Service is Null , stil lwe trying to get Actions.*/
-                val dmrControl = DMRControlHelper(renderingUDN,
-                        upnpProcessor!!.controlPoint, renderingDevice, service)
-                val playbackHelper = PlaybackHelper(dmrControl)
-                LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN] = playbackHelper
-            }
-        } else {
-            val mPlay = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
-            if (mPlay?.playbackStopped!!) {
-                val service = renderingDevice.findService(ServiceType(DMRControlHelper.SERVICE_NAMESPACE,
-                        DMRControlHelper.SERVICE_AVTRANSPORT_TYPE))
-                if (service == null) {
-                    /*AVTransport not found so showing error to user*/
-                    handler.sendEmptyMessage(SERVICE_NOT_FOUND)
-                    return
-                }
-                val dmrControl = DMRControlHelper(renderingUDN,
-                        upnpProcessor!!.controlPoint, renderingDevice, service)
-                val playbackHelper = PlaybackHelper(dmrControl)
-                LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN] = playbackHelper
-            }
-        }
+        createOrUpdatePlaybackHelperAndBroswer()
 
         try {
             val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
-            playbackHelper?.dmsHelper = dmsBrowseHelper?.clone()
             playbackHelper?.playSong()
-
-            libreApplication.deviceIpAddress = currentIpAddress
             openNowPlaying(true)
         } catch (e: Exception) {
             //handling the excetion when the device is rebooted
@@ -372,100 +306,151 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
 
     }
 
+    private fun createOrUpdatePlaybackHelperAndBroswer() {
+        dmsBrowseHelper!!.saveDidlListAndPosition(currentFragment?.getCurrentDIDLObjectList(), position)
+        dmsBrowseHelper!!.browseObjectStack = didlObjectStack
+        dmsBrowseHelper!!.scrollPosition = currentFragment?.getFirstVisibleItemPosition()!!
+
+        Log.d("play", "didlObjectStack = $didlObjectStack")
+        Log.d("play", "scrollPosition = ${dmsBrowseHelper?.scrollPosition}")
+
+        /* here first find the UDN of the current selected device */
+        remoteDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpAddress)
+        if (remoteDevice == null && upnpProcessor != null) {
+            remoteDevice = upnpProcessor!!.getTheRendererFromRegistryIp(currentIpAddress)
+            UpnpDeviceManager.getInstance().onRemoteDeviceAdded(remoteDevice)
+        }
+        if (remoteDevice == null) {
+            runOnUiThread { showToast(R.string.deviceNotFound) }
+            return
+        }
+
+        renderingUDN = remoteDevice?.identity?.udn.toString()
+        var playbackHelper: PlaybackHelper? = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
+        val service = remoteDevice?.findService(
+                ServiceType(DMRControlHelper.SERVICE_NAMESPACE, DMRControlHelper.SERVICE_AVTRANSPORT_TYPE)
+        )
+
+        if (playbackHelper == null) {
+            /* If it is local device then assign local audio manager */
+            if (LibreApplication.LOCAL_UDN.equals(renderingUDN, ignoreCase = true)) {
+                val audioManager = applicationContext.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                val dmr = DMRControlHelper(audioManager)
+                playbackHelper = PlaybackHelper(dmr)
+            } else {
+                if (service == null) {
+                    /*AVTransport not found so showing error to user*/
+                    handler.sendEmptyMessage(SERVICE_NOT_FOUND)
+                    return
+                }
+                /*crash Fix when Service is Null , stil lwe trying to get Actions.*/
+                val dmrControl = DMRControlHelper(renderingUDN, upnpProcessor?.controlPoint, remoteDevice, service)
+                playbackHelper = PlaybackHelper(dmrControl)
+            }
+        } else {
+            if (playbackHelper.playbackStopped) {
+                if (service == null) {
+                    /*AVTransport not found so showing error to user*/
+                    handler.sendEmptyMessage(SERVICE_NOT_FOUND)
+                    return
+                }
+                val dmrControl = DMRControlHelper(renderingUDN, upnpProcessor?.controlPoint, remoteDevice, service)
+                playbackHelper = PlaybackHelper(dmrControl)
+            }
+        }
+
+        playbackHelper.dmsHelper = dmsBrowseHelper?.clone()
+        LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN] = playbackHelper
+    }
+
     override fun onBrowseComplete(parentObjectId: String?, result: Map<String, List<DIDLObject>>) {
+
         LibreLogger.d(this, "Browse Completed , parentObjectId = $parentObjectId")
         if (browsingCancelled) {
             browsingCancelled = false
             return
         }
 
-        runOnUiThread {
-            if (didlObjectStack!!.size == 1) {
-                et_search_media?.visibility = View.GONE
-                LibreLogger.d(this, "Hide search at first page")
-            }
-
+        if (parentObjectId == ContentTree.ROOT_ID) {
             val containersList = result!!["Containers"]
             if (containersList?.isNotEmpty()!!) {
-                val childContainerDIDLObjectList = ArrayList<DIDLObject>()
                 for (container in containersList) {
-                    Log.e("onBrowseComplete", "container title = ${container.title}, id ${container.id}, clazz = ${container.clazz.value}")
+                    Log.e("browsecomplete 4 root", "container title = ${container.title}, id ${container.id}, clazz = ${container.clazz.value}")
                     /*Browse only for top containers = Albums,Artists,Songs,Genres*/
-                    if (container.id == ContentTree.AUDIO_ALBUMS_ID
-                            || container.id == ContentTree.AUDIO_ARTISTS_ID
-                            || container.id == ContentTree.AUDIO_SONGS_ID
-                            || container.id == ContentTree.AUDIO_GENRES_ID){
-                        didlObjectStack?.push(container)
-                        browse(container)
-                    } else {
-                        childContainerDIDLObjectList?.add(container)
+
+                    didlObjectStack?.push(container);
+
+                    when {
+                        container.id == ContentTree.AUDIO_ALBUMS_ID -> {
+                            albumContainer = container
+                        }
+
+                        container.id == ContentTree.AUDIO_SONGS_ID -> {
+                            songContainer = container
+                        }
+                        container.id == ContentTree.AUDIO_GENRES_ID -> {
+                            genreContainer = container
+                        }
+                        container.id == ContentTree.AUDIO_ARTISTS_ID -> {
+                            artistContainer = container
+                        }
                     }
                 }
 
-                when {
-                    parentObjectId?.contains(ContentTree.AUDIO_ALBUMS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[ALBUMS]
-                        fragmentV2?.updateBrowserList(childContainerDIDLObjectList)
-                        fragmentMap[ALBUMS] = fragmentV2!!
-                    }
-
-                    parentObjectId?.contains(ContentTree.AUDIO_ARTISTS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[ARTISTS]
-                        fragmentV2?.updateBrowserList(childContainerDIDLObjectList)
-                        fragmentMap[ARTISTS] = fragmentV2!!
-                    }
-
-                    parentObjectId?.contains(ContentTree.AUDIO_SONGS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[SONGS]
-                        fragmentV2?.updateBrowserList(childContainerDIDLObjectList)
-                        fragmentMap[SONGS] = fragmentV2!!
-                    }
-
-                    parentObjectId?.contains(ContentTree.AUDIO_GENRES_ID)!! -> {
-                        val fragmentV2 = fragmentMap[GENRES]
-                        fragmentV2?.updateBrowserList(childContainerDIDLObjectList)
-                        fragmentMap[GENRES] = fragmentV2!!
-                    }
-                }
+                browse(albumContainer)
             }
+        } else {
 
+            val containersList = result!!["Containers"]
             val itemsList = result["Items"] as List<Item>
-            if (itemsList?.isNotEmpty()!!) {
-                val itemsDIDLObjectList = ArrayList<DIDLObject>()
-                showProgressDialog(R.string.pleaseWait)
-                for (item in itemsList) {
-                    Log.e("CTDMRBrowserFragment", "item = " + item.title)
-                    Log.e("onBrowseComplete", "item id ${item.id}, clazz = ${item.clazz.value}")
-                    itemsDIDLObjectList?.add(item)
+            when (parentObjectId) {
+                ContentTree.AUDIO_ALBUMS_ID -> {
+                    val fragmentV2 = fragmentMap[ALBUMS]
+                    if (containersList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(containersList)
+                    if (itemsList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(itemsList)
+                    fragmentV2?.browsingOver()
+                    fragmentMap[ALBUMS] = fragmentV2!!
+                    browse(artistContainer)
                 }
 
-                when {
-                    parentObjectId?.contains(ContentTree.AUDIO_ALBUMS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[ALBUMS]
-                        fragmentV2?.updateBrowserList(itemsDIDLObjectList)
-                        fragmentMap[ALBUMS] = fragmentV2!!
-                    }
+                ContentTree.AUDIO_ARTISTS_ID -> {
+                    val fragmentV2 = fragmentMap[ARTISTS]
+                    if (containersList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(containersList)
+                    if (itemsList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(itemsList)
+                    fragmentV2?.browsingOver()
+                    fragmentMap[ARTISTS] = fragmentV2!!
+                    browse(genreContainer)
+                }
 
-                    parentObjectId?.contains(ContentTree.AUDIO_ARTISTS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[ARTISTS]
-                        fragmentV2?.updateBrowserList(itemsDIDLObjectList)
-                        fragmentMap[ARTISTS] = fragmentV2!!
-                    }
+                ContentTree.AUDIO_GENRES_ID -> {
+                    val fragmentV2 = fragmentMap[GENRES]
+                    if (containersList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(containersList)
+                    if (itemsList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(itemsList)
+                    fragmentV2?.browsingOver()
+                    fragmentMap[GENRES] = fragmentV2!!
+                    browse(songContainer)
+                }
 
-                    parentObjectId?.contains(ContentTree.AUDIO_SONGS_ID)!! -> {
-                        val fragmentV2 = fragmentMap[SONGS]
-                        fragmentV2?.updateBrowserList(itemsDIDLObjectList)
-                        fragmentMap[SONGS] = fragmentV2!!
-                    }
-
-                    parentObjectId?.contains(ContentTree.AUDIO_GENRES_ID)!! -> {
-                        val fragmentV2 = fragmentMap[GENRES]
-                        fragmentV2?.updateBrowserList(itemsDIDLObjectList)
-                        fragmentMap[GENRES] = fragmentV2!!
-                    }
+                ContentTree.AUDIO_SONGS_ID -> {
+                    val fragmentV2 = fragmentMap[SONGS]
+                    if (containersList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(containersList)
+                    if (itemsList?.isNotEmpty()!!)
+                        fragmentV2?.updateBrowserList(itemsList)
+                    fragmentV2?.browsingOver()
+                    fragmentMap[SONGS] = fragmentV2!!
+                    //clear
                 }
             }
+        }
 
+        runOnUiThread {
             dismissDialog()
 
             if (needSetListViewScroll) {
@@ -488,32 +473,15 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         }
     }
 
-    /*override fun onBackPressed() {
-        closeKeyboard(this@CTDMSBrowserActivityV2, currentFocus)
-        if (didlObjectStack!!.isEmpty() || didlObjectStack!!.peek().id == ContentTree.AUDIO_ID) {
-            *//*val intent = Intent(this, CTNowPlayingActivity::class.java)
-            intent.putExtra(CURRENT_DEVICE_IP, currentIpAddress)
-            startActivity(intent)
-            finish()*//*
-            finish()
-        } else {
-            didlObjectStack!!.pop()
-            if (!didlObjectStack!!.isEmpty()) {
-                browse(didlObjectStack!!.peek())
-            }
-        }
-    }*/
-
     override fun onStartComplete() {
         // TODO Auto-generated method stub
 
-        if (LibreApplication.LOCAL_UDN.trim().isEmpty())
+        if (LibreApplication.LOCAL_UDN.trim().isEmpty()) {
+            LibreLogger.d(this,"onStartComplete LOCAL_UDN is empty")
             return
-
-        if (intent?.getBooleanExtra(AppConstants.IS_LOCAL_DEVICE_SELECTED, false)!!) {
-            dmsDeviceUDN = LibreApplication.LOCAL_UDN.trim()
         }
 
+        val dmsDeviceUDN = intent?.getStringExtra(DEVICE_UDN)
         if (dmsBrowseHelper == null) {
             dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(dmsDeviceUDN!!, ignoreCase = true))
                 DMSBrowseHelper(true, dmsDeviceUDN)
@@ -521,13 +489,12 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
                 DMSBrowseHelper(false, dmsDeviceUDN)
         }
 
-        val dmsDevice = dmsBrowseHelper!!.getDevice(UpnpDeviceManager.getInstance())
-        didlObjectStack = dmsBrowseHelper!!.browseObjectStack.clone() as Stack<DIDLObject>
+        val dmsDevice = dmsBrowseHelper?.getDevice(UpnpDeviceManager.getInstance())
+        didlObjectStack = dmsBrowseHelper?.browseObjectStack?.clone() as Stack<DIDLObject>
         Log.d("onStartComplete", "didlObjectStack = $didlObjectStack")
 
         if (dmsDevice == null) {
-
-            upnpProcessor!!.searchDMR()
+            upnpProcessor?.searchDMR()
             val builder = AlertDialog.Builder(this@CTDMSBrowserActivityV2)
             builder.setMessage(getString(R.string.deviceMissing))
                     .setCancelable(false)
@@ -571,13 +538,13 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         upnpProcessor?.searchDMR()
     }
 
-    override fun onRemoteDeviceAdded(device: RemoteDevice) {
-        super.onRemoteDeviceAdded(device)
-        val ip = device.identity.descriptorURL.host
-        LibreLogger.d(this, "Remote device with added with ip $ip")
+    override fun onRemoteDeviceAdded(remoteDevice: RemoteDevice?) {
+        super.onRemoteDeviceAdded(remoteDevice)
+        val ip = remoteDevice?.identity?.descriptorURL?.host
+        LibreLogger.d(this, "Remote remoteDevice with added with ip $ip")
         if (ip.equals(currentIpAddress!!, ignoreCase = true)) {
             if (selectedDIDLObject != null) {
-                /* This is a case where user has selected a DMS source but that time  rendering device was null and hence we play with the storedPlayer object*/
+                /* This is a case where user has selected a DMS source but that time  rendering remoteDevice was null and hence we play with the storedPlayer object*/
                 runOnUiThread {
                     val handler = Handler()
                     handler.postDelayed({
@@ -698,12 +665,13 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
             Log.d("handleClick", "didlObjectStack = $didlObjectStack")
 //            browse(clickedDIDLObject)
 
+            createOrUpdatePlaybackHelperAndBroswer()
             /*Go to file listing screen*/
-            startActivity(Intent(this,CTUpnpFileBrowserActivity::class.java).apply {
-                putExtra(CURRENT_DEVICE_IP,currentIpAddress)
-                putExtra(DEVICE_UDN,dmsDeviceUDN)
-                putExtra(CLICKED_DIDL_ID,clickedDIDLObject?.id)
-                putExtra(DIDL_TITLE,clickedDIDLObject?.title)
+            startActivity(Intent(this, CTUpnpFileBrowserActivity::class.java).apply {
+                putExtra(CURRENT_DEVICE_IP, currentIpAddress)
+                putExtra(DEVICE_UDN, renderingUDN)
+                putExtra(CLICKED_DIDL_ID, clickedDIDLObject?.id)
+                putExtra(DIDL_TITLE, clickedDIDLObject?.title)
             })
 
 
@@ -722,7 +690,7 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
         unRegisterForDeviceEvents()
 
         val intent = Intent(this@CTDMSBrowserActivityV2, CTNowPlayingActivity::class.java)
-        /* This change is done to make sure that album art is reflectd after source swithing from Aux to other-START*/
+        /* This change is done to make sure that album art is reflectd after source switching from Aux to other-START*/
         if (setDMR) {
             val sceneObjectFromCentralRepo = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpAddress)
             if (sceneObjectFromCentralRepo != null) {
@@ -732,10 +700,10 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
                 sceneObjectFromCentralRepo.totalTimeOfTheTrack = 0
             }
         }
-        /* This change is done to make sure that album art is reflectd after source swithing from Aux to other*- END*/
+        /* This change is done to make sure that album art is reflected after source switching from Aux to other*- END*/
         intent.putExtra(CURRENT_DEVICE_IP, currentIpAddress)
         startActivity(intent)
-        finish()
+//        finish()
     }
 
     inner class TabsViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
@@ -788,10 +756,12 @@ class CTDMSBrowserActivityV2 : CTDeviceDiscoveryActivity(), DMSProcessor.DMSProc
             return *//*super.getItemPosition(`object`)*//*PagerAdapter.POSITION_NONE
         }*/
 
-        override fun destroyItem(container: ViewGroup?, position: Int, `object`: Any?) {
+        override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
             super.destroyItem(container, position, `object`)
             fragmentMap.remove(tabTitles[position])
         }
+
+
 
         override fun getCount(): Int {
             return tabTitles.size

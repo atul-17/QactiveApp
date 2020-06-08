@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/screen_bg">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/appbar_bg">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_back"
                     android:layout_width="?attr/actionBarSize"
                     android:layout_height="?attr/actionBarSize"
@@ -31,7 +31,7 @@
                     android:padding="16dp"
                     app:srcCompat="@drawable/ic_arrow_back_white" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_toolbar_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -45,15 +45,15 @@
                     android:textSize="22sp"
                     app:fontFamily="sans-serif-medium" />
             </LinearLayout>
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:clipToPadding="false"
         android:fillViewport="true"
-        app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior">
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -61,7 +61,7 @@
             android:orientation="vertical"
             android:paddingBottom="32dp">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
                 android:layout_gravity="center"
@@ -73,34 +73,173 @@
                 android:text="@string/general_settings"
                 android:textColor="@color/app_text_color_disabled" />
 
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="?attr/actionBarSize"-->
+                <!--android:background="@color/appbar_bg"-->
+                <!--android:gravity="center_vertical">-->
+
+                <!--<android.support.v7.widget.AppCompatTextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:text="@string/device_name"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--app:fontFamily="sans-serif" />-->
+
+                <!--<android.support.v7.widget.AppCompatTextView-->
+                    <!--android:id="@+id/tv_device_name"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:gravity="center_vertical|right"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:text="@string/app_name"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textAllCaps="true"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--app:fontFamily="sans-serif-black" />-->
+
+                 <!--<ImageView-->
+                     <!--android:id="@+id/btnSceneName"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignParentEnd="true"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_alignParentTop="true"-->
+                    <!--android:drawableRight="@mipmap/ic_home_black"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--/>-->
+            <!--</LinearLayout>-->
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/sceneEdit"
+                android:background="@color/appbar_bg"
+                android:gravity="center_vertical"
+                >
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/btnEditSceneName"
+                    style="?android:attr/buttonStyleSmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@mipmap/edit_white"
+                    android:gravity="center_vertical"
+                    />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:textSize="16sp"
+                    android:text="@string/device_name"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif"
+                    android:id="@+id/sceneName"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginEnd="10dp" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/tv_device_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:singleLine="true"
+                    android:text="Speaker Name"
+                    android:textColor="@color/white"
+                    android:inputType="text|textNoSuggestions"
+                    android:maxLength="50"
+                    android:layout_marginLeft="-18dp"
+                    app:fontFamily="sans-serif"
+                    android:textSize="16sp"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/sceneName"
+                    />
+
+                <!--<android.support.v7.widget.AppCompatTextView-->
+                    <!--android:id="@+id/tv_device_name"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:gravity="center_vertical|right"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:text="@string/app_name"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:textAllCaps="true"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--app:fontFamily="sans-serif-black" />-->
+
+                <!--<android.support.v7.widget.AppCompatTextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:padding="16dp"-->
+                    <!--android:textSize="16sp"-->
+                    <!--android:text="@string/device_name"-->
+                    <!--android:textColor="@color/white"-->
+                    <!--app:fontFamily="sans-serif" />-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="Scene Name :"-->
+                    <!--android:id="@+id/textView4"-->
+                    <!--android:layout_alignParentLeft="true"-->
+                    <!--android:layout_alignParentStart="true"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:textColor="@color/brand_dark_grey"-->
+                    <!--android:textSize="18dp"-->
+                    <!--android:paddingRight="10dp"/>-->
+
+
+
+
+            </RelativeLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
+                android:weightSum="2"
+                android:id="@+id/ll_source_config"
                 android:gravity="center_vertical">
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:layout_width="wrap_content"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1.8"
                     android:gravity="center_vertical"
                     android:padding="16dp"
+                    android:text="@string/sourceConfiguration"
                     android:textSize="16sp"
-                    android:text="@string/device_name"
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatTextView
-                    android:id="@+id/tv_device_name"
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical|right"
-                    android:padding="16dp"
-                    android:text="@string/app_name"
-                    android:textSize="16sp"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    app:fontFamily="sans-serif-black" />
+                    android:layout_weight=".2"
+                    android:src="@drawable/ic_white_right_arrow"
+                    />
+
             </LinearLayout>
 
             <View
@@ -109,13 +248,160 @@
                 android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
                 android:gravity="center_vertical">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="@string/hubLedSwitch"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_hub_led_switch_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/off"
+                    android:textAllCaps="true"
+                    android:textSize="16sp"
+                    android:textColor="@color/white" />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_hub_led_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="false"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/appbar_bg"
+                android:weightSum="2"
+                android:id="@+id/ll_user_reg"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.8"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="@string/customerReg"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:src="@drawable/ic_white_right_arrow"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/appbar_bg"
+                android:weightSum="2"
+                android:id="@+id/ll_firmware_update_4_hours"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.8"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="@string/firmware_update_4_hrs"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:src="@drawable/ic_white_right_arrow"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/appbar_bg"
+                android:weightSum="2"
+                android:id="@+id/ll_firmware_update_3_min"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1.8"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="@string/firmware_update_3_min"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:src="@drawable/ic_white_right_arrow"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height=".5dp"
+                android:background="@android:color/transparent" />
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/appbar_bg"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -130,7 +416,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_audio_output"
                         android:paddingLeft="8dp"
                         android:paddingRight="8dp"
@@ -139,10 +425,10 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical|right"
                         android:background="?attr/selectableItemBackground"
-                        android:drawableRight="@drawable/ic_orange_right_arrow"
+                        android:drawableRight="@drawable/ic_white_right_arrow"
                         android:drawablePadding="12dp"
                         android:gravity="center_vertical"
-                        android:textColor="@color/app_text_color_enabled"
+                        android:textColor="@color/white"
                         app:fontFamily="sans-serif-black"
                         tools:text="@string/app_name" />
 
@@ -165,7 +451,7 @@
                 android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
@@ -173,7 +459,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="24dp"
@@ -183,18 +469,18 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatSeekBar
+                <androidx.appcompat.widget.AppCompatSeekBar
                     android:id="@+id/seek_bar_bass"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:max="100"
                     android:maxHeight="3dp"
-                    android:progressDrawable="@drawable/gradient_progress_drawable"
+                    android:progressDrawable="@drawable/gradient_progress_drawable_black_white"
                     android:thumb="@drawable/thumb_drawable"
                     tools:progress="30" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_bass_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -211,7 +497,7 @@
                 android:background="@android:color/transparent" />
 
             <LinearLayout
-                android:visibility="visible"
+                android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
@@ -219,7 +505,7 @@
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
@@ -229,18 +515,18 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatSeekBar
+                <androidx.appcompat.widget.AppCompatSeekBar
                     android:id="@+id/seek_bar_treble"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:max="100"
                     android:maxHeight="3dp"
-                    android:progressDrawable="@drawable/gradient_progress_drawable"
+                    android:progressDrawable="@drawable/gradient_progress_drawable_black_white"
                     android:thumb="@drawable/thumb_drawable"
                     tools:progress="30" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_treble_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -251,10 +537,7 @@
                     app:fontFamily="sans-serif" />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/transparent" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -262,7 +545,7 @@
                 android:background="@color/appbar_bg"
                 android:gravity="center_vertical">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -273,7 +556,7 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_ip_address"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -298,7 +581,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -315,7 +598,7 @@
                     android:layout_weight="1"
                     android:paddingRight="16dp">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_system_firmware"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -330,7 +613,7 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center_vertical|right"
-                        android:layout_marginRight="32dp"
+                        android:layout_marginRight="40dp"
                         android:indeterminate="true"
                         android:visibility="gone"
                         tools:visibility="visible" />
@@ -351,7 +634,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -367,7 +650,7 @@
                     android:layout_weight="1"
                     android:paddingRight="16dp">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_host_firmware"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -397,7 +680,7 @@
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -407,7 +690,7 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_mac_address"
                     android:padding="16dp"
                     android:gravity="right"
@@ -421,9 +704,58 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/appbar_bg"
+                android:gravity="center_vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:padding="16dp"
+                    android:text="@string/alertSounds"
+                    android:textSize="16sp"
+                    android:textColor="@color/white"
+                    app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_alert"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/on"
+                    android:textAllCaps="true"
+                    android:textSize="16sp"
+                    android:textColor="@color/white" />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_alert_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@android:color/transparent" />
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:padding="4dp">
 
                 <LinearLayout
@@ -432,13 +764,13 @@
                     android:layout_centerInParent="true"
                     android:gravity="center">
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:layout_marginRight="16dp"
                         app:srcCompat="@drawable/flight_takeoff" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_away_mode_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -447,8 +779,9 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_edit_away_mode"
+                    android:visibility="invisible"
                     android:background="?attr/selectableItemBackground"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -464,9 +797,10 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
                 android:gravity="center_vertical"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -480,9 +814,10 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:visibility="gone"
                     android:paddingRight="16dp">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_network_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -496,7 +831,7 @@
                         android:layout_width="28dp"
                         android:layout_height="28dp"
                         android:layout_gravity="center_vertical|right"
-                        android:layout_marginRight="32dp"
+                        android:layout_marginRight="40dp"
                         android:indeterminate="true"
                         android:visibility="gone"
                         tools:visibility="visible" />
@@ -513,9 +848,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
+                android:visibility="gone"
                 android:gravity="center_vertical">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -525,7 +861,7 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_wifi_pwd"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -553,13 +889,13 @@
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_marginRight="24dp"
-                        app:srcCompat="@drawable/amazon_logo_128" />
+                        app:srcCompat="@drawable/amazon_logo_small" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:text="@string/alexa_settings"
@@ -573,7 +909,7 @@
                     android:background="@color/appbar_bg"
                     android:gravity="center_vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -589,19 +925,19 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_amazon_login"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical|right"
-                            android:drawableRight="@drawable/ic_orange_right_arrow"
+                            android:drawableRight="@drawable/ic_white_right_arrow"
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
                             android:text="@string/logged_in"
                             android:textSize="16sp"
-                            android:textColor="@color/app_text_color_enabled"
+                            android:textColor="@color/white"
                             app:fontFamily="sans-serif-black" />
 
                         <ProgressBar
@@ -609,7 +945,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"
-                            android:layout_marginRight="40dp"
+                            android:layout_marginRight="?attr/actionBarSize"
                             android:indeterminate="true"
                             android:visibility="gone"
                             tools:visibility="visible" />
@@ -628,7 +964,7 @@
                     android:background="@color/appbar_bg"
                     android:gravity="center_vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -644,20 +980,20 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_alexa_locale"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
+                            android:visibility="visible"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical|right"
                             android:background="?attr/selectableItemBackground"
-                            android:drawableRight="@drawable/ic_orange_right_arrow"
+                            android:drawableRight="@drawable/ic_white_right_arrow"
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
-                            android:text="@string/logged_in"
                             android:textSize="16sp"
-                            android:textColor="@color/app_text_color_enabled"
+                            android:textColor="@color/white"
                             app:fontFamily="sans-serif-black" />
 
                         <ProgressBar
@@ -665,7 +1001,7 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"
-                            android:layout_marginRight="40dp"
+                            android:layout_marginRight="?attr/actionBarSize"
                             android:indeterminate="true"
                             android:visibility="gone"
                             tools:visibility="visible" />
@@ -678,11 +1014,11 @@
             <LinearLayout
                 android:id="@+id/ll_soft_update"
                 android:visibility="gone"
-                tools:visibility="visible"
+                tools:visibility="gone"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="32dp"
                     android:layout_gravity="center"
@@ -700,34 +1036,23 @@
                     android:background="@color/appbar_bg"
                     android:gravity="center_vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:padding="16dp"
-                        android:text="@string/software_update"
-                        android:textSize="16sp"
-                        android:textColor="@color/white"
-                        app:fontFamily="sans-serif" />
-
                     <FrameLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
 
-                        <android.support.v7.widget.AppCompatTextView
+                        <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/tv_soft_update"
                             android:paddingLeft="8dp"
                             android:paddingRight="8dp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical|right"
-                            android:drawableRight="@drawable/ic_orange_right_arrow"
+                            android:drawableRight="@drawable/ic_white_right_arrow"
                             android:drawablePadding="12dp"
                             android:gravity="center_vertical"
-                            android:text="@string/logged_in"
                             android:textSize="16sp"
-                            android:textColor="@color/app_text_color_enabled"
+                            android:textColor="@color/white"
                             app:fontFamily="sans-serif-black" />
 
                         <ProgressBar
@@ -735,16 +1060,22 @@
                             android:layout_width="28dp"
                             android:layout_height="28dp"
                             android:layout_gravity="center_vertical|right"
-                            android:layout_marginRight="40dp"
+                            android:layout_marginRight="?attr/actionBarSize"
                             android:indeterminate="true"
-                            android:visibility="gone"
+                            android:visibility="visible"
                             tools:visibility="visible" />
                     </FrameLayout>
 
                 </LinearLayout>
             </LinearLayout>
 
-
+        <LinearLayout
+            android:id="@+id/llAlexaSpeechVol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible"
+            tools:visibility="visible">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -752,14 +1083,14 @@
                 android:orientation="horizontal"
                 android:padding="12dp">
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginRight="24dp"
                     android:scaleType="fitCenter"
                     app:srcCompat="@drawable/alexa_blue_white_100px" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/speech_volume_follow"
@@ -772,7 +1103,7 @@
                 android:background="@color/appbar_bg"
                 android:gravity="center_vertical">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -783,22 +1114,24 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_switch_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/off"
                     android:textAllCaps="true"
                     android:textSize="16sp"
-                    android:textColor="@color/app_text_color_enabled" />
+                    android:textColor="@color/white" />
 
-                <android.support.v7.widget.SwitchCompat
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_speech_volume_follow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:checked="false"
+                    app:theme="@style/Color1SwitchStyle"
+                    android:theme="@style/Color1SwitchStyle"
                     android:textOff="OFF"
                     android:textOn="ON" />
             </LinearLayout>
@@ -808,15 +1141,17 @@
                 android:layout_height="1dp"
                 android:background="@android:color/transparent" />
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/appbar_bg"
                 android:gravity="center_vertical"
                 android:paddingLeft="16dp"
-                android:paddingRight="16dp">
+                android:paddingRight="16dp"
+                android:id="@+id/speechVolume">
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
@@ -826,18 +1161,18 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
 
-                <android.support.v7.widget.AppCompatSeekBar
+                <androidx.appcompat.widget.AppCompatSeekBar
                     android:id="@+id/seek_bar_volume"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:max="100"
                     android:maxHeight="3dp"
-                    android:progressDrawable="@drawable/gradient_progress_drawable"
+                    android:progressDrawable="@drawable/gradient_progress_drawable_black_white"
                     android:thumb="@drawable/thumb_drawable"
                     tools:progress="30" />
 
-                <android.support.v7.widget.AppCompatTextView
+                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tv_volume_value"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -847,7 +1182,7 @@
                     android:textColor="@color/white"
                     app:fontFamily="sans-serif" />
             </LinearLayout>
-
         </LinearLayout>
-    </android.support.v4.widget.NestedScrollView>
-</android.support.design.widget.CoordinatorLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,8 +7,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.LinearLayoutManager
+import androidx.core.content.ContextCompat.startActivity
+import androidx.appcompat.app.AlertDialog
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.text.TextUtils
 import android.util.Log
 import android.view.MotionEvent
@@ -20,22 +21,22 @@ import android.widget.Toast
 import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.adapter.CTDeviceBrowserListAdapter
 import com.cumulations.libreV2.closeKeyboard
-import com.libre.LErrorHandeling.LibreError
+import com.libre.qactive.LErrorHandeling.LibreError
 import com.cumulations.libreV2.model.DataItem
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.Constants.NETWORK_TIMEOUT
-import com.libre.Scanning.ScanningHandler
-import com.libre.constants.LSSDPCONST
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.LUCIMESSAGES.BACK
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIControl
-import com.libre.luci.LUCIPacket
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.util.LibreLogger
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.Constants.NETWORK_TIMEOUT
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.LUCIMESSAGES.BACK
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.luci.LUCIControl
+import com.libre.qactive.luci.LUCIPacket
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_device_browser.*
 import org.json.JSONException
 import org.json.JSONObject
@@ -178,7 +179,7 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
                 val intent = Intent(this@CTDeviceBrowserActivity, CTMediaSourcesActivity::class.java)
                 intent.putExtra(Constants.CURRENT_DEVICE_IP, currentIpaddress)
                 val currentSceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(currentIpaddress)
-                intent.putExtra(Constants.CURRENT_SOURCE, "" + currentSceneObject!!.currentSource)
+                intent.putExtra(Constants.CURRENT_SOURCE, "" + currentSceneObject?.currentSource)
                 startActivity(intent)
                 finish()
 
@@ -189,8 +190,6 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
 
     override fun onStart() {
         super.onStart()
-        val musicPlayerView = findViewById<FrameLayout>(R.id.fl_music_play_widget)
-        setMusicPlayerWidget(musicPlayerView, currentIpaddress!!)
         if (isSongSelected){
             deviceBrowserListAdapter?.dataItemList?.clear()
             deviceBrowserListAdapter?.notifyDataSetChanged()
@@ -203,6 +202,8 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
         super.onResume()
         /*Registering to receive messages*/
         registerForDeviceEvents(this)
+        val musicPlayerView = findViewById<FrameLayout>(R.id.fl_music_play_widget)
+        setMusicPlayerWidget(musicPlayerView, currentIpaddress!!)
     }
 
     private fun sendScrollUp() {
@@ -212,6 +213,14 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
             gotolastpostion = true
             //  mLayoutManager.scrollToPosition(49);
             showProgressDialog(R.string.loading_next_items)
+            //////////// timeout for dialog - showLoader() ///////////////////
+            if (current_source_index_selected == 0) {
+                /*increasing timeout for media servers only*/
+                handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, 60000)
+            } else {
+                handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, 15000)
+            }
+
             LibreLogger.d(this, "recycling " + "SCROLL UP" + "and find first visible item position=" +
                     mLayoutManager!!.findFirstVisibleItemPosition() + "find last visible item=" +
                     mLayoutManager!!.findLastVisibleItemPosition() + "find last completely visible item=" +
@@ -227,6 +236,13 @@ class CTDeviceBrowserActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteract
             LibreLogger.d(this, "recycling " + "SCROLL DOWN")
             // mLayoutManager.scrollToPosition(0);
             showProgressDialog(R.string.loading_prev_items)
+            //////////// timeout for dialog - showLoader() ///////////////////
+            if (current_source_index_selected == 0) {
+                /*increasing timeout for media servers only*/
+                handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, 60000)
+            } else {
+                handler.sendEmptyMessageDelayed(NETWORK_TIMEOUT, 15000)
+            }
             LibreLogger.d(this, "recycling " + "Last song")
             showToast(R.string.lastSong)
         }

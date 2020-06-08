@@ -1,4 +1,4 @@
-package com.libre.luci;
+package com.libre.qactive.luci;
 /*********************************************************************************************
  * Copyright (C) 2014 Libre Wireless Technology
  * <p/>
@@ -12,8 +12,8 @@ import android.util.Log;
 
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl;
 import com.cumulations.libreV2.tcp_tunneling.enums.ModelId;
-import com.libre.Scanning.ScanningHandler;
-import com.libre.util.LibreLogger;
+import com.libre.qactive.Scanning.ScanningHandler;
+import com.libre.qactive.util.LibreLogger;
 
 import java.util.ArrayList;
 

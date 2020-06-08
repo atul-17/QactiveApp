@@ -5,7 +5,7 @@
         android:id="@+id/action_discover"
         android:enabled="true"
         android:icon="@drawable/ic_discover_unselected"
-        android:title="@string/discovery"
+        android:title="@string/home"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_add"
@@ -22,12 +22,12 @@
         android:id="@+id/action_tutorial"
         android:enabled="true"
         android:icon="@drawable/tutorials_unselected"
-        android:title="@string/tutorials"
+        android:title="@string/help"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"
         android:enabled="true"
-        android:icon="@drawable/settings_unselected"
-        android:title="@string/Settings"
+        android:icon="@drawable/about_icon_black"
+        android:title="@string/about"
         app:showAsAction="ifRoom" />
 </menu>

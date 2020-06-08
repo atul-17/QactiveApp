@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.provider.Settings
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,34 +16,37 @@ import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.activity.CTConnectToWifiActivity
 import com.cumulations.libreV2.toHtmlSpanned
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
 import com.cumulations.libreV2.model.WifiConnection
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.serviceinterface.LSDeviceClient
-import com.libre.util.LibreLogger
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.serviceinterface.LSDeviceClient
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_fragment_device_setup_instructions.*
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
 
-class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
+class CTDeviceSetupInfoFragment: Fragment(),View.OnClickListener {
     private val deviceDiscoveryActivity by lazy {
         activity as CTDeviceDiscoveryActivity
     }
     private var mDeviceName: String? = null
+    private var ssid: String? = null
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         return inflater?.inflate(R.layout.ct_fragment_device_setup_instructions,container,false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListeners()
     }
+
+
 
     private fun setListeners() {
         btn_wifi_settings.setOnClickListener(this)
@@ -62,20 +65,21 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        /*
-        This is hot fix. Need to check scenario when speaker in SAC/SA mode connected to more then 1 app
-        phoneIp = 192.168.43.149 when app wifi connected to SA
-        phoneIp = 192.168.255.254 when app wifi connected to SAC*/
+//        This is hot fix. Need to check scenario when speaker in SAC/SA mode connected to more then 1 app
+//        phoneIp = 192.168.43.149 when app wifi connected to SA
+//        phoneIp = 192.168.255.254 when app wifi connected to SAC*/
+//        For sac gateway 192.168.255.249
+//        For sa gateway 192.168.43.2
+//        LibreLogger.d(this,"onResume, phoneIp = "+deviceDiscoveryActivity.phoneIpAddress())
+//        LibreLogger.d(this,"onResume, connected router Ip = "+WifiUtil(deviceDiscoveryActivity).getConnectedRouterIp())
+//        btn_next.isEnabled = deviceDiscoveryActivity.phoneIpAddress().contains(AppConstants.SAC_MODE_IP)
 
-        LibreLogger.d(this,"onResume, phoneIp = "+deviceDiscoveryActivity.phoneIpAddress())
-        /*if (deviceDiscoveryActivity.getConnectedSSIDName(deviceDiscoveryActivity).contains(Constants.RIVAA_WAC_SSID)!!)
-            btn_next.isEnabled = true*/
-
-        /*if (deviceDiscoveryActivity.phoneIpAddress().contains(AppConstants.SAC_MODE_IP)){
-            btn_next.isEnabled = true
-        }*/
-
-        btn_next.isEnabled = deviceDiscoveryActivity.phoneIpAddress().contains(AppConstants.SAC_MODE_IP)
+        Handler().postDelayed({
+            ssid = deviceDiscoveryActivity.getConnectedSSIDName(deviceDiscoveryActivity)
+            tv_connected_ssid?.text = "Connected ssid : $ssid"
+            btn_next?.isEnabled =
+                    ssid?.contains(Constants.SA_SSID_RIVAA_CONCERT)!! || ssid?.contains(Constants.SA_SSID_RIVAA_STADIUM)!!
+        },300)
     }
 
     override fun onClick(p0: View?) {
@@ -85,7 +89,7 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
                 (activity as CTDeviceDiscoveryActivity).disableNetworkChangeCallBack()
                 (activity as CTDeviceDiscoveryActivity).disableNetworkOffCallBack()
 
-                WifiConnection.getInstance().mPreviousSSID = AppUtils.getConnectedSSID(activity)
+                WifiConnection.getInstance().mPreviousSSID = AppUtils.getConnectedSSID(activity!!)
                 LibreApplication.activeSSID = WifiConnection.getInstance().mPreviousSSID
 
                 startActivityForResult(Intent(Settings.ACTION_WIFI_SETTINGS).apply {
@@ -99,17 +103,13 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
             }
 
             R.id.btn_next -> {
-                if (!deviceDiscoveryActivity.connectedSSID?.contains(Constants.RIVAA_WAC_SSID)!!) {
+                if (!(ssid?.contains(Constants.SA_SSID_RIVAA_CONCERT)!! || ssid?.contains(Constants.SA_SSID_RIVAA_STADIUM)!!)) {
                     AppUtils.showAlertForNotConnectedToSAC(deviceDiscoveryActivity)
                     return
                 }
 
-                /*Commenting for RIVAA SAC*/
-                /*val phoneIpaddresss = deviceDiscoveryActivity.phoneIpAddress()
-                if (phoneIpaddresss != null && phoneIpaddresss!!.contains("192.168.255."))
-                    return*/
-
-                if (deviceDiscoveryActivity.connectedSSID?.endsWith(".d")!!) {
+                val connectedSSID = deviceDiscoveryActivity?.getConnectedSSIDName(deviceDiscoveryActivity)
+                if (connectedSSID?.endsWith(".d")!!) {
                     return
                 }
 
@@ -128,13 +128,14 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
             getDeviceName()
         } else {
             Log.e("retrieveDeviceName","Device name = $mDeviceName")
-            WifiConnection.getInstance().putssidDeviceNameSAC(deviceDiscoveryActivity.connectedSSID, mDeviceName)
+            val connectedSSID = deviceDiscoveryActivity?.getConnectedSSIDName(deviceDiscoveryActivity)
+            WifiConnection.getInstance().putssidDeviceNameSAC(connectedSSID, mDeviceName)
             startActivity(Intent(deviceDiscoveryActivity, CTConnectToWifiActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 putExtra(Constants.FROM_ACTIVITY,CTDeviceSetupInfoFragment::class.java.simpleName)
                 putExtra(AppConstants.DEVICE_IP, AppConstants.SAC_IP_ADDRESS)
                 putExtra(AppConstants.DEVICE_NAME, mDeviceName)
-                putExtra(AppConstants.DEVICE_SSID, deviceDiscoveryActivity.connectedSSID)
+                putExtra(AppConstants.DEVICE_SSID, connectedSSID)
             })
         }
     }
@@ -146,22 +147,25 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
 
         deviceNameService.getSacDeviceName(object : Callback<String> {
             override fun success(deviceName: String, response: Response) {
+                deviceDiscoveryActivity?.dismissDialog()
                 mDeviceName = deviceName.toHtmlSpanned().toString()
                 LibreLogger.d(this, "Device name $mDeviceName, seeking scan result")
                 if (mDeviceName != null) {
                     Log.e("SACDeviceName---", mDeviceName)
-                    WifiConnection.getInstance().putssidDeviceNameSAC(deviceDiscoveryActivity.connectedSSID, mDeviceName)
+                    val connectedSSID = deviceDiscoveryActivity?.getConnectedSSIDName(deviceDiscoveryActivity)
+                    WifiConnection.getInstance().putssidDeviceNameSAC(connectedSSID, mDeviceName)
                     startActivity(Intent(deviceDiscoveryActivity, CTConnectToWifiActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         putExtra(Constants.FROM_ACTIVITY,CTDeviceSetupInfoFragment::class.java.simpleName)
                         putExtra(AppConstants.DEVICE_IP, AppConstants.SAC_IP_ADDRESS)
                         putExtra(AppConstants.DEVICE_NAME, mDeviceName)
-                        putExtra(AppConstants.DEVICE_SSID, deviceDiscoveryActivity.connectedSSID)
+                        putExtra(AppConstants.DEVICE_SSID, connectedSSID)
                     })
                 }
             }
 
             override fun failure(error: RetrofitError) {
+                deviceDiscoveryActivity?.dismissDialog()
                 error.printStackTrace()
                 Log.d("getDeviceName","error ${error.message}")
                 retrieveDeviceName()
@@ -186,8 +190,8 @@ class CTDeviceSetupInfoFragment:Fragment(),View.OnClickListener {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         deviceDiscoveryActivity?.dismissDialog()
         handler?.removeMessages(AppConstants.GETTING_DEVICE_NAME)
     }

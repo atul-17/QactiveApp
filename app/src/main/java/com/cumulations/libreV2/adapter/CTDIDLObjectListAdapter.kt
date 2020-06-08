@@ -1,15 +1,14 @@
 package com.cumulations.libreV2.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.cumulations.libreV2.activity.CTDMSBrowserActivityV2
 import com.cumulations.libreV2.activity.CTUpnpFileBrowserActivity
-import com.libre.R
-import com.libre.app.dlna.dmc.server.ContentTree
+import com.libre.qactive.R
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.ct_list_item_didl_object.view.*
 import org.fourthline.cling.support.model.DIDLObject
@@ -54,6 +53,8 @@ class CTDIDLObjectListAdapter(val context: Context,
                 if (uri != null) {
                     try {
                         val androiduri = android.net.Uri.parse(uri!!.toString())
+
+
                         /*when{
                             didlObject?.refID?.contains(ContentTree.AUDIO_ALBUMS_ID)!! -> {
                                 Picasso.with(context)

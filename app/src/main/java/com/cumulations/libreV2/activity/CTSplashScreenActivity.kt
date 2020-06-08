@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.view.View
 import com.cumulations.libreV2.AppConstants.DEVICES_FOUND
 import com.cumulations.libreV2.AppConstants.MEDIA_PROCESS_DONE
@@ -14,15 +14,15 @@ import com.cumulations.libreV2.AppConstants.MEDIA_PROCESS_INIT
 import com.cumulations.libreV2.AppConstants.MSEARCH_REQUEST
 import com.cumulations.libreV2.AppConstants.TIME_EXPIRED
 import com.cumulations.libreV2.model.SceneObject
-import com.libre.LibreApplication
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.ScanningHandler
-import com.libre.app.dlna.dmc.processor.upnp.LoadLocalContentService
-import com.libre.luci.LSSDPNodes
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.util.LibreLogger
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.app.dlna.dmc.processor.upnp.LoadLocalContentService
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_splash.*
 
 class CTSplashScreenActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteractionListner {

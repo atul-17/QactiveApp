@@ -6,7 +6,7 @@
     android:background="@color/screen_bg"
     android:orientation="vertical">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/appbar_bg"
@@ -29,6 +29,8 @@
         android:indeterminate="true"
         android:visibility="gone"
         tools:visibility="visible" />
+
+
 
     <WebView
         android:id="@+id/web_view"

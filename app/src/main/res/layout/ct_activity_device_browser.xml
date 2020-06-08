@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/screen_bg">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         app:contentInsetLeft="0dp"
         app:contentInsetStart="0dp"
@@ -16,21 +16,21 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <android.support.v7.widget.AppCompatImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ib_back"
                 android:background="?attr/selectableItemBackground"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="?attr/actionBarSize"
                 app:srcCompat="@drawable/ic_arrow_back_white" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_source_icon"
                 android:visibility="gone"
                 tools:visibility="gone"
                 android:layout_width="?attr/actionBarSize"
                 android:layout_height="match_parent" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/browser_title"
                 android:layout_gravity="center_vertical"
                 android:gravity="center"
@@ -46,7 +46,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ib_home"
                 android:visibility="visible"
                 android:padding="12dp"
@@ -55,8 +55,8 @@
                 android:layout_height="?attr/actionBarSize"
                 android:src="@mipmap/ic_home_black" />
         </LinearLayout>
-    </android.support.v7.widget.Toolbar>
-    <android.support.v7.widget.RecyclerView
+    </androidx.appcompat.widget.Toolbar>
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_device_browser"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -66,7 +66,7 @@
         android:paddingLeft="16dp"
         android:paddingRight="16dp"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_no_data"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

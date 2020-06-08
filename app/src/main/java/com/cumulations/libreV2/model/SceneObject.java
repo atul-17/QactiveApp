@@ -1,9 +1,9 @@
 package com.cumulations.libreV2.model;
 
-import com.libre.alexa.ControlConstants;
-import com.libre.luci.LSSDPNodeDB;
-import com.libre.luci.LSSDPNodes;
-import com.libre.util.LibreLogger;
+import com.cumulations.libreV2.tcp_tunneling.enums.BatteryType;
+import com.libre.qactive.alexa.ControlConstants;
+import com.libre.qactive.luci.LSSDPNodeDB;
+import com.libre.qactive.util.LibreLogger;
 
 /**
  * Created by karunakaran on 7/22/2015.
@@ -39,9 +39,16 @@ public class SceneObject {
      */
     private String playUrl;
     private PREPARING_STATE preparingState;
+    private boolean nextControl,previousControl,isSeekenabled;
 
     /*For alexa btn long press in device list*/
     private boolean isAlexaBtnLongPressed;
+
+    private boolean isBatteryPluggedIn;
+    private boolean isAuxPluggedIn;
+    private boolean isBatteryCharging;
+    private BatteryType batteryType;
+    private int tunnelingCurrentSource;
 
     public SceneObject() {}
 
@@ -83,7 +90,25 @@ public class SceneObject {
 
         return volumeZoneInPercentage;
     }
+    public void setNextControl(boolean nextControl){
+        this.nextControl=nextControl;
+    }
+    public boolean getNextControl(){
+        return nextControl;
+    }
 
+    public void setPreviousControl(boolean previousControl){
+        this.previousControl=previousControl;
+    }
+    public boolean getPreviousControl(){
+        return previousControl;
+    }
+    public void setSeekEnabled(boolean isSeekenabled){
+        this.isSeekenabled=isSeekenabled;
+    }
+    public boolean getSeekEnabled(){
+        return isSeekenabled;
+    }
     public void setvolumeZoneInPercentage(int inputVolume) {
         volumeZoneInPercentage = inputVolume;
     }
@@ -249,11 +274,7 @@ public class SceneObject {
     }
 
     public String getPlayUrl() {
-
-        LibreLogger.d(this,"Setting the playurl for "+ipAddress +" is  rRETUN is "+playUrl);
-        if(playUrl==null){
-            LibreLogger.d(this,"ERROR  Getting Playurl is Null");
-        }
+        LibreLogger.d(this,"getPlayUrl for "+ipAddress +" is "+playUrl);
         return playUrl;
     }
 
@@ -360,5 +381,51 @@ public class SceneObject {
 
     public void setAlexaBtnLongPressed(boolean alexaBtnLongPressed) {
         isAlexaBtnLongPressed = alexaBtnLongPressed;
+    }
+
+    public boolean isBatteryPluggedIn() {
+        return isBatteryPluggedIn;
+    }
+
+    public void setBatteryPluggedIn(boolean batteryPluggedIn) {
+        isBatteryPluggedIn = batteryPluggedIn;
+    }
+
+    public boolean isAuxPluggedIn() {
+        return isAuxPluggedIn;
+    }
+
+    public void setAuxPluggedIn(boolean auxPluggedIn) {
+        isAuxPluggedIn = auxPluggedIn;
+    }
+
+    public boolean isBatteryCharging() {
+        return isBatteryCharging;
+    }
+
+    public void setBatteryCharging(boolean batteryCharging) {
+        isBatteryCharging = batteryCharging;
+    }
+
+    public BatteryType getBatteryType() {
+        return batteryType;
+    }
+
+    public void setBatteryType(BatteryType batteryType) {
+        this.batteryType = batteryType;
+    }
+
+    public void clearBatteryStats(){
+        isAuxPluggedIn = false;
+        isBatteryPluggedIn = false;
+        isBatteryCharging = false;
+    }
+
+    public int getTunnelingCurrentSource() {
+        return tunnelingCurrentSource;
+    }
+
+    public void setTunnelingCurrentSource(int tunnelingCurrentSource) {
+        this.tunnelingCurrentSource = tunnelingCurrentSource;
     }
 }

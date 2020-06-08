@@ -2,13 +2,13 @@ package com.cumulations.libreV2.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.Gravity
 import android.view.WindowManager
 import com.cumulations.libreV2.activity.CTDeviceSettingsActivity
 import com.cumulations.libreV2.tcp_tunneling.enums.AQModeSelect
-import com.libre.R
-import com.libre.Scanning.Constants
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
 import kotlinx.android.synthetic.main.ct_dlg_fragment_audio_output.*
 
 

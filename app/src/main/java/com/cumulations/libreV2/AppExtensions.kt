@@ -11,20 +11,21 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
-import android.support.design.internal.BottomNavigationItemView
-import android.support.design.internal.BottomNavigationMenuView
-import android.support.design.widget.BottomNavigationView
-import android.support.v4.content.ContextCompat
+import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.android.material.bottomnavigation.BottomNavigationMenuView
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.core.content.ContextCompat
 import android.text.Html
 import android.text.Spanned
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import com.libre.R
-import com.libre.constants.LSSDPCONST
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.MIDCONST
-import com.libre.luci.LUCIControl
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LUCIControl
 
 fun IntArray.containsOnly(num: Int): Boolean = filter { it == num }.isNotEmpty()
 
@@ -38,7 +39,7 @@ fun removeShiftMode(view: BottomNavigationView) {
         shiftingMode.isAccessible = false
         for (i in 0 until menuView.childCount) {
             val item = menuView.getChildAt(i) as BottomNavigationItemView
-            item.setShiftingMode(false)
+            item.setShifting(false)
             // set once again checked value, so view will be updated
             item.setChecked(item.itemData.isChecked)
         }
@@ -150,5 +151,10 @@ fun openKeyboard(context: Context, view: View?) {
 
 fun Activity.isVisibleToUser():Boolean{
     return this.window.decorView.isShown
+}
+
+fun isConnectedToSAMode(ssid: String):Boolean{
+    return (ssid.contains(Constants.SA_SSID_RIVAA_CONCERT) || ssid.contains(Constants.SA_SSID_RIVAA_STADIUM))
+            && !ssid.contains("_")
 }
 

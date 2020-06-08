@@ -11,12 +11,12 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_didl_item_album_art"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:scaleType="fitCenter"
-        app:srcCompat="@mipmap/dms_album_art" />
+        app:srcCompat="@drawable/album_borderless" />
 
 
     <LinearLayout
@@ -27,7 +27,7 @@
         android:layout_weight="1"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp">
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_didl_item_name"
             app:fontFamily="sans-serif"
             android:layout_width="match_parent"
@@ -39,7 +39,7 @@
             android:textColor="@color/white"
             tools:text="DIDL Object Name" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_didl_item_artist"
             android:textSize="12sp"
             app:fontFamily="sans-serif-light"
@@ -54,7 +54,7 @@
     </LinearLayout>
 
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_container_count"
         android:textSize="12sp"
         app:fontFamily="sans-serif-light"

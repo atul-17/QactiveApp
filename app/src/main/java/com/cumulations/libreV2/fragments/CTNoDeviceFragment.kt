@@ -4,30 +4,30 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.cumulations.libreV2.model.SceneObject
-import com.libre.*
-import com.libre.Scanning.ScanningHandler
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
 import kotlinx.android.synthetic.main.ct_fragment_no_device.*
 
-class CTNoDeviceFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickListener {
+class CTNoDeviceFragment: Fragment(),LibreDeviceInteractionListner,View.OnClickListener {
     private val mScanHandler = ScanningHandler.getInstance()
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         return inflater?.inflate(R.layout.ct_fragment_no_device,container,false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListeners()
@@ -35,8 +35,8 @@ class CTNoDeviceFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickLi
 
     private fun setListeners() {
 //        iv_refresh.setOnClickListener(this)
-        ll_refresh.setOnClickListener(this)
-        ll_setup_speaker.setOnClickListener(this)
+        tv_refresh.setOnClickListener(this)
+        tv_setup_speaker.setOnClickListener(this)
     }
 
     private fun initViews() {
@@ -51,8 +51,8 @@ class CTNoDeviceFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickLi
 
     override fun onClick(p0: View?) {
         when(p0?.id){
-            R.id.iv_refresh,R.id.ll_refresh -> /*refreshDevices()*/(activity as CTHomeTabsActivity).refreshDevices()
-            R.id.ll_setup_speaker -> {
+            R.id.iv_refresh,R.id.tv_refresh -> /*refreshDevices()*/(activity as CTHomeTabsActivity).refreshDevices()
+            R.id.tv_setup_speaker -> {
                 (activity as CTHomeTabsActivity).openFragment(CTDeviceSetupInfoFragment::class.java.simpleName,animate = true)
             }
         }
@@ -75,7 +75,6 @@ class CTNoDeviceFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickLi
     }
 
     override fun newDeviceFound(node: LSSDPNodes) {
-        handler?.removeMessages(1)
         updateSceneObjectAndOpenDeviceList(node.ip)
     }
 
@@ -87,9 +86,9 @@ class CTNoDeviceFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickLi
             if (!mScanHandler.isIpAvailableInCentralSceneRepo(ipaddress)) {
                 val sceneObject = SceneObject(" ", node.friendlyname, 0f, node.ip)
                 mScanHandler.putSceneObjectToCentralRepo(ipaddress, sceneObject)
+                (activity as CTHomeTabsActivity).openFragment(CTActiveDevicesFragment::class.java.simpleName,animate = true)
+                handler?.removeMessages(1)
             }
-
-            (activity as CTHomeTabsActivity).openFragment(CTActiveDevicesFragment::class.java.simpleName,animate = true)
         }
 
     }

@@ -6,13 +6,13 @@
         <item name="android:windowSoftInputMode">stateHidden|adjustPan</item>
 
         <!-- Active thumb color & Active track color(30% transparency) -->
-        <item name="colorControlActivated">@color/app_text_color_enabled</item>
+        <item name="colorControlActivated">@color/white</item>
         <!-- Inactive thumb color -->
         <item name="colorSwitchThumbNormal">@color/brand_dark_grey</item>
         <!-- Inactive track color(30% transparency) -->
         <!--<item name="android:colorForeground">@color/brand_dark_grey</item>-->
         <item name="android:textColor">@color/white</item>
-        <item name="colorAccent">@color/app_text_color_enabled</item>
+        <item name="colorAccent">@color/white</item>
 
         <!--Should be importing 'android.support.v7.app.AlertDialog' instead of 'android.app.AlertDialog'-->
         <item name="alertDialogTheme">@style/AlertDialogTheme</item>
@@ -24,8 +24,8 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="colorControlActivated">@color/brand_orange</item>
-        <item name="android:windowBackground">@drawable/riva_splash_1080p</item>
+        <item name="colorControlActivated">@color/white</item>
+        <item name="android:windowBackground">@drawable/android_splash_screen</item>
     </style>
 
     <style name="GradientAppButtonStyle">
@@ -57,11 +57,11 @@
         <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
         <item name="colorAccent">@android:color/white</item>
         <item name="colorControlNormal">@color/white</item>
-        <item name="colorControlActivated">@color/app_text_color_enabled</item>
+        <item name="colorControlActivated">@color/white</item>
     </style>
 
     <style name="GradientProgressBarStyle" parent="@style/Widget.AppCompat.ProgressBar.Horizontal">
-        <item name="android:indeterminateDrawable">@drawable/gradient_progress_drawable</item>
+        <item name="android:indeterminateDrawable">@drawable/gradient_progress_drawable_black_white</item>
         <item name="android:indeterminate">true</item>
         <!--<item name="android:indeterminateTint" tools:targetApi="lollipop">@color/btn_app_dark_pink</item>-->
         <!--<item name="android:indeterminateTintMode" tools:targetApi="lollipop">src_in</item>-->
@@ -87,17 +87,26 @@
         <item name="android:textAllCaps">true</item>
     </style>
 
+    <style name="Color1SwitchStyle">
+        <item name="colorControlActivated">@color/white</item>
+    </style>
+
     <style name="AlertDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
     </style>
 
+
+    <style name="WhiteProgressBar">
+        <item name="colorAccent">#fff</item>
+    </style>
+
     <style name="NegativeButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/app_text_color_enabled</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="PositiveButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
-        <item name="android:textColor">@color/app_text_color_enabled</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 

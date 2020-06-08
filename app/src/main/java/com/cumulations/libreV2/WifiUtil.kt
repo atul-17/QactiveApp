@@ -4,16 +4,20 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkInfo
 import android.net.wifi.ScanResult
 import android.net.wifi.SupplicantState
 import android.net.wifi.WifiConfiguration
 import android.net.wifi.WifiConfiguration.GroupCipher
 import android.net.wifi.WifiConfiguration.KeyMgmt
 import android.net.wifi.WifiManager
+import android.text.format.Formatter
 import android.util.Log
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
-import com.libre.Scanning.Constants
-import com.libre.util.LibreLogger
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.util.LibreLogger
 
 
 class WifiUtil(private val context: Context) {
@@ -29,10 +33,13 @@ class WifiUtil(private val context: Context) {
     }
 
     private val wifiManager: WifiManager = context.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+//    private val connectivityManager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager?
     private var wifiList: List<ScanResult> = arrayListOf()
     private val myBroadCastReceiver: MyBroadcastReceiver = MyBroadcastReceiver()
 
     fun isWifiOn():Boolean{
+        val supplicantState = wifiManager.connectionInfo?.supplicantState
+        LibreLogger.d(this,"isWifiOn, supplicantState ${supplicantState.toString()}")
         return /*wifiManager.isWifiEnabled &&*/ wifiManager?.connectionInfo?.supplicantState == SupplicantState.COMPLETED
     }
 
@@ -40,6 +47,27 @@ class WifiUtil(private val context: Context) {
         val supplicantState = wifiManager.connectionInfo.supplicantState
         LibreLogger.d(this,"supplicantState name = ${supplicantState.name}")
         return supplicantState
+    }
+
+    fun getConnectedRouterIp():String{
+        val dhcpInfo = wifiManager.dhcpInfo
+        val ipAddress = dhcpInfo.ipAddress
+        val formattedIp = /*Formatter.formatIpAddress(ipAddress)*/formatIP(ipAddress)
+        LibreLogger.d(this,"getConnectedWifiIp, dns1 ${formatIP(dhcpInfo.dns1)}" +
+                ", dns2 ${formatIP(dhcpInfo.dns2)}, serverAddress ${formatIP(dhcpInfo.serverAddress)}" +
+                ", netmask ${formatIP(dhcpInfo.netmask)}, gateway ${formatIP(dhcpInfo.gateway)}" +
+                ", ipAddress ${formatIP(dhcpInfo.ipAddress)}")
+        return formattedIp
+    }
+
+    private fun formatIP(ip: Int): String {
+        return String.format(
+                "%d.%d.%d.%d",
+                ip and 0xff,
+                ip shr 8 and 0xff,
+                ip shr 16 and 0xff,
+                ip shr 24 and 0xff
+        )
     }
 
     fun startWifiScan() {
@@ -163,7 +191,7 @@ class WifiUtil(private val context: Context) {
     fun connectWiFiToSSID(networkSSID: String, networkPass: String, networkSec: String):Int {
         var networkId = -1
         try {
-            Log.v("connectWiFiToSSID", "SSID " + networkSSID + "Pwd : " + networkPass)
+            Log.v("connectWiFiToSSID", "SSID " + networkSSID + ", Pwd : " + networkPass)
             var wifiConfiguration = getExistingWifiConfig(networkSSID)
 
             if (wifiConfiguration == null){
@@ -287,5 +315,20 @@ class WifiUtil(private val context: Context) {
 
     fun removeNetwork(networkId:Int):Boolean {
         return wifiManager.removeNetwork(networkId)
+    }
+
+    fun isWifiConnected():Boolean{
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = cm.activeNetworkInfo
+
+        if (activeNetwork?.type == ConnectivityManager.TYPE_WIFI && activeNetwork?.isConnected)
+            return true
+
+        if (activeNetwork?.type == ConnectivityManager.TYPE_MOBILE && activeNetwork?.isConnected){
+            return wifiManager?.connectionInfo?.supplicantState == SupplicantState.COMPLETED
+                    || activeNetwork?.state == NetworkInfo.State.DISCONNECTED
+        }
+
+        return false
     }
 }

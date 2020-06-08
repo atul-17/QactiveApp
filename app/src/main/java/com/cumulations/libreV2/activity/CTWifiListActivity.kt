@@ -6,7 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.View
 import com.cumulations.libreV2.AppConstants
@@ -16,15 +16,15 @@ import com.cumulations.libreV2.model.ScanResultItem
 import com.cumulations.libreV2.model.ScanResultResponse
 import com.cumulations.libreV2.toHtmlSpanned
 import com.cumulations.libreV2.model.WifiConnection
-import com.libre.Scanning.Constants
-import com.libre.serviceinterface.LSDeviceClient
-import kotlinx.android.synthetic.main.ct_activity_wifi_list.*
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.serviceinterface.LSDeviceClient
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
 import com.google.gson.Gson
-import com.libre.LErrorHandeling.LibreError
-import com.libre.R
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.R
+import kotlinx.android.synthetic.main.ct_activity_wifi_list.*
 
 
 class CTWifiListActivity: CTDeviceDiscoveryActivity() {
@@ -67,7 +67,8 @@ class CTWifiListActivity: CTDeviceDiscoveryActivity() {
     }
 
     private fun getScanResultsFromDevice(){
-        if (!getConnectedSSIDName(this).contains(Constants.RIVAA_WAC_SSID)!!) {
+        val ssid = getConnectedSSIDName(this)
+        if (!(ssid?.contains(Constants.SA_SSID_RIVAA_CONCERT)!! || ssid?.contains(Constants.SA_SSID_RIVAA_STADIUM)!!)) {
             AppUtils.showAlertForNotConnectedToSAC(this)
             return
         }
@@ -84,7 +85,7 @@ class CTWifiListActivity: CTDeviceDiscoveryActivity() {
     }
 
     private fun getScanResultsForIp(deviceIp: String) {
-        showProgressDialog(R.string.getting_scan_results)
+//        showProgressDialog(R.string.getting_scan_results)
         swipe_refresh.isRefreshing = true
         Log.d("getScanResultsForIp","ip = $deviceIp")
         val BASE_URL = "http://$deviceIp:80"
@@ -121,7 +122,9 @@ class CTWifiListActivity: CTDeviceDiscoveryActivity() {
                 swipe_refresh.isRefreshing = false
                 Log.e("getScanResultsForIp",error?.message)
                 showToast(error?.message!!)
-                getScanResultsForIp(deviceIp)
+                if (error?.message?.contains("failed to connect to")!!){
+                    finish()
+                } /*else getScanResultsForIp(deviceIp)*/
             }
 
         })

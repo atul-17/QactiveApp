@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Message
 import android.provider.Settings
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,30 +14,33 @@ import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
-import com.libre.LibreApplication
+import com.libre.qactive.LibreApplication
 import com.cumulations.libreV2.model.WifiConnection
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.ScanningHandler
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.ScanningHandler
 import com.cumulations.libreV2.model.SceneObject
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
+import com.libre.qactive.R
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
 import kotlinx.android.synthetic.main.ct_fragment_no_wifi.*
 
-class CTNoWifiFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickListener {
+class CTNoWifiFragment: Fragment(),LibreDeviceInteractionListner,View.OnClickListener {
     private val mScanHandler = ScanningHandler.getInstance()
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
         return inflater?.inflate(R.layout.ct_fragment_no_wifi,container,false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
         setListeners()
+        if (activity!=null) {
+            ((activity) as CTHomeTabsActivity).showLoader(false)
+        }
     }
 
     private fun setListeners() {
@@ -57,12 +60,12 @@ class CTNoWifiFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickList
 
     override fun onClick(p0: View?) {
         when(p0?.id){
-            R.id.iv_refresh -> refreshDevices()
+            R.id.iv_refresh -> (activity as CTHomeTabsActivity).refreshDevices()
             R.id.tv_wifi_settings -> {
                 (activity as CTDeviceDiscoveryActivity).disableNetworkChangeCallBack()
                 (activity as CTDeviceDiscoveryActivity).disableNetworkOffCallBack()
 
-                WifiConnection.getInstance().mPreviousSSID = AppUtils.getConnectedSSID(activity)
+                WifiConnection.getInstance().mPreviousSSID = AppUtils.getConnectedSSID(activity!!)
                 LibreApplication.activeSSID = WifiConnection.getInstance().mPreviousSSID
 
                 startActivityForResult(Intent(Settings.ACTION_WIFI_SETTINGS).apply {
@@ -103,21 +106,10 @@ class CTNoWifiFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickList
             if (!mScanHandler.isIpAvailableInCentralSceneRepo(ipaddress)) {
                 val sceneObject = SceneObject(" ", node.friendlyname, 0f, node.ip)
                 mScanHandler.putSceneObjectToCentralRepo(ipaddress, sceneObject)
+                (activity as CTHomeTabsActivity).openFragment(CTActiveDevicesFragment::class.java.simpleName,animate = true)
             }
-
-            (activity as CTHomeTabsActivity).openFragment(CTActiveDevicesFragment::class.java.simpleName,animate = true)
         }
 
-    }
-
-    private fun refreshDevices() {
-        (activity as CTDeviceDiscoveryActivity).libreApplication.scanThread.UpdateNodes()
-        (activity as CTDeviceDiscoveryActivity).showProgressDialog(R.string.mSearchingTheDevce)
-        Handler().postDelayed({
-            if (activity == null || activity.isFinishing)
-                return@postDelayed
-            (activity as CTDeviceDiscoveryActivity).dismissDialog()
-        }, Constants.ITEM_CLICKED_TIMEOUT.toLong())
     }
 
     override fun deviceGotRemoved(ipaddress: String) {

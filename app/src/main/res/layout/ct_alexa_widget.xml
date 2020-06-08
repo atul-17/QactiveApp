@@ -25,7 +25,7 @@
             android:visibility="visible"
             tools:visibility="invisible">
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_track_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 tools:text="@string/app_name"
                 tools:visibility="visible" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_album_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
         </LinearLayout>
 
 
-        <android.support.v7.widget.AppCompatImageButton
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/ib_alexa_avs_btn"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -61,7 +61,7 @@
             app:srcCompat="@drawable/alexa_blue_white_100px" />
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_alexa_listening"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"

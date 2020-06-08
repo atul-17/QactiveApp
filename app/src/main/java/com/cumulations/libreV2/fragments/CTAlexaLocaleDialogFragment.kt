@@ -2,15 +2,14 @@ package com.cumulations.libreV2.fragments
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
+import androidx.fragment.app.DialogFragment
 import android.view.WindowManager
 import com.cumulations.libreV2.activity.CTDeviceSettingsActivity
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.alexa.LibreAlexaConstants
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.alexa.LibreAlexaConstants
 import kotlinx.android.synthetic.main.ct_dlg_fragment_select_locale.*
 import android.view.Gravity
-
+import com.libre.qactive.R
 
 
 /**
@@ -25,11 +24,11 @@ class CTAlexaLocaleDialogFragment: DialogFragment() {
         dialog.setCanceledOnTouchOutside(true)
         isCancelable = true
 
-        val lp = dialog.window.attributes
-        lp.gravity = Gravity.BOTTOM //psotion
-        lp.width = WindowManager.LayoutParams.MATCH_PARENT // fuill screen
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT
-        dialog.window.attributes = lp
+        val lp = dialog.window?.attributes
+        lp?.gravity = Gravity.BOTTOM //psotion
+        lp?.width = WindowManager.LayoutParams.MATCH_PARENT // fuill screen
+        lp?.height = WindowManager.LayoutParams.WRAP_CONTENT
+        dialog.window?.attributes = lp
 
 
         arguments?.let {

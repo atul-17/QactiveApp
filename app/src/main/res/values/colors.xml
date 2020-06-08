@@ -16,9 +16,12 @@
     <color name="dark_gray">#808080</color>
     <color name="light_gray">#C0C0C0</color>
 
+    <color name="app_bg_black">#161616</color>
 
     <color name="screen_bg">#1E1E1E</color>
     <color name="appbar_bg">#2C2C2C</color>
+    <color name="light_black">#2C2C2C</color>
+
     <color name="btn_app_orange">#EF6330</color>
     <color name="btn_app_dark_pink">#B63070</color>
     <color name="btn_app_mid_pink">#D44A4F</color>
@@ -30,7 +33,7 @@
     <color name="app_orange_light">#7FEF6330</color>
     <color name="app_dark_pink_light">#7FB63070</color>
     <color name="app_mid_pink_light">#7FD44A4F</color>
-
+    <color name="bottom_nav_color">#dadada</color>
     <color name="riva_logo_bg">#292929</color>
 
 </resources>

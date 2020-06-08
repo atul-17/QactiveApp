@@ -6,6 +6,4 @@
     <!--screen 1-->
     <dimen name="small_text">12sp</dimen>
     <dimen name="medium_text">18sp</dimen>
-
-    <!--screen 2-->
 </resources>

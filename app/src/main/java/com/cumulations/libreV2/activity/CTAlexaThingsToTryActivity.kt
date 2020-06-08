@@ -4,15 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import com.cumulations.libreV2.launchTheApp
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.alexa.AlexaUtils
-import com.libre.constants.LSSDPCONST
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LUCIControl
-import com.libre.util.LibreLogger
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.alexa.AlexaUtils
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LUCIControl
+import com.libre.qactive.R
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_alexa_things_to_try.*
 
 

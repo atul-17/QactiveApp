@@ -1,14 +1,14 @@
 package com.cumulations.libreV2.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cumulations.libreV2.activity.CTDeviceBrowserActivity
 import com.cumulations.libreV2.model.DataItem
-import com.libre.R
-import com.libre.util.PicassoTrustCertificates
+import com.libre.qactive.R
+import com.libre.qactive.util.PicassoTrustCertificates
 import kotlinx.android.synthetic.main.ct_remotecommand_item.view.*
 
 class CTDeviceBrowserListAdapter(val context: Context,

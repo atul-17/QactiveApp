@@ -3,6 +3,7 @@ package com.cumulations.libreV2.tcp_tunneling;
 import android.util.Log;
 
 import com.cumulations.libreV2.tcp_tunneling.enums.PayloadType;
+import com.libre.qactive.util.LibreLogger;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,25 +15,28 @@ public class TunnelingControl {
 
     private String clientSocketIp;
     private static ConcurrentHashMap<String, Socket> tunnelingClientsMap = new ConcurrentHashMap<>();
-    public static final int TUNNELING_CLIENT_PORT = 50005;
+    static final int TUNNELING_CLIENT_PORT = 50005;
+    private Object TAG = this;
 
     public TunnelingControl(String clientSocketIp) {
         this.clientSocketIp = clientSocketIp;
     }
 
     public static boolean isTunnelingClientPresent(String ip){
-        /*if (!tunnelingClientsMap.containsKey(ip))
+        if (!tunnelingClientsMap.containsKey(ip))
             return false;
         Socket socket = tunnelingClientsMap.get(ip);
-        if (socket == null) return false;
+        if (socket == null) {
+            LibreLogger.d("TunnelingControl","isTunnelingClientPresent, socket null");
+        }
 
-        return socket.isConnected() && !socket.isClosed();*/
+        LibreLogger.d("TunnelingControl","isTunnelingClientPresent, ip = "+ip+" socket isConnected "+socket.isConnected()
+                +" socket isClosed "+socket.isClosed());
         return tunnelingClientsMap.containsKey(ip);
     }
 
-    public static void addTunnelingClient(Socket socket){
-        Log.d("addTunnelingClient","socket "+socket.getInetAddress().getHostAddress()
-        +" isPresent = "+tunnelingClientsMap.containsKey(socket.getInetAddress().getHostAddress()));
+    static void addTunnelingClient(Socket socket){
+        Log.d("addTunnelingClient","socket "+socket.getInetAddress().getHostAddress());
         tunnelingClientsMap.put(socket.getInetAddress().getHostAddress(),socket);
     }
 
@@ -46,14 +50,16 @@ public class TunnelingControl {
         Log.d("removeTunnelingClient","isSocketPresent "+isSocketPresent);
         if (isSocketPresent){
             Socket clientSocket = tunnelingClientsMap.get(socketIp);
-            if (!clientSocket.isClosed() || clientSocket.isConnected()) {
-                try {
+            try {
+                if (clientSocket!=null) {
                     clientSocket.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
+                LibreLogger.d("removeTunnelingClient","removeTunnelingClient, exception "+e.getMessage());
             }
             tunnelingClientsMap.remove(socketIp);
+            Log.d("removeTunnelingClient","socket "+socketIp+" removed");
         }
     }
 
@@ -86,26 +92,37 @@ public class TunnelingControl {
                     }
 
                     Socket client = tunnelingClientsMap.get(clientSocketIp);
-                    if (client == null){
-                        Log.e("sendDataModeCommand","socket "+clientSocketIp+" null");
+                    if (client == null || client.isClosed() || !client.isConnected()){
+                        Log.e("sendDataModeCommand","socket null/closed/not connected");
                         tunnelingClientsMap.remove(clientSocketIp);
                         return;
                     }
 
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     out.write(sendMessage);
-//                    out.write(sendMessage,0,sendMessage.length);
-//                    out.flush();
 
-                    Log.i("sendDataModeCommand","byte[] written "+ Arrays.toString(sendMessage));
+                    LibreLogger.d(TAG,"sendDataModeCommand ip "+clientSocketIp+" byte[] written "+ Arrays.toString(sendMessage));
                 } catch (Exception e){
                     e.printStackTrace();
+                    LibreLogger.d(TAG,"sendDataModeCommand, exception "+e.getMessage());
                     if (e instanceof IOException){
-                        tunnelingClientsMap.remove(clientSocketIp);
+                        removeTunnelingSocket(clientSocketIp);
                     }
                 }
             }
         }).start();
+    }
+
+    private void removeTunnelingSocket(String clientSocketIp) {
+        Socket existingSocket = TunnelingControl.getTunnelingClient(clientSocketIp);
+        if (existingSocket!=null && !existingSocket.isClosed()){
+            try {
+                existingSocket.close();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+            TunnelingControl.removeTunnelingClient(clientSocketIp);
+        }
     }
 
     public void sendGetModelIdCommand(){
@@ -133,30 +150,32 @@ public class TunnelingControl {
                     }
 
                     Socket client = tunnelingClientsMap.get(clientSocketIp);
-                    if (client == null){
-                        Log.e("sendCommand","socket "+clientSocketIp+" null");
+                    if (client == null || client.isClosed() || !client.isConnected()){
+                        Log.e("sendDataModeCommand","socket null/closed/not connected");
                         tunnelingClientsMap.remove(clientSocketIp);
                         return;
                     }
 
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     out.write(sendMessage);
-                    Log.i("sendCommand","byte[] written "+ Arrays.toString(sendMessage));
+
+                    LibreLogger.d(TAG,"sendCommand ip "+clientSocketIp+" byte[] written "+ Arrays.toString(sendMessage));
 
                     Thread.sleep(300);
                     sendDataModeCommand();
 
                 } catch (Exception e){
                     e.printStackTrace();
+                    LibreLogger.d(TAG,"sendCommand, exception "+e.getMessage());
                     if (e instanceof IOException){
-                        tunnelingClientsMap.remove(clientSocketIp);
+                        removeTunnelingSocket(clientSocketIp);
                     }
                 }
             }
         }).start();
     }
 
-    public void sendCommand(PayloadType payloadType,byte payloadValue){
+    public void sendCommand(final PayloadType payloadType, byte payloadValue){
         final TCPTunnelPacket tcpTunnelPacket = new TCPTunnelPacket(
                 TCPTunnelPacket.APP_COMMAND,
                 TCPTunnelPacket.SET_MODE,
@@ -179,47 +198,29 @@ public class TunnelingControl {
                     }
 
                     Socket client = tunnelingClientsMap.get(clientSocketIp);
-                    if (client == null){
-                        Log.e("sendCommand","socket "+clientSocketIp+" null");
+                    if (client == null || client.isClosed() || !client.isConnected()){
+                        Log.e("sendDataModeCommand","socket null/closed/not connected");
                         tunnelingClientsMap.remove(clientSocketIp);
                         return;
                     }
 
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     out.write(sendMessage);
-                    Log.i("sendCommand","byte[] written "+ Arrays.toString(sendMessage));
+
+                    LibreLogger.d(TAG,"sendCommand ip "+clientSocketIp+" byte[] written "+ Arrays.toString(sendMessage));
 
                     Thread.sleep(300);
                     sendDataModeCommand();
 
                 } catch (Exception e){
                     e.printStackTrace();
+                    LibreLogger.d(TAG,"sendCommand, exception "+e.getMessage());
                     if (e instanceof IOException){
-                        tunnelingClientsMap.remove(clientSocketIp);
+                        removeTunnelingSocket(clientSocketIp);
                     }
                 }
             }
         }).start();
-    }
-
-    private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
-    public static String bytesToHex(byte[] bytes) {
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
-        }
-        return new String(hexChars);
-    }
-
-    public static String readableByteArrayToHexString(byte[] a) {
-        StringBuilder sb = new StringBuilder(a.length * 2);
-        for(byte b: a) {
-            sb.append("0x");
-            sb.append(String.format("%02x", b));
-        }
-        return sb.toString();
     }
 
     private static final String HEXES = "0123456789ABCDEF";

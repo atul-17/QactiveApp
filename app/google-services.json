@@ -54,7 +54,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:565420878772:android:bedccf2cf86f13c7",
         "android_client_info": {
-          "package_name": "com.libre"
+          "package_name": "com.libre.qactive"
         }
       },
       "oauth_client": [
@@ -62,7 +62,7 @@
           "client_id": "565420878772-imj7pfqf9kdnmqj4irgg7rluk06cn4lr.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.libre",
+            "package_name": "com.libre.qactive",
             "certificate_hash": "f051a66a80750e90d03fed0dd5ffe04a66855593"
           }
         },

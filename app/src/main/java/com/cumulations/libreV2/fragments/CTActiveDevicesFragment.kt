@@ -4,13 +4,14 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.cumulations.libreV2.AppUtils
+import com.cumulations.libreV2.WifiUtil
 import com.cumulations.libreV2.activity.CTDeviceDiscoveryActivity
 import com.cumulations.libreV2.activity.CTHomeTabsActivity
 import com.cumulations.libreV2.adapter.CTDeviceListAdapter
@@ -19,52 +20,49 @@ import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
 import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.TunnelingFragmentListener
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.Constants.*
-import com.libre.Scanning.ScanningHandler
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIPacket
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.util.LibreLogger
-import com.libre.util.PicassoTrustCertificates
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.Constants.*
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.luci.LUCIPacket
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.util.LibreLogger
+import com.libre.qactive.util.PicassoTrustCertificates
 import kotlinx.android.synthetic.main.ct_fragment_discovery_list.*
 import org.json.JSONObject
 
-class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnClickListener, TunnelingFragmentListener {
+class CTActiveDevicesFragment : Fragment(), LibreDeviceInteractionListner, TunnelingFragmentListener {
     private val mScanHandler = ScanningHandler.getInstance()
-    private lateinit var deviceListAdapter:CTDeviceListAdapter
+    private lateinit var deviceListAdapter: CTDeviceListAdapter
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         super.onCreateView(inflater, container, savedInstanceState)
-        return inflater?.inflate(R.layout.ct_fragment_discovery_list,container,false)
+        return inflater?.inflate(R.layout.ct_fragment_discovery_list, container, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews(view)
-        setListeners(view)
     }
 
-    private fun setListeners(view: View?) {
-//        iv_refresh?.setOnClickListener(this)
-    }
+
 
     private fun initViews(view: View?) {
-        val nodeDB = LSSDPNodeDB.getInstance()
-        if (nodeDB.GetDB().size <= 0) {
-            (activity as CTHomeTabsActivity).openFragment(CTNoDeviceFragment::class.java.simpleName,animate = true)
+        if (LSSDPNodeDB.getInstance().GetDB().size <= 0) {
+            (activity as CTHomeTabsActivity).openFragment(CTNoDeviceFragment::class.java.simpleName, animate = true)
+            return
         }
 
-//        toolbar.title = ""
-
-        deviceListAdapter = CTDeviceListAdapter(activity)
+        deviceListAdapter = CTDeviceListAdapter(activity!!)
         rv_device_list?.layoutManager = LinearLayoutManager(activity)
         rv_device_list?.adapter = deviceListAdapter
     }
@@ -72,43 +70,10 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
     override fun onResume() {
         super.onResume()
 
-        deviceListAdapter.clear()
         (activity as CTDeviceDiscoveryActivity).registerForDeviceEvents(this)
         (activity as CTHomeTabsActivity).setTunnelFragmentListener(this)
 
         updateFromCentralRepositryDeviceList()
-
-        /*val sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
-        if (sceneKeySet.isEmpty()) {
-            refreshDevices()
-        }*/
-    }
-
-    fun refreshDeviceListWithUpdatedScenes(){
-
-    }
-
-    override fun onClick(p0: View?) {
-        when(p0?.id){
-            R.id.iv_refresh -> {
-                handler.removeCallbacksAndMessages(null)
-                refreshDevices()
-            }
-        }
-    }
-
-    private fun showLoader(show:Boolean){
-//        if (show) progress_bar.visibility = View.VISIBLE else progress_bar.visibility = View.GONE
-    }
-
-    private val mTaskHandlerForSendingMSearch = Handler()
-    private val mMyTaskRunnableForMSearch = object : Runnable {
-        override fun run() {
-            showLoader(false)
-            LibreLogger.d(this, "My task is Sending 1 Minute Once M-Search")
-            val application = activity.application as LibreApplication
-            application.scanThread.UpdateNodes()
-        }
     }
 
     internal var handler: Handler = @SuppressLint("HandlerLeak")
@@ -117,11 +82,11 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
 
             if (msg.what == PREPARATION_INIT) {
                 val ipaddress = msg.data.getString("ipAddress")
-                triggerTimeOutHandlerForIpAddress(ipaddress)
+                triggerTimeOutHandlerForIpAddress(ipaddress!!)
             }
             if (msg.what == PREPARATION_COMPLETED) {
                 val ipaddress = msg.data.getString("ipAddress")
-                removeTimeOutTriggerForIpaddress(ipaddress)
+                removeTimeOutTriggerForIpaddress(ipaddress!!)
             }
         }
     }
@@ -158,13 +123,14 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
     private var mMasterFound: Boolean = false
 
     fun updateFromCentralRepositryDeviceList() {
-        var sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
-        LibreLogger.d(this, "Master is Getting Added T Active Scenes Adapter" + mScanHandler.sceneObjectFromCentralRepo.keys)
+        var sceneKeySet = ScanningHandler.getInstance().sceneObjectMapFromRepo.keys.toTypedArray()
+        LibreLogger.d(this, "Master is Getting Added T Active Scenes Adapter" + mScanHandler.sceneObjectMapFromRepo.keys)
         /* Fix For If Device is Available But SceneObject is Not Available in the Network */
         if (sceneKeySet.isEmpty()) {
             if (LSSDPNodeDB.getInstance().isDeviceInNodeRepo) {
                 for (nodes in LSSDPNodeDB.getInstance().GetDB()) {
-                    if (!ScanningHandler.getInstance().isIpAvailableInCentralSceneRepo(nodes.ip)) {
+                    if (!ScanningHandler.getInstance().isIpAvailableInCentralSceneRepo(nodes.ip)
+                    /*&& LSSDPNodeDB.getInstance().hasFilteredModels(nodes)*/) {
                         val sceneObject = SceneObject(" ", nodes.friendlyname, 0f, nodes.ip)
                         ScanningHandler.getInstance().putSceneObjectToCentralRepo(nodes.ip, sceneObject)
                         LibreLogger.d(this, "Device is not available in Central Repo So Created SceneObject " + nodes.ip)
@@ -173,13 +139,24 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
             }
         }
 
-        sceneKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
+        sceneKeySet = ScanningHandler.getInstance().sceneObjectMapFromRepo.keys.toTypedArray()
 
-        for (sceneIp in sceneKeySet) {
-            deviceListAdapter.addDeviceToList(mScanHandler.sceneObjectFromCentralRepo[sceneIp])
-            (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(sceneIp)
-            /*Get Tunneling Data*/
-            TunnelingControl(sceneIp).sendDataModeCommand()
+        deviceListAdapter?.clear()
+        if (sceneKeySet.isEmpty()) {
+//            refreshDevices()
+            (activity as CTHomeTabsActivity).openFragment(CTNoDeviceFragment::class.java.simpleName, animate = false)
+        } else {
+            for (sceneIp in sceneKeySet) {
+                val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(sceneIp)
+                sceneObject?.clearBatteryStats()
+                (activity as CTHomeTabsActivity).showLoader(false)
+                Log.d("atul_gif_loader","false_updateFromCentralRepositryDeviceList");
+                deviceListAdapter.addDeviceToList(sceneObject)
+                (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(sceneIp)
+                /*Get Tunneling Data*/
+                TunnelingControl(sceneIp).sendDataModeCommand()
+            }
+            deviceListAdapter.notifyDataSetChanged()
         }
 
     }
@@ -189,7 +166,10 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
     }
 
     override fun newDeviceFound(node: LSSDPNodes) {
-        showLoader(false)
+        /*if (!LSSDPNodeDB.getInstance().hasFilteredModels(node)){
+            LibreLogger.d(this,"newDeviceFound, non filter = "+node.friendlyname)
+            return
+        }*/
 
         Log.d("newDeviceFound", "device found ip ${node.ip} Device State ${node.deviceState}")
         mDeviceFound = true
@@ -197,7 +177,6 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(node.ip)
 
         val sceneObject = SceneObject(" ", node.friendlyname, 0f, node.ip)
-        LibreLogger.d(this, "New device is found with the ip address = " + node.friendlyname)
         if (!mScanHandler.isIpAvailableInCentralSceneRepo(node.ip)) {
             mScanHandler.putSceneObjectToCentralRepo(node.ip, sceneObject)
         } else {
@@ -207,15 +186,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         }
 
         deviceListAdapter?.addDeviceToList(sceneObject)
-    }
-
-    private fun refreshDevices() {
-        LibreLogger.d(this, "Refresh Devices With clearing")
-        showLoader(true)
-        val application = activity.application as LibreApplication
-        application.scanThread.UpdateNodes()
-        /*Start m-search thread after 10 seconds*/
-        mTaskHandlerForSendingMSearch.postDelayed(mMyTaskRunnableForMSearch, Constants.REFRESH_DEVICE_TIMEOUT)
+        deviceListAdapter.notifyDataSetChanged()
     }
 
     override fun deviceGotRemoved(ipaddress: String) {
@@ -227,55 +198,54 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
             LibreLogger.d(this, "" + sceneObject!!.sceneName)
 
             if (deviceListAdapter.itemCount == 0) {
-                refreshDevices()
+                (activity as CTHomeTabsActivity).refreshDevices()
             }
         }
 
         if (LSSDPNodeDB.getInstance().GetDB().size <= 0) {
-            (activity as CTHomeTabsActivity).openFragment(CTNoDeviceFragment::class.java.simpleName,animate = true)
+            (activity as CTHomeTabsActivity).openFragment(CTNoDeviceFragment::class.java.simpleName, animate = true)
         }
     }
 
     override fun messageRecieved(nettyData: NettyData) {
-        LibreLogger.d(this, "messageRecieved device " + nettyData.getRemotedeviceIp())
 
-        var sceneObject: SceneObject? = deviceListAdapter.getDeviceSceneFromAdapter(nettyData.getRemotedeviceIp())
-        if (sceneObject == null) {
-            sceneObject = mScanHandler.getSceneObjectFromCentralRepo(nettyData.getRemotedeviceIp())
-        }
+        var sceneObject = mScanHandler.getSceneObjectFromCentralRepo(nettyData.getRemotedeviceIp())
 
         val luciPacket = LUCIPacket(nettyData.getMessage())
         val msg = String(luciPacket.payload)
 
-        when(luciPacket.command){
+        if (sceneObject == null) {
+            LibreLogger.d(this, "messageRecieved device " + nettyData.getRemotedeviceIp() + " sceneObject null")
+            return
+        }
+
+        when (luciPacket.command) {
             MIDCONST.MID_DEVICE_STATE_ACK -> {
                 try {
-                    (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(nettyData.remotedeviceIp)
+                    LibreLogger.d(this, "A device became master found with the ip addrs = " + nettyData.getRemotedeviceIp())
+                    val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
+
+                    val newSceneObject: SceneObject
+                    if (node != null) {
+                        newSceneObject = SceneObject(" ", node.friendlyname, 0f, nettyData.getRemotedeviceIp())
+                        LibreLogger.d(this, "device became master its name  = " + node.friendlyname)
+                        if (!mScanHandler.isIpAvailableInCentralSceneRepo(node.ip)) {
+                            mScanHandler.putSceneObjectToCentralRepo(node.ip, newSceneObject)
+                        }
+
+
+                        deviceListAdapter.addDeviceToList(newSceneObject)
+
+                        (activity as CTDeviceDiscoveryActivity).requestLuciUpdates(nettyData.remotedeviceIp)
+                    }
+
+                    val ipKeySet = mScanHandler.sceneObjectMapFromRepo.keys.toTypedArray()
+                    if (ipKeySet.isEmpty()) {
+                        LibreLogger.d(this, "Handle the case when there is no scene object remaining in the UI" + nettyData.getRemotedeviceIp())
+                        (activity as CTHomeTabsActivity).refreshDevices()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                }
-
-
-                LibreLogger.d(this, "A device became master found with the ip addrs = " + nettyData.getRemotedeviceIp())
-                val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
-
-                val newSceneObject: SceneObject
-                if (node != null) {
-                    newSceneObject = SceneObject(" ", node.friendlyname, 0f, nettyData.getRemotedeviceIp())
-                    LibreLogger.d(this, "device became master its name  = " + node.friendlyname)
-                } else {
-                    newSceneObject = SceneObject(" ", "", 0f, nettyData.getRemotedeviceIp())
-                }
-
-                if (node != null && !mScanHandler.isIpAvailableInCentralSceneRepo(node.ip)) {
-                    mScanHandler.putSceneObjectToCentralRepo(node.ip, newSceneObject)
-                }
-
-                deviceListAdapter.addDeviceToList(newSceneObject)
-                val mMasterIpKeySet = mScanHandler.sceneObjectFromCentralRepo.keys.toTypedArray()
-                if (mMasterIpKeySet.isEmpty()) {
-                    LibreLogger.d(this, "Handle the case when there is no scene object remaining in the UI" + nettyData.getRemotedeviceIp())
-                    refreshDevices()
                 }
             }
 
@@ -292,6 +262,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                     sceneObject?.sceneName = msg// = duration/60000.0f;
                     LibreLogger.d(this, "Scene Name " + sceneObject?.sceneName)
                     mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
+
                     deviceListAdapter.addDeviceToList(sceneObject)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -315,15 +286,16 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                 deviceListAdapter.addDeviceToList(sceneObject)
             }
 
+            /**For RIVA speakers, during AUX we won't get volume in MB 64 for volume changes
+             * done through speaker hardware buttons**/
             MIDCONST.VOLUME_CONTROL -> {
-                /*this message box is to get volume*/
                 try {
-                    val duration = Integer.parseInt(msg)
-                    Log.e("VOLUME_CONTROL","value = $duration")
-                    if (sceneObject?.volumeValueInPercentage != duration) {
-                        sceneObject?.volumeValueInPercentage = duration
+                    val volume = Integer.parseInt(msg)
+                    LibreLogger.d(this, "${sceneObject.sceneName} VOLUME_CONTROL volume = $volume")
+                    if (sceneObject?.volumeValueInPercentage != volume) {
+                        sceneObject?.volumeValueInPercentage = volume
                         mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
-                        LibreLogger.d(this, "Recieved the current volume to be" + sceneObject?.volumeValueInPercentage)
+                        LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress] = sceneObject?.volumeValueInPercentage
                         deviceListAdapter.addDeviceToList(sceneObject)
                     }
                 } catch (e: Exception) {
@@ -334,8 +306,10 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
             MIDCONST.MID_CURRENT_SOURCE.toInt() -> {
                 /*this MB to get current sources*/
                 try {
-                    LibreLogger.d(this, "Recieved the current source as  " + sceneObject?.currentSource)
                     val mSource = Integer.parseInt(msg)
+                    if (mSource == EXTERNAL_SOURCE)
+                        return
+                    LibreLogger.d(this, " ${sceneObject.sceneName} MID_CURRENT_SOURCE $mSource")
                     sceneObject?.currentSource = mSource
                     mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
                     deviceListAdapter.addDeviceToList(sceneObject)
@@ -364,7 +338,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                         handler.sendMessage(handlerMessage)
                         deviceListAdapter.notifyDataSetChanged()
 
-                        sceneObject = AppUtils.updateSceneObjectWithPlayJsonWindow(window,sceneObject!!)
+                        sceneObject = AppUtils.updateSceneObjectWithPlayJsonWindow(window, sceneObject!!)
 
                         /* this is done to avoid  image refresh everytime the 42 message is recieved and the song playing back is the same */
                         LibreLogger.d(this, "Invalidating the scene name for  = " + sceneObject?.ipAddress + "/" + "coverart.jpg")
@@ -393,11 +367,14 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
 
                     val handlerMsg = Message()
 
-                    if (sceneObject?.playstatus != playstatus) {
-                        sceneObject?.playstatus = playstatus
-                        mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
-                        deviceListAdapter.addDeviceToList(sceneObject)
-                    }
+                    sceneObject?.playstatus = playstatus
+                    mScanHandler.putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
+                    deviceListAdapter.addDeviceToList(sceneObject)
+
+                    /*update stop all button*/
+//                    if (activity is CTHomeTabsActivity) {
+//                        (activity as CTHomeTabsActivity).toggleStopAllButtonVisibility()
+//                    }
 
                     if (sceneObject?.currentSource != Constants.BT_SOURCE
                             && mGcastCheckNode != null
@@ -438,7 +415,6 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                     when {
                         msg.contains(Constants.FAIL) -> error = LibreError(nettyData.getRemotedeviceIp(), Constants.FAIL_ALERT_TEXT)
                         msg.contains(Constants.SUCCESS) -> {
-                            showLoader(false)
 
                             val handlerMsg = Message()
                             handlerMsg.what = PREPARATION_COMPLETED
@@ -455,31 +431,35 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
                         msg.contains(Constants.DMR_SONG_UNSUPPORTED) -> error = LibreError(nettyData.getRemotedeviceIp(), resources.getString(R.string.SONG_NOT_SUPPORTED))
                     }
                     PicassoTrustCertificates.getInstance(activity).invalidate(sceneObject?.album_art)
-                    showLoader(false)
 
                     if (error != null)
                         (activity as CTDeviceDiscoveryActivity).showErrorMessage(error)
 
                 } catch (e: Exception) {
-                    Log.e("exception","MB 54 ${e.message}")
+                    Log.e("exception", "MB 54 ${e.message}")
                     e.printStackTrace()
                 }
 
             }
 
             MIDCONST.MID_MIC -> {
-                if (msg.contains("BLOCKED",true)) {
+                if (msg.contains("BLOCKED", true)) {
                     deviceListAdapter.audioRecordUtil?.stopRecording()
                     (activity as CTDeviceDiscoveryActivity).showToast(getString(R.string.deviceMicOn))
                     sceneObject?.isAlexaBtnLongPressed = false
                     /*updating boolean status to repo as well*/
-                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject?.ipAddress,sceneObject)
+                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
                     deviceListAdapter?.addDeviceToList(sceneObject)
                 }
             }
 
             MIDCONST.MID_ENV_READ -> {
                 if (msg.contains("AlexaRefreshToken")) {
+                    val token = msg.substring(msg.indexOf(":") + 1)
+                    val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
+                    if (mNode != null) {
+                        mNode.alexaRefreshToken = token
+                    }
                     deviceListAdapter?.addDeviceToList(sceneObject)
                 }
             }
@@ -487,7 +467,7 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
     }
 
     private fun clearScenePreparationFlags() {
-        val mSceneList = mScanHandler.sceneObjectFromCentralRepo
+        val mSceneList = mScanHandler.sceneObjectMapFromRepo
         for (masterIp in mSceneList.keys) {
             val sceneObject = mScanHandler.getSceneObjectFromCentralRepo(masterIp)
             if (sceneObject != null)
@@ -499,30 +479,48 @@ class CTActiveDevicesFragment:Fragment(),LibreDeviceInteractionListner,View.OnCl
         clearScenePreparationFlags()
         (activity as CTDeviceDiscoveryActivity).libreApplication.unregisterMicException()
         handler.removeCallbacksAndMessages(null)
-        mTaskHandlerForSendingMSearch.removeCallbacks(mMyTaskRunnableForMSearch)
         (activity as CTDeviceDiscoveryActivity).unRegisterForDeviceEvents()
         (activity as CTHomeTabsActivity).removeTunnelFragmentListener()
         super.onDestroyView()
     }
 
-    override fun onTunnelDataReceived(tunnelingData: TunnelingData?) {
-        LibreLogger.d(this,"onTunnelDataReceived, ip = ${tunnelingData?.remoteClientIp}")
+    override fun onFragmentTunnelDataReceived(tunnelingData: TunnelingData?) {
+        var tunnelDataChanged = false
+        LibreLogger.d(this, "onFragmentTunnelDataReceived, ip = ${tunnelingData?.remoteClientIp}")
         if (tunnelingData?.remoteMessage?.size!! >= 24) {
             val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
+            val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(tunnelingData.remoteClientIp)
 
-            val sceneObject = ScanningHandler.getInstance().sceneObjectFromCentralRepo[tunnelingData.remoteClientIp]
-            /*if (tcpTunnelPacket.volume>=0){
-                sceneObject?.volumeValueInPercentage = tcpTunnelPacket.volume
-                LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject?.ipAddress] = sceneObject?.volumeValueInPercentage
-            }*/
-
-            if (tcpTunnelPacket.currentSource == Constants.BT_SOURCE
-                    || tcpTunnelPacket.currentSource == Constants.AUX_SOURCE
-                    || tcpTunnelPacket.currentSource == Constants.NO_SOURCE){
-                sceneObject?.currentSource = tcpTunnelPacket.currentSource
+            if (tcpTunnelPacket.isAuxPluggedIn != sceneObject?.isAuxPluggedIn) {
+                sceneObject?.isAuxPluggedIn = tcpTunnelPacket.isAuxPluggedIn
+                tunnelDataChanged = true
             }
-            mScanHandler.putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
-            deviceListAdapter?.addDeviceToList(sceneObject)
+
+            if (tcpTunnelPacket.isBatteryPluggedIn != sceneObject?.isBatteryPluggedIn) {
+                sceneObject?.isBatteryPluggedIn = tcpTunnelPacket.isBatteryPluggedIn
+                tunnelDataChanged = true
+            }
+
+            if (tcpTunnelPacket.isBatteryCharging != sceneObject?.isBatteryCharging) {
+                sceneObject?.isBatteryCharging = tcpTunnelPacket.isBatteryCharging
+                tunnelDataChanged = true
+            }
+
+            if (tcpTunnelPacket.batteryLevel != sceneObject?.batteryType) {
+                sceneObject?.batteryType = tcpTunnelPacket.batteryLevel
+                tunnelDataChanged = true
+            }
+
+            LibreLogger.d(this, "tunnelDataReceived, current source = ${tcpTunnelPacket.currentSource}")
+            if (tcpTunnelPacket.currentSource != sceneObject?.tunnelingCurrentSource) {
+                sceneObject?.tunnelingCurrentSource = tcpTunnelPacket.currentSource
+                tunnelDataChanged = true
+            }
+
+            LibreLogger.d(this, "onFragmentTunnelDataReceived, tunnelDataChanged $tunnelDataChanged")
+            if (tunnelDataChanged) {
+                deviceListAdapter?.addDeviceToList(sceneObject)
+            }
         }
     }
 }

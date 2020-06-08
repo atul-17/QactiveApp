@@ -2,17 +2,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/screen_bg"
     android:orientation="vertical"
     android:paddingBottom="40dp">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="32dp"
         android:text="@string/setup_instructions"
-        android:textColor="@color/app_text_color_enabled"
+        android:textColor="@color/white"
         android:textSize="16sp"
         app:fontFamily="sans-serif-medium" />
 
@@ -25,16 +26,15 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/circle_outline_grey"
             android:gravity="center"
             android:text="@string/one"
-            android:textColor="@color/app_text_color_enabled"
-            android:textSize="16sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -52,16 +52,15 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/circle_outline_grey"
             android:gravity="center"
             android:text="@string/two"
-            android:textColor="@color/app_text_color_enabled"
-            android:textSize="16sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -70,14 +69,14 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:layout_width="match_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/riva_configure_xxxxxx" />
+        app:srcCompat="@drawable/qactive_configure_xxxxxx" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -87,16 +86,16 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/circle_outline_grey"
+
             android:gravity="center"
             android:text="@string/three"
-            android:textColor="@color/app_text_color_enabled"
-            android:textSize="16sp" />
+            android:textColor="@color/white"
+            android:textSize="20sp" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
@@ -105,26 +104,35 @@
             android:textColor="@color/white" />
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/tv_connected_ssid"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        tools:text = "Connected ssid : "
+        android:textColor="@color/white" />
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_wifi_settings"
         android:layout_width="wrap_content"
-        android:layout_height="40dp"
+        android:layout_height="45dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="32dp"
-        android:background="@drawable/app_btn_selector"
+        android:background="@drawable/btn_enabled_round_bg"
         android:enabled="true"
         android:minWidth="200dp"
         android:text="@string/wifi_settings"
         android:textColor="@color/app_btn_textcolor_selector"
         android:textSize="16sp" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_next"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
-        android:background="@drawable/app_btn_selector"
+        android:background="@drawable/btn_enabled_round_bg"
         android:enabled="false"
         android:minWidth="200dp"
         android:text="@string/next"

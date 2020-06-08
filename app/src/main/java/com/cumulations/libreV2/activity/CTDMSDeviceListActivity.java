@@ -10,12 +10,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.cumulations.libreV2.AppConstants;
-import com.libre.LibreApplication;
-import com.libre.R;
-import com.libre.Scanning.Constants;
-import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl;
-import com.libre.app.dlna.dmc.utility.UpnpDeviceManager;
-import com.libre.util.LibreLogger;
+import com.libre.qactive.LibreApplication;
+
+import com.libre.qactive.R;
+import com.libre.qactive.Scanning.Constants;
+
+import com.libre.qactive.app.dlna.dmc.processor.impl.UpnpProcessorImpl;
+import com.libre.qactive.app.dlna.dmc.utility.UpnpDeviceManager;
+import com.libre.qactive.util.LibreLogger;
 
 import org.fourthline.cling.model.meta.LocalDevice;
 import org.fourthline.cling.model.meta.RemoteDevice;

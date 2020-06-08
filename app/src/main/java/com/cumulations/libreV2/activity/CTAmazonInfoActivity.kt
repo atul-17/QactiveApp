@@ -2,13 +2,14 @@ package com.cumulations.libreV2.activity
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.core.content.ContextCompat.startActivity
 import android.view.View
 import com.cumulations.libreV2.AppConstants
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.alexa.DeviceProvisioningInfo
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.alexa.DeviceProvisioningInfo
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
 import kotlinx.android.synthetic.main.ct_activity_amazon_signin_setup.*
 
 class CTAmazonInfoActivity : CTDeviceDiscoveryActivity(), View.OnClickListener {

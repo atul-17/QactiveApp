@@ -2,33 +2,55 @@ package com.cumulations.libreV2.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.app.AlertDialog
+import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.AppUtils
 import com.cumulations.libreV2.model.ScanResultItem
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
 import com.cumulations.libreV2.model.WifiConnection
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.netty.BusProvider
-import com.libre.serviceinterface.LSDeviceClient
-import com.libre.util.LibreLogger
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LUCIControl
+import com.libre.qactive.netty.BusProvider
+import com.libre.qactive.serviceinterface.LSDeviceClient
+import com.libre.qactive.util.LibreLogger
+import kotlinx.android.synthetic.main.activity_google_cast_update_after_sac.*
 import kotlinx.android.synthetic.main.ct_activity_connect_to_wifi.*
+import kotlinx.android.synthetic.main.ct_activity_connect_to_wifi.iv_back
+import kotlinx.android.synthetic.main.ct_activity_connect_to_wifi.toolbar
+import kotlinx.android.synthetic.main.ct_device_settings.*
 import retrofit.Callback
 import retrofit.RetrofitError
 import retrofit.client.Response
 import java.util.*
 
 class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener {
+    private var DeviceName: String? = null
+    internal var DeviceNameChanged  = false
+
     private val activityName by lazy {
         intent?.getStringExtra(Constants.FROM_ACTIVITY)
+    }
+    private val deviceSSID by lazy {
+        intent?.getStringExtra(AppConstants.DEVICE_SSID)
+    }
+    private val deviceIP by lazy {
+        intent?.getStringExtra(AppConstants.DEVICE_IP)
+    }
+    private val deviceName by lazy {
+        intent?.getStringExtra(AppConstants.DEVICE_NAME)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,6 +60,20 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
         setListeners()
 
         disableNetworkChangeCallBack()
+       LibreLogger.d(this,"suma in connect to wifi activity sac device name"+deviceSSID);
+        LibreLogger.d(this,"suma in connect to wifi activity sac device IP"+deviceIP);
+        LibreLogger.d(this,"suma in connect to wifi activity sac device Name"+deviceName);
+
+        if (activityName == "CTConnectToWifiActivity") {
+
+            WifiConnection.getInstance().mPreviousSSID = LibreApplication.activeSSID
+            et_device_name.setText(deviceSSID)
+
+        } else {
+            et_device_name.setText(wifiConnect.getssidDeviceNameSAC(deviceSSID.toString()))
+
+        }
+        enableOrDisableEditDeviceNameButton()
     }
 
     private fun setListeners() {
@@ -45,6 +81,7 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
         btn_cancel.setOnClickListener(this)
         btn_next.setOnClickListener(this)
         ll_select_wifi.setOnClickListener(this)
+        editDeviceNameBtn.setOnClickListener(this)
     }
 
     private fun initViews() {
@@ -57,6 +94,8 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
         et_device_name.post {
             et_device_name.setSelection(et_device_name.length())
         }
+        et_device_name.isEnabled=false;
+
     }
 
     override fun onClick(p0: View?) {
@@ -70,14 +109,55 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
             }
             R.id.btn_next -> {
                 if (fieldsValid()){
-
-                    LibreApplication.sacDeviceNameSetFromTheApp = et_device_name.text.toString()
                     wifiConnect.setMainSSIDPwd(et_wifi_password.text.toString())
-
                     writeSacConfig(et_device_name.text.toString())
                 }
             }
-            R.id.btn_cancel -> onBackPressed()
+            R.id.btn_cancel -> {
+                onBackPressed()
+            }
+            R.id.editDeviceNameBtn->{
+                if (!et_device_name.isEnabled()) {
+
+                    editDeviceNameBtn.setImageResource(R.mipmap.check)
+
+                    et_device_name.setClickable(true)
+
+                    et_device_name.setEnabled(true)
+
+                    et_device_name.setFocusableInTouchMode(true)
+
+                    et_device_name.setFocusable(true)
+
+                    et_device_name.requestFocus()
+
+                    et_device_name.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.cancwel, 0)
+
+                    val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+
+                    imm.showSoftInput(et_device_name, InputMethodManager.SHOW_IMPLICIT)
+
+                } else {
+
+                    editDeviceNameBtn.setImageResource(R.mipmap.edit_white)
+
+                    et_device_name.setClickable(false)
+
+                    et_device_name.setEnabled(false)
+
+                    et_device_name.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+
+                    if (!deviceSSID.equals(et_device_name.getText().toString(), ignoreCase = true)) {
+                        if (activityName.equals("LSSDPDeviceNetworkSettings", ignoreCase = true)) {
+                            LUCIControl(deviceIP).SendCommand(MIDCONST.MID_DEVNAME, et_device_name.getText().toString(), LSSDPCONST.LUCI_SET)
+                            LibreLogger.d(this,"suma in conect to wifi activity else save device name")
+                        }
+                    }
+
+                }
+
+            }
+
         }
     }
 
@@ -94,6 +174,17 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
 
         if (et_wifi_password.text.toString().length<8) {
             showToast(getString(R.string.wifi_password_invalid))
+            return false
+        }
+
+        if (tv_selected_wifi?.text?.toString()?.isEmpty()!!) {
+            showToast(getString(R.string.please_selecte_wifi))
+            return false
+        }
+
+        val ssid = getConnectedSSIDName(this)
+        if (!(ssid?.contains(Constants.SA_SSID_RIVAA_CONCERT)!! || ssid?.contains(Constants.SA_SSID_RIVAA_STADIUM)!!)) {
+            AppUtils.showAlertForNotConnectedToSAC(this)
             return false
         }
 
@@ -136,13 +227,14 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
 
     private var wifiConnect = WifiConnection.getInstance()
 
+
     private fun writeSacConfig(etDeviceName: String) {
         showProgressDialog(getString(R.string.configuring_device))
         var baseUrl = ""
         val deviceIp = intent?.getStringExtra(AppConstants.DEVICE_IP)
         /* HTTP Post */
         baseUrl = if (activityName == CTDeviceSettingsActivity::class.java.simpleName) {
-            wifiConnect.mPreviousSSID = connectedSSID
+            wifiConnect.mPreviousSSID = getConnectedSSIDName(this)
             "http://$deviceIp:80"
         } else {
             "http://192.168.43.1:80"
@@ -187,7 +279,7 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
                 mDeviceNameChanged = false
                 params[AppConstants.SAC_DEVICE_NAME] = ""
             } else {
-                if (et_device_name.text.isNotEmpty() && et_device_name.text.toString().toByteArray().size <= 50) {
+                if (et_device_name.text!!.isNotEmpty() && et_device_name.text.toString().toByteArray().size <= 50) {
                     mDeviceNameChanged = true
                     val modifiedEtDeviceName = etDeviceName.trim { it <= ' ' } /*etDeviceName.replaceAll("\n", "");*/
                     params[AppConstants.SAC_DEVICE_NAME] = modifiedEtDeviceName
@@ -229,26 +321,15 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
 
                     if (t.contains("SAC credentials received")) {
 
-                        mHandler.sendEmptyMessage(Constants.HTTP_POST_DONE_SUCCESSFULLY)
+//                        mHandler.sendEmptyMessage(Constants.HTTP_POST_DONE_SUCCESSFULLY)
 
-                        wifiConnect.setmSACDevicePostDone(true)
                         AppUtils.storeSSIDInfoToSharedPreferences(this@CTConnectToWifiActivity,wifiConnect.getMainSSID(), wifiConnect.getMainSSIDPwd())
                         if (mDeviceNameChanged) {
                             showProgressDialog(getString(R.string.deviceRebooting))
                             mDeviceNameChanged = false
                         }
 
-                        val error = LibreError("Successfully Credentials posted ,", t)
-                        BusProvider.getInstance().post(error)
-
-//                        unbindWifiNetwork(this@CTConnectToWifiActivity)
-
-                        LibreApplication.sacDeviceNameSetFromTheApp = et_device_name.text.toString()
-                        startActivity(Intent(this@CTConnectToWifiActivity, CTConnectingToMainNetwork::class.java)
-                                .apply {
-                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                })
-                        finish()
+                        goToSpeakerSetupScreen(t)
                     } else {
                         val error = LibreError("Error, connecting to Main Network Credentials  ," +
                                 "and Got Response Message as ", t)
@@ -257,11 +338,19 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
                 }
 
                 override fun failure(error: RetrofitError?) {
-                    dismissDialog()
-                    wifiConnect.setmSACDevicePostDone(false)
                     error?.printStackTrace()
                     Log.d("handleSacFailure", error?.message)
-                    mHandler.sendEmptyMessage(Constants.HTTP_POST_FAILED)
+
+                    dismissDialog()
+                    val ssid = getConnectedSSIDName(this@CTConnectToWifiActivity)
+                    if (!(ssid?.contains(Constants.SA_SSID_RIVAA_CONCERT)!! || ssid?.contains(Constants.SA_SSID_RIVAA_STADIUM)!!)) {
+                        /*Sometimes in OnePlus 6, after posting sac credentials, device P2P goes off before giving success response
+                        * to retrofit*/
+                        goToSpeakerSetupScreen(error?.message!!)
+                    } else {
+                        wifiConnect.setmSACDevicePostDone(false)
+                        mHandler.sendEmptyMessage(Constants.HTTP_POST_FAILED)
+                    }
                 }
 
             })
@@ -271,8 +360,62 @@ class CTConnectToWifiActivity: CTDeviceDiscoveryActivity(),View.OnClickListener 
 
     }
 
+    private fun goToSpeakerSetupScreen(message: String) {
+        wifiConnect.setmSACDevicePostDone(true)
+
+        val error = LibreError("Credentials sent to speaker",message)
+        BusProvider.getInstance().post(error)
+
+//                        unbindWifiNetwork(this@CTConnectToWifiActivity)
+
+        LibreApplication.sacDeviceNameSetFromTheApp = et_device_name.text.toString()
+        startActivity(Intent(this@CTConnectToWifiActivity, CTConnectingToMainNetwork::class.java)
+                .apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                })
+        finish()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         mHandler.removeCallbacksAndMessages(null)
     }
-}
+
+    private fun enableOrDisableEditDeviceNameButton() {
+        val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(deviceIP)
+
+        if (mNode != null && mNode.getgCastVerision() != null) {
+            editDeviceNameBtn.setVisibility(View.INVISIBLE)
+        } else {
+            editDeviceNameBtn.setVisibility(View.VISIBLE)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //enableOrDisableEditDeviceNameButton();
+//        tv_device_name.isEnabled == false;
+//        tv_device_name.setText(currentDeviceNode?.getFriendlyname())
+       // DeviceName = tv_device_name.getText().toString()
+//        if (activityName == "CTConnectToWifiActivity") {
+//
+//            WifiConnection.getInstance().mPreviousSSID = LibreApplication.activeSSID
+//
+//            et_device_name.setText(deviceSSID)
+//
+//        } else {
+//            et_device_name.setText(wifiConnect.getssidDeviceNameSAC(deviceSSID.toString()))
+//
+//        }
+    }
+
+//    private fun enableOrDisableEditDeviceNameButton() {
+//        val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentDeviceIp)
+//        if (mNode != null && mNode.getgCastVerision() != null) {
+//            /*we need to show toast so don't hide*/
+//            btnEditSceneName.setVisibility(View./*INVISIBLE*/VISIBLE)
+//        } else {
+//            btnEditSceneName.setVisibility(View.VISIBLE)
+//        }
+//    }
+    }

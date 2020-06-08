@@ -10,7 +10,7 @@
         android:layout_height="fill_parent"
         android:foreground="@drawable/radial_gradient">
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_blurred_album_art"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -23,7 +23,7 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -44,7 +44,7 @@
                     android:gravity="center_vertical"
                     android:paddingRight="8dp">
 
-                    <android.support.v7.widget.AppCompatImageButton
+                    <androidx.appcompat.widget.AppCompatImageButton
                         android:id="@+id/iv_back"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
@@ -52,14 +52,16 @@
                         android:padding="16dp"
                         app:srcCompat="@drawable/ic_arrow_back_white" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_device_name"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center"
                         android:layout_marginLeft="8dp"
                         android:layout_marginRight="8dp"
                         android:layout_weight="1"
                         android:ellipsize="marquee"
+                        android:gravity="center"
                         android:marqueeRepeatLimit="marquee_forever"
                         android:scrollHorizontally="true"
                         android:singleLine="true"
@@ -68,14 +70,24 @@
                         android:textSize="22sp"
                         app:fontFamily="sans-serif-medium" />
 
-                    <android.support.v7.widget.AppCompatImageButton
-                        android:id="@+id/iv_alexa_account"
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/iv_device_settings"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:srcCompat="@drawable/settings_selected" />
+
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/iv_alexa_settings"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="?attr/selectableItemBackgroundBorderless"
                         android:padding="5dp"
                         android:scaleType="fitCenter"
                         app:srcCompat="@drawable/alexa_account" />
+
+
                 </LinearLayout>
 
                 <LinearLayout
@@ -84,14 +96,14 @@
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:id="@+id/iv_volume_down"
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:padding="12dp"
                         app:srcCompat="@drawable/ic_volume_mute" />
 
-                    <android.support.v7.widget.AppCompatSeekBar
+                    <androidx.appcompat.widget.AppCompatSeekBar
                         android:id="@+id/seek_bar_volume"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -102,67 +114,96 @@
                         android:paddingTop="5dp"
                         android:paddingRight="10dp"
                         android:paddingBottom="5dp"
-                        android:progressDrawable="@drawable/gradient_progress_drawable"
+                        android:progressDrawable="@drawable/gradient_progress_drawable_black_white"
                         android:thumb="@drawable/thumb_drawable"
                         tools:progress="30" />
 
-                    <android.support.v7.widget.AppCompatImageView
+                    <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_height="40dp"
                         android:padding="12dp"
                         app:srcCompat="@drawable/ic_volume_up" />
                 </LinearLayout>
             </LinearLayout>
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            android:padding="12dp"
-            tools:visibility="visible"
-            android:visibility="visible">
+            android:padding="10dp"
+            android:visibility="visible"
+            tools:visibility="visible">
 
-            <android.support.v7.widget.AppCompatImageView
-                android:id="@+id/iv_source_icon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:adjustViewBounds="true"
-                android:scaleType="fitCenter"
-                android:src="@mipmap/ic_sources" />
 
-            <android.support.v7.widget.AppCompatTextView
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_source_type"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Sources" />
+                android:visibility="gone"
+                tools:text="Sources"
+                tools:visibility="gone" />
         </LinearLayout>
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_album_art"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_weight="1"
             android:scaleType="fitCenter"
             android:src="@mipmap/album_art"
             android:visibility="visible" />
 
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="24dp"
+            android:layout_marginTop="15dp"
             android:layout_marginRight="24dp"
-            android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <android.support.v7.widget.AppCompatTextView
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true">
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_source_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:adjustViewBounds="true"
+                    android:scaleType="centerInside"
+                    android:src="@mipmap/ic_sources"
+                    android:visibility="gone"
+                    tools:src="@drawable/sirius_image2"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/iv_source_selection"
+                android:layout_width="48dp"
+                android:layout_height="30dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_gravity="right"
+                android:layout_alignParentRight="true"
+                app:srcCompat="@drawable/ic_white_right_arrow" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/mshuffleFavRepeat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
+            android:layout_marginTop="15dp">
+
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tv_current_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -170,83 +211,130 @@
                 app:fontFamily="sans-serif-medium"
                 tools:text="01:41" />
 
-            <View
-                android:layout_width="0dp"
-                android:layout_height="1dp"
-                android:layout_weight="1" />
 
-            <android.support.v7.widget.AppCompatTextView
-                android:id="@+id/tv_total_duration"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="5dp"
-                app:fontFamily="sans-serif-medium"
-                tools:text="04:37" />
-        </LinearLayout>
+                android:orientation="horizontal">
 
-        <android.support.v7.widget.AppCompatSeekBar
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/media_btn_skip_prev"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="40dp"
+                        android:layout_marginLeft="30dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/spotify_15_prev"
+                        android:visibility="visible" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/media_btn_skip_next"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginStart="50dp"
+                        android:layout_marginLeft="5dp"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/spotify_15_next"
+                        android:visibility="visible" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_total_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="5dp"
+                    app:fontFamily="sans-serif-medium"
+                    tools:text="04:37" />
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/seek_bar_song"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
-            android:layout_marginRight="24dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
             android:max="100"
             android:maxHeight="3dp"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
-            android:progressDrawable="@drawable/gradient_progress_drawable"
+            android:progressDrawable="@drawable/gradient_progress_drawable_black_white"
             android:thumb="@drawable/thumb_drawable"
             tools:progress="30" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_track_name"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|left"
+            android:layout_marginLeft="28dp"
             android:layout_marginTop="5dp"
+            android:layout_marginRight="28dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
             android:textColor="@color/white"
+            android:textSize="15sp"
             android:textStyle="bold"
             tools:text="Track Name" />
 
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tv_album_name"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center_horizontal|left"
+            android:layout_marginLeft="28dp"
+            android:layout_marginRight="28dp"
             android:ellipsize="marquee"
             android:marqueeRepeatLimit="marquee_forever"
             android:scrollHorizontally="true"
             android:singleLine="true"
-            android:textSize="16sp"
+            android:textSize="15sp"
             app:fontFamily="sans-serif-light"
             tools:text="Album Name" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="11dp"
             android:background="#3f000000"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_shuffle"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:padding="8dp"
                 app:srcCompat="@drawable/shuffle_enabled" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_previous"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
@@ -254,16 +342,16 @@
                 android:padding="8dp"
                 app:srcCompat="@drawable/prev_enabled" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_play_pause"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:padding="8dp"
-                app:srcCompat="@drawable/play_orange" />
+                app:srcCompat="@drawable/play_white" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_next"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
@@ -271,7 +359,7 @@
                 android:padding="8dp"
                 app:srcCompat="@drawable/next_enabled" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_repeat"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
@@ -286,9 +374,8 @@
 
     <ProgressBar
         android:id="@+id/loader"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="?attr/actionBarSize"
+        android:layout_height="?attr/actionBarSize"
         android:layout_gravity="center"
         android:visibility="gone"
         tools:visibility="visible" />

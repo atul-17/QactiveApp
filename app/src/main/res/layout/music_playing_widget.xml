@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <android.support.v7.widget.AppCompatSeekBar
+        <androidx.appcompat.widget.AppCompatSeekBar
             android:id="@+id/seek_bar_song"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +24,7 @@
             android:maxHeight="1dp"
             android:paddingLeft="-1px"
             android:paddingRight="-1px"
-            android:progress="30"
+            android:progress ="30"
             android:progressDrawable="@drawable/gradient_progress_song_drawable"
             android:thumb="@null"
             android:visibility="visible"
@@ -47,7 +47,7 @@
                 android:visibility="visible"
                 tools:visibility="visible">
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_album_art"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
@@ -66,7 +66,7 @@
                     android:gravity="center_vertical"
                     android:orientation="vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_track_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -78,7 +78,7 @@
                         tools:text="@string/app_name"
                         tools:visibility="visible" />
 
-                    <android.support.v7.widget.AppCompatTextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tv_album_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                         tools:visibility="visible" />
                 </LinearLayout>
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_current_source"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -100,7 +100,7 @@
                     app:srcCompat="@mipmap/spotify"
                     tools:visibility="visible" />
 
-                <android.support.v7.widget.AppCompatImageView
+                <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/iv_play_pause"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
@@ -108,12 +108,12 @@
                     android:layout_marginRight="5dp"
                     android:padding="8dp"
                     android:background="?attr/selectableItemBackground"
-                    app:srcCompat="@drawable/pause_orange"
+                    app:srcCompat="@drawable/pause_white"
                     tools:visibility="visible" />
             </LinearLayout>
 
 
-            <android.support.v7.widget.AppCompatImageButton
+            <androidx.appcompat.widget.AppCompatImageButton
                 android:id="@+id/ib_alexa_avs_btn"
                 android:focusable="true"
                 android:clickable="true"
@@ -126,7 +126,7 @@
         </LinearLayout>
     </LinearLayout>
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_alexa_listening"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

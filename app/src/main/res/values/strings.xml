@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">Riva Voice</string>
-    <string name="title_activity_welcome">Riva Voice</string>
+    <string name="app_name">Q Acoustics</string>
+    <string name="app_name_in_toolbar"> Q Active</string>
+    <string name="title_activity_welcome">Q Acoustics</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="play_music">Play music from…</string>
     <string name="favorite_button">Favorites</string>
-
     <string name="notification_ticker_text">Multi Room Audio</string>
 
     <string-array name="audio_output_array">
@@ -32,6 +32,38 @@
 
     <!-- Error messages -->
 
+
+    <string name="fwUpdateNotification1"> There is an update available for your Q Active system.The update will take approximately 4 hours.The system will not function during update process </string>
+
+    <string name="fwUpdateNotification2"> There is an update available for your Q Active system.The update will take approximately 3 minutes.The system will not function during update process </string>
+
+    <string name="qactive"> Q Active </string>
+
+    <string name="study"> Study </string>
+
+    <string name="qactiveRegistration"> Q Acoustics Registration </string>
+
+
+    <string name="sourceConfiguration"> Source Configuration</string>
+
+    <string name="customerReg"> Customer Registration</string>
+
+
+    <string name="qactiveRegistrationDetails"> By registering with Q Acoustics you will benefit from extended warranty, special offers, news, notifications and recommendations from the Q Acoustic Team</string>
+
+
+
+    <string name="firmware_update_4_hrs"> Firmware Update (4 hours)</string>
+
+    <string name="firmware_update_3_min"> Firmware Update (3 min)</string>
+
+    <string name="hubLedSwitch"> Hub LED switch off after 20s</string>
+
+    <string name="source_settings"> Source Settings </string>
+
+
+    <string name="alertSounds"> Alert Sounds</string>
+
     <string name="requestTimeout">Device response timed out. Please try again</string>
     <string name="pleaseWait">Please wait…</string>
     <string name="browseFailed">Browse content failed!</string>
@@ -43,11 +75,14 @@
     <string name="retry">Retry</string>
     <string name="cannotCreateDMS">Cannot create DMS Processor</string>
     <string name="loadingLocalContent">Loading Local contents</string>
+    <string name="loadingLocalContentFailed"> Loading local content failed!!</string>
+
     <string name="restartAppManually">Loading of Local content failed! Auto restarting is failed.Please restart the app manually!</string>
     <string name="failed">FAILED</string>
     <string name="deviceNameChanging">Device Name Changing</string>
     <string name="deviceLength">Speaker Name cannot be more than 50</string>
     <string name="Settings">Settings</string>
+    <string name="about">About</string>
     <string name="deviceNamecannotBeEmpty">Speaker Name Cannot Be an Empty</string>
     <string name="deviceRebooting">Speaker is Rebooting…</string>
     <string name="httpPostFailed">HTTP Post Got Failed , please Retry By Clicking Save</string>
@@ -77,7 +112,7 @@
     <string name="spotify">Spotify</string>
     <string name="noDeviceFound">No free speakers available</string>
     <string name="title_error_sac_message">
-        Please Connect to SSID
+        Please connect to speaker ssid
     </string>
     <string name="ipAddress">IP Address </string>
     <string name="sourceIndexWrong">Selected source index is worng</string>
@@ -109,7 +144,7 @@
     <string name="noDeviceUpdating">No device under update. </string>
 
 
-    <string name="newrestartApp">Network auto changed to  \" %1$s \" in WIFI Settings Menu \nPlease reconnect to  \" %2$s \" </string>
+    <string name="newrestartApp">Network auto changed to  \" %1$s \" in Wi-Fi Settings Menu \nPlease reconnect to  \" %2$s \" </string>
 
 
     <!--strings that were in Constants.java -->
@@ -150,7 +185,7 @@
     <string name="engUSLang">English (US)</string>
     <string name="engUKLang">English (UK)</string>
     <string name="deutschLang">Deutsch</string>
-    <string name="alexaText">Amazon Alexa</string>
+    <string name="alexaText">amazon alexa</string>
 
     <!--Alexa cognito-->
     <string name="somethingWentWrong">Something went wrong , please try again later.</string>
@@ -162,8 +197,10 @@
     <string name="get_started">Get Started</string>
     <string name="permission_location_rationale">You need to allow location permission to detect speaker Wi-Fi</string>
     <string name="discovery">Discovery</string>
+    <string name="home"> Home </string>
     <string name="add">Add</string>
     <string name="tutorials">Tutorials</string>
+    <string name="help">Help</string>
     <string name="no_device_found">No speaker found</string>
     <string name="make_sure_devices_connected_to_wifi">Make sure all of your speakers are connected to the same Wi-Fi and refresh</string>
     <string name="refresh">Refresh</string>
@@ -172,13 +209,15 @@
     <string name="device_setup2">Speaker Setup</string>
     <string name="setup_instructions">Setup Instructions</string>
     <string name="one">1</string>
-    <string name="power_on_libre_device">Power on Riva Voice speaker</string>
-    <string name="go_to_wifi_settings">Go to Wi-Fi settings and select \'RIVAACONCERT_xxxxxx\' from the Wi-Fi list</string>
+    <string name="power_on_libre_device">Power on QActive speaker</string>
+    <string name="go_to_wifi_settings">Go to Wi-Fi settings and select \'QActive_xxxxxx\' from the Wi-Fi list</string>
     <string name="two">2</string>
     <string name="three">3</string>
-    <string name="after_connecting_to_libre_device"><![CDATA[After connecting to the Riva Voice speaker, return to the Riva Voice app & click next]]></string>
+    <string name="after_connecting_to_libre_device"><![CDATA[After connecting to the QActive Voice speaker, return to the Q Acoustics app & click next]]></string>
     <string name="wifi_settings">Wi-Fi Settings</string>
-    <string name="device_name">Speaker Name</string>
+    <string name="device_name">Speaker Name :</string>
+    <string name="scene_name">Scene Name :</string>
+
     <string name="connect_device_to_wifi">Connect speaker to Wi-Fi network</string>
     <string name="select_wifi">Select a Wi-Fi</string>
     <string name="wifi_pwd">Wi-Fi Password</string>
@@ -198,6 +237,7 @@
     <string name="device_setup_successfull">Your speaker has been set up successfully.</string>
     <string name="congrats">Congrats!</string>
     <string name="wifi_list_unavailable">No Wi-Fi results available</string>
+
     <string name="amazon_login">Amazon Login</string>
     <string name="login_with_amazon">Login with Amazon</string>
     <string name="connect_amazon_account">Your speaker includes access to Alexa. Connect your Amazon account to access  personalized features.</string>
@@ -211,12 +251,12 @@
     <string name="connected_speakers">Connected Speakers</string>
     <string name="speaker_ready_cmds">Speaker is ready for commands</string>
     <string name="logout">Logout</string>
-    <string name="libre_voice">Riva Voice</string>
+    <string name="libre_voice">QActive</string>
     <string name="login_to_enable_cmds">Login to enable voice commands</string>
     <string name="speaker_ready_for_cmds">Speaker is ready for commands</string>
     <string name="listening">Listening …</string>
     <string name="login_with_amazon_warn">You need to login to Amazon to enable speech commands</string>
-    <string name="riva_tutorial_url">https://rivaaudio.com/alexa-tutorial/en/index.html</string>
+    <string name="riva_tutorial_url">https://www.qacoustics.co.uk/qactivehelp</string>
     <string name="version_only">Version</string>
     <string name="language">Language</string>
     <string name="english">English</string>
@@ -261,5 +301,34 @@
     <string name="mb223_update_download">Firmware image downloading started</string>
     <string name="mb223_update_image_available">Firmware image downloaded from server and ready to update speaker</string>
     <string name="mb223_download_fail">Downloading of firmware image from server failed</string>
+    <string name="please_selecte_wifi">Please select Wi-Fi</string>
+    <string name="setting_up_speaker">Setting up speaker and looking for update</string>
+    <string name="now_rebooting">Now rebooting !</string>
+    <string name="indicating_light">Indicating light will breath in blue and turn white at the end …</string>
+    <string name="updating_your_speaker">Updating your speaker</string>
+    <string name="you_will_see_flashing">You will see flashing red, blue and green lights …</string>
+    <string name="open_wifi_settings">Open Wi-Fi settings</string>
 
+    <string name="AuxOffAlert">Turning Off AUX</string>
+
+    <string name="BtOffAlert">Turning Off BT</string>
+
+    <string name="searching_renderer">Searching the renderer…</string>
+
+    <string name="foreground_channel_id">qactive_foreground_channel</string>
+
+    <string name="notifications_channel_description">Displays a notification which tells service is running to discover DMR devices</string>
+    <string name="new_spotify_heading">Ask Alexa to play your favourite playlists , artists and genres.For example, just say, Alexa, play Today’s Top Hits”.</string>
+    <string name="new_spotify_heading2">Listen	on	your speakers or TV, using the Spotify app as a	remote.</string>
+    <string name="new_spotify_main_header">Use your voice to control Spotify.</string>
+    <string name="remote_control">Remote Control</string>
+    <string name="openspotifyapp">Open Spotify App</string>
+    <string name="spotifyConnect">Spotify Connect</string>
+    <string name="learnMore">Learn more</string>
+    /*Spotify Errors Strings*/
+    <string name="SPOTIFY_NOT_AVAILABLE_FOR_FREE">This function is not allowed now.</string>
+    <string name="SPOTIFY_NOT_SUPPORTED_FOR_FREE">This function is not available.</string>
+    <string name="SPOTIFY_SHUFFLE_OFF_NOT_SUPPORTED_FOR_FREE">This function is not available.</string>
+    <string name="SPOTIFY_ADS_PLAYING">This function is not allowed while playing Ads.</string>
+    <string name="SPOTIFY_ERROR">Ignore this error for now. Will check later.</string>
 </resources>

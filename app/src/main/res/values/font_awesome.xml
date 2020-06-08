@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="fa_angle_right">&#xf105;</string>
+    <string name="fa_asterisk">&#xf069;</string>
+    <string name="fa_building">&#xf1ad;</string>
+    <string name="fa_calendar">&#xf073;</string>
+    <string name="fa_certificate">&#xf0a3;</string>
+    <string name="fa_circle">&#xf111;</string>
+    <string name="fa_clock_o">&#xf017;</string>
+    <string name="fa_credit_card">&#xf09d;</string>
+    <string name="fa_cutlery">&#xf0f5;</string>
+    <string name="fa_envelope">&#xf0e0;</string>
+    <string name="fa_exclamation_triangle">&#xf071;</string>
+    <string name="fa_facebook">&#xf09a;</string>
+    <string name="fa_female">&#xf182;</string>
+    <string name="fa_file">&#xf15b;</string>
+    <string name="fa_file_text_o">&#xf0f6;</string>
+    <string name="fa_filter">&#xf0b0;</string>
+    <string name="fa_frown_o">&#xf119;</string>
+    <string name="fa_gift">&#xf06b;</string>
+    <string name="fa_heart">&#xf004;</string>
+    <string name="fa_heart_o">&#xf08a;</string>
+    <string name="fa_history">&#xf1da;</string>
+    <string name="fa_arrow_circle_down">&#xf0ab;</string>
+    <string name="fa_arrow_circle_up"> &#xf0aa; </string>
+    <string name="fa_angle_down">&#xf107;</string>
+    <string name="fa_angle_up">&#xf106;</string>
+    <string name="fa_home">&#xf015;</string>
+    <string name="fa_info">&#xf129;</string>
+    <string name="fa_info_circle">&#xf05a;</string>
+    <string name="fa_list_alt">&#xf022;</string>
+    <string name="fa_location_arrow">&#xf124;</string>
+    <string name="fa_lock">&#xf023;</string>
+    <string name="fa_male">&#xf183;</string>
+    <string name="fa_map_marker">&#xf041;</string>
+    <string name="fa_minus_circle">&#xf056;</string>
+    <string name="fa_pencil">&#xf040;</string>
+    <string name="fa_pencil_square_o">&#xf044;</string>
+    <string name="fa_phone">&#xf095;</string>
+    <string name="fa_phone_square">&#xf098;</string>
+    <string name="fa_plus">&#xf067;</string>
+    <string name="fa_plus_circle">&#xf055;</string>
+    <string name="fa_question">&#xf128;</string>
+    <string name="fa_refresh">&#xf021;</string>
+    <string name="fa_rupee">&#xf156;</string>
+    <string name="fa_search">&#xf002;</string>
+    <string name="fa_shopping_cart">&#xf07a;</string>
+    <string name="fa_square">&#xf0c8;</string>
+    <string name="fa_star">&#xf005;</string>
+    <string name="fa_tag">&#xf02b;</string>
+    <string name="fa_tags">&#xf02c;</string>
+    <string name="fa_truck">&#xf0d1;</string>
+    <string name="fa_user">&#xf007;</string>
+    <string name="fa_users">&#xf0c0;</string>
+
+</resources>

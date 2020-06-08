@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll_vol_changes"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="2"
+    android:background="@color/screen_bg"
+    app:layout_constraintTop_toBottomOf="@+id/appbarLayout">
+
+
+    <ImageView
+        android:id="@+id/iv_low_volume"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".3"
+        android:src="@drawable/volume_low_enabled" />
+
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/seek_bar_volume"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.4"
+        android:max="100"
+        android:maxHeight="3dp"
+        android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+        android:thumb="@drawable/thumb_drawable"
+        tools:progress="30" />
+
+    <ImageView
+        android:id="@+id/iv_high_volume"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight=".3"
+        android:src="@drawable/ic_volume_up" />
+
+</LinearLayout>

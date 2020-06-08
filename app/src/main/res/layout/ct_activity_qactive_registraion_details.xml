@@ -1,0 +1,220 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_bg_black"
+    >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ll_heading"
+        android:orientation="vertical">
+
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/brand_light_grey"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetLeft="0dp"
+                app:contentInsetStart="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center_vertical"
+                    android:paddingRight="8dp">
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/iv_back"
+                        android:layout_width="?attr/actionBarSize"
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="16dp"
+                        app:srcCompat="@drawable/ic_arrow_back_white" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv_device_name"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ellipsize="marquee"
+                        android:marqueeRepeatLimit="marquee_forever"
+                        android:scrollHorizontally="true"
+                        android:singleLine="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/qactive"
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        app:fontFamily="sans-serif-medium" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/iv_alexa_settings"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="5dp"
+                        android:scaleType="centerInside"
+                        app:srcCompat="@drawable/alexa_account" />
+
+                    <androidx.appcompat.widget.AppCompatImageButton
+                        android:id="@+id/iv_device_settings"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        app:srcCompat="@drawable/settings_selected" />
+                </LinearLayout>
+            </androidx.appcompat.widget.Toolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/app_bg_black"
+            android:orientation="vertical">
+
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:text="@string/qactiveRegistration"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textColor="@color/white"
+            />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:gravity="center_vertical"
+            android:padding="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@color/appbar_bg"
+            android:textSize="16sp"
+            android:text="Name:"
+            android:textColor="@color/white"
+            app:fontFamily="sans-serif" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginTop="10dp"
+                android:background="@color/appbar_bg"
+                android:textSize="16sp"
+                android:text="Email:"
+                android:textColor="@color/white"
+                app:fontFamily="sans-serif" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@color/appbar_bg"
+                android:weightSum="2"
+                >
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_weight="1.7"
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:background="@android:color/transparent"
+                android:textSize="16sp"
+                android:text="Country:"
+                android:id="@+id/tv_country_name"
+                android:textColor="@color/white"
+                app:fontFamily="sans-serif" />
+
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:layout_gravity="center"
+                    android:id="@+id/ivShowCountryList"
+                    android:src="@drawable/ic_arrow_down"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:background="@color/appbar_bg"
+                android:weightSum="2"
+                >
+            <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="0dp"
+                android:layout_weight="1.7"
+                android:layout_height="60dp"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:textSize="16sp"
+                android:text="Product:"
+                android:id="@+id/tv_product_name"
+                android:background="@android:color/transparent"
+                android:textColor="@color/white"
+                app:fontFamily="sans-serif" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".2"
+                    android:layout_gravity="center"
+                    android:id="@+id/ivProductList"
+                    android:src="@drawable/ic_arrow_down"
+                    />
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="150dp"
+        android:layout_height="60dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:id="@+id/btnSubmit"
+        android:textAlignment="center"
+        android:layout_centerInParent="true"
+        android:layout_above="@+id/qactive_custom_speaker_ready_commands"
+        android:layout_marginBottom="25dp"
+        android:enabled="true"
+        android:background="@drawable/custom_submit_active_inactive_button"
+        />
+
+
+    <include
+        android:id="@+id/qactive_custom_speaker_ready_commands"
+        layout="@layout/qactive_custom_speaker_ready_commands"
+        android:layout_width="match_parent"
+        android:visibility="invisible"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>

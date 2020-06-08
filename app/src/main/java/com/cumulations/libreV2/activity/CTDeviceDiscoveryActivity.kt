@@ -3,25 +3,20 @@ package com.cumulations.libreV2.activity
 import android.Manifest
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
-import android.app.Activity
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.ProgressDialog
+import android.app.*
 import android.content.*
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.net.Uri
 import android.net.wifi.ScanResult
+import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.provider.Settings
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
-import android.support.v7.app.AlertDialog
-import android.support.v7.widget.AppCompatImageButton
-import android.support.v7.widget.AppCompatImageView
-import android.support.v7.widget.AppCompatSeekBar
-import android.support.v7.widget.AppCompatTextView
+import com.google.android.material.snackbar.Snackbar
+import androidx.core.app.ActivityCompat
+import androidx.appcompat.app.AlertDialog
 import android.util.Log
 import android.view.Gravity
 import android.view.KeyEvent
@@ -29,6 +24,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.widget.*
 
 import com.cumulations.libreV2.AppConstants
 import com.cumulations.libreV2.*
@@ -37,44 +33,37 @@ import com.cumulations.libreV2.SharedPreferenceHelper
 import com.cumulations.libreV2.WifiUtil
 import com.cumulations.libreV2.fragments.CTActiveDevicesFragment
 import com.cumulations.libreV2.fragments.CTNoDeviceFragment
-import com.github.johnpersano.supertoasts.SuperToast
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
-import com.libre.LErrorHandeling.LibreError
-import com.libre.Ls9Sac.FwUpgradeData
-import com.libre.Ls9Sac.GcastUpdateStatusAvailableListView
-import com.libre.Scanning.Constants
-import com.libre.Scanning.ScanningHandler
-import com.libre.alexa.AudioRecordCallback
-import com.libre.alexa.AudioRecordUtil
-import com.libre.alexa.MicExceptionListener
-import com.libre.alexa.MicTcpServer
-import com.libre.app.dlna.dmc.gui.abstractactivity.UpnpListenerActivity
-import com.libre.app.dlna.dmc.processor.impl.UpnpProcessorImpl
-import com.libre.app.dlna.dmc.processor.upnp.CoreUpnpService
-import com.libre.app.dlna.dmc.server.ContentTree
-import com.libre.app.dlna.dmc.utility.UpnpDeviceManager
-import com.libre.constants.LSSDPCONST
-import com.libre.constants.LUCIMESSAGES
-import com.libre.constants.MIDCONST
-import com.libre.luci.LSSDPNodeDB
-import com.libre.luci.LSSDPNodes
-import com.libre.luci.LUCIControl
-import com.libre.luci.LUCIPacket
-import com.libre.luci.Utils
-import com.libre.netty.BusProvider
-import com.libre.netty.LibreDeviceInteractionListner
-import com.libre.netty.NettyData
-import com.libre.netty.RemovedLibreDevice
-import com.libre.util.LibreLogger
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.Ls9Sac.FwUpgradeData
+import com.libre.qactive.Ls9Sac.GcastUpdateStatusAvailableListView
+import com.libre.qactive.Scanning.Constants
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.alexa.AudioRecordCallback
+import com.libre.qactive.alexa.AudioRecordUtil
+import com.libre.qactive.alexa.MicExceptionListener
+import com.libre.qactive.alexa.MicTcpServer
+
+import com.libre.qactive.constants.LSSDPCONST
+import com.libre.qactive.constants.LUCIMESSAGES
+import com.libre.qactive.constants.MIDCONST
+import com.libre.qactive.luci.LSSDPNodeDB
+import com.libre.qactive.luci.LSSDPNodes
+import com.libre.qactive.luci.LUCIControl
+import com.libre.qactive.luci.LUCIPacket
+import com.libre.qactive.luci.Utils
+import com.libre.qactive.netty.BusProvider
+import com.libre.qactive.netty.LibreDeviceInteractionListner
+import com.libre.qactive.netty.NettyData
+import com.libre.qactive.netty.RemovedLibreDevice
+import com.libre.qactive.util.LibreLogger
 import com.squareup.otto.Subscribe
 
 import org.json.JSONObject
-
-import java.net.SocketException
 
 import com.cumulations.libreV2.AppConstants.LOCATION_PERMISSION_REQUEST_CODE
 import com.cumulations.libreV2.AppConstants.LOCATION_PERM_SETTINGS_REQUEST_CODE
@@ -88,11 +77,22 @@ import com.cumulations.libreV2.model.SceneObject
 import com.cumulations.libreV2.tcp_tunneling.TCPTunnelPacket
 import com.cumulations.libreV2.tcp_tunneling.TunnelingData
 import com.cumulations.libreV2.tcp_tunneling.TunnelingControl
-import com.libre.*
-import com.libre.LibreApplication.activeSSID
-import com.libre.alexa.AlexaUtils
-import com.libre.util.PicassoTrustCertificates
-import com.squareup.picasso.Picasso
+import com.danimahardhika.cafebar.CafeBar
+import com.libre.qactive.LibreApplication.activeSSID
+import com.libre.qactive.DMRDeviceListenerForegroundService
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants.*
+import com.libre.qactive.alexa.AlexaUtils
+import com.libre.qactive.app.dlna.dmc.gui.abstractactivity.UpnpListenerActivity
+import com.libre.qactive.app.dlna.dmc.processor.impl.UpnpProcessorImpl
+import com.libre.qactive.app.dlna.dmc.processor.upnp.CoreUpnpService
+import com.libre.qactive.app.dlna.dmc.server.ContentTree
+import com.libre.qactive.app.dlna.dmc.utility.UpnpDeviceManager
+import com.libre.qactive.util.PicassoTrustCertificates
+import kotlinx.android.synthetic.main.ct_activity_media_sources.*
+import java.security.AccessController.getContext
+import java.text.DateFormat
 import java.util.*
 
 /**
@@ -122,7 +122,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     private var mandateDialog: AlertDialog? = null
     lateinit var sharedPreferenceHelper: SharedPreferenceHelper
     private var parentView: View? = null
-    var connectedSSID: String? = null
+    private var onReceiveSSID: String? = null
 
     private var musicPlayerIp: String? = null
     private var musicPlayerWidget: ViewGroup? = null
@@ -140,6 +140,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     private var audioRecordUtil: AudioRecordUtil? = null
     private var micTcpServer: MicTcpServer? = null
 
+
+    private var cafeBar: CafeBar? = null
+
     private var busEventListener: Any = object : Any() {
         @Subscribe
         fun newDeviceFound(nodes: LSSDPNodes) {
@@ -149,25 +152,33 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             }
             if (nodes.getgCastVerision() != null)
                 checkForTheSACDeviceSuccessDialog(nodes)
+
+            if (alertDialog1 != null && alertDialog1?.isShowing!!) {
+                alertDialog1?.dismiss()
+            }
         }
 
         @Subscribe
         fun newMessageRecieved(nettyData: NettyData?) {
-            val dummyPacket = LUCIPacket(nettyData!!.getMessage())
-            LibreLogger.d(this, "New message appeared for the device " + nettyData.getRemotedeviceIp() +
-                    "For the CommandStatus " + dummyPacket.commandStatus + " for the command " + dummyPacket.command)
-            if (libreDeviceInteractionListner != null) {
-                if (nettyData != null)
-                    libreDeviceInteractionListner!!.messageRecieved(nettyData)
+            val dummyPacket = LUCIPacket(nettyData?.getMessage())
+            val time = DateFormat.getInstance().format(System.currentTimeMillis())
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "newMessageRecieved, ip = ${nettyData?.getRemotedeviceIp()}, " +
+                    "MB = ${dummyPacket.command}, " +
+                    "msg = ${String(dummyPacket.payload)} at $time")
+
+            if (nettyData != null) {
+                libreDeviceInteractionListner?.messageRecieved(nettyData)
+//                    handleGCastMessage(nettyData)
+                parseMessageForMusicPlayer(nettyData)
             }
 
-            handleGCastMessage(nettyData)
-            parseMessageForMusicPlayer(nettyData)
+//            handleGCastMessage(nettyData)
+            //   parseMessageForMusicPlayer(nettyData)
         }
 
         @Subscribe
         fun deviceGotRemovedFromIpAddress(deviceIpAddress: String?) {
-            LibreLogger.d(this, "deviceGotRemovedFromIpAddress, " + deviceIpAddress!!)
+            LibreLogger.d(this, "deviceGotRemovedFromIpAddress, $deviceIpAddress")
             if (deviceIpAddress != null) {
                 if (libreDeviceInteractionListner != null) {
                     libreDeviceInteractionListner!!.deviceGotRemoved(deviceIpAddress)
@@ -177,25 +188,30 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
         @Subscribe
         fun deviceGotRemoved(removedLibreDevice: RemovedLibreDevice?) {
-            LibreLogger.d(this, "deviceGotRemoved, " + removedLibreDevice!!.getmIpAddress())
+            LibreLogger.d(this, "deviceGotRemoved, " + removedLibreDevice?.getmIpAddress())
             if (removedLibreDevice != null) {
+                val nodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(removedLibreDevice.getmIpAddress())
                 if (appInForeground(this@CTDeviceDiscoveryActivity)) {
-                    if (LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(removedLibreDevice.getmIpAddress()) != null) {
-                        alertDialogForDeviceNotAvailable(LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(removedLibreDevice.getmIpAddress()))
+                    if (nodes != null) {
+                        LibreLogger.d(this, "deviceGotRemoved, class name = " + this.javaClass.simpleName)
+                        if (libreDeviceInteractionListner !is CTConnectingToMainNetwork) {
+                            alertDialogForDeviceNotAvailable(LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(removedLibreDevice.getmIpAddress()))
+                        } else {
+                            removeTheDeviceFromRepo(removedLibreDevice.getmIpAddress())
+                        }
                     }
                 } else {
                     removeTheDeviceFromRepo(removedLibreDevice.getmIpAddress())
-                    if (libreDeviceInteractionListner != null) {
-                        libreDeviceInteractionListner!!.deviceGotRemoved(removedLibreDevice.getmIpAddress())
-                    }
                 }
             }
+
         }
+
 
         @Subscribe
         fun fwUpdateInternetFound(fwUpgradeData: FwUpgradeData) {
             Log.d(TAG, "fwUpdateInternetFound, device = " + fwUpgradeData.getmDeviceName()
-                    + ",[" + LibreApplication.FW_UPDATE_AVAILABLE_LIST.keys.toString()+"]")
+                    + ",[" + LibreApplication.FW_UPDATE_AVAILABLE_LIST.keys.toString() + "]")
             val intent = Intent(this@CTDeviceDiscoveryActivity, GcastUpdateStatusAvailableListView::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
@@ -209,10 +225,10 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
 
         @Subscribe
-        fun tunnelingMessageReceived(tunnelingData: TunnelingData){
-            LibreLogger.d(this,"tunnelingMessageReceived, data = ${TunnelingControl.getReadableHexByteArray(tunnelingData.remoteMessage)}")
+        fun tunnelingMessageReceived(tunnelingData: TunnelingData) {
+            LibreLogger.d(this, "tunnelingMessageReceived, data = ${TunnelingControl.getReadableHexByteArray(tunnelingData.remoteMessage)}")
 
-            if (tunnelingData.remoteMessage.size == 4){
+            if (tunnelingData.remoteMessage.size == 4) {
                 /*Model Id only when 0x01 0x05 0x05 0x01~0x08*/
                 val byteArray = tunnelingData.remoteMessage
                 if (byteArray[0].toInt() == 0x01
@@ -234,14 +250,31 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                     if ((libreDeviceInteractionListner as Activity).isVisibleToUser()) {
                         tunnelDataReceived(tunnelingData)
                     }
+                } else if (libreDeviceInteractionListner is CTActiveDevicesFragment) {
+                    tunnelDataReceived(tunnelingData)
                 }
             }
         }
     }
 
     /*Will be overridden by Child classes who want this data*/
-    open fun tunnelDataReceived(tunnelingData: TunnelingData){
+    open fun tunnelDataReceived(tunnelingData: TunnelingData) {
+        LibreLogger.d(this, "tunnelDataReceived, ip = ${tunnelingData?.remoteClientIp}")
+        if (tunnelingData?.remoteMessage?.size!! >= 24) {
+            val tcpTunnelPacket = TCPTunnelPacket(tunnelingData.remoteMessage)
 
+            val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(tunnelingData.remoteClientIp)
+                    ?: return
+
+            if (tcpTunnelPacket.volume >= 0) {
+                LibreLogger.d(this, "tunnelDataReceived, ip ${tunnelingData.remoteClientIp}, volume = ${tcpTunnelPacket.volume}")
+                /*Fucking don't multiply by 5 again, we are handling it from packet only*/
+                sceneObject.volumeValueInPercentage = tcpTunnelPacket.volume
+                LibreApplication.INDIVIDUAL_VOLUME_MAP[sceneObject.ipAddress] = sceneObject.volumeValueInPercentage
+                ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject.ipAddress, sceneObject)
+            }
+
+        }
     }
 
     private val isMicrophonePermissionGranted: Boolean
@@ -254,6 +287,15 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     private var sAcalertDialog: AlertDialog? = null
     private var fwUpdateAlertDialog: AlertDialog? = null
 
+    private val MSEARCH_TIMEOUT = (10 * 60 * 1000).toLong()
+    private var dmrSearchHandler: Handler? = null
+    private var dmrSearchRunnable: Runnable = object : Runnable {
+        override fun run() {
+            LibreLogger.d(this, "Sending periodic DMR search")
+            upnpProcessor?.searchDMR()
+            dmrSearchHandler?.postDelayed(this, MSEARCH_TIMEOUT)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -261,45 +303,63 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         libreApplication = application as LibreApplication
         sharedPreferenceHelper = SharedPreferenceHelper(this)
 
+
         val intentFilter = IntentFilter()
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION)
+        intentFilter.addAction(WifiManager.NETWORK_STATE_CHANGED_ACTION)
         localNetworkStateReceiver = LocalNetworkStateReceiver()
 
         registerReceiver(localNetworkStateReceiver, intentFilter)
 
         upnpProcessor = UpnpProcessorImpl(this)
-        upnpProcessor!!.bindUpnpService()
         upnpProcessor!!.addListener(this)
         upnpProcessor!!.addListener(UpnpDeviceManager.getInstance())
+        upnpProcessor!!.bindUpnpService()
+
         libreApplication.gpsStateReceiver.setActivity(this)
     }
 
+    private fun initDMRSearch() {
+        dmrSearchHandler = Handler()
+        dmrSearchHandler?.postDelayed(dmrSearchRunnable, 2000)
+    }
+
     override fun onStart() {
+        initBusEvent()
+        initDMRForegroundService()
+//        initDMRSearch()
         super.onStart()
         Log.d(TAG, "onStart")
         parentView = window.decorView.rootView
-        initEventsAndServers()
         proceedToHome()
     }
 
     open fun proceedToHome() {}
 
     fun checkLocationPermission() {
-        if (!AppUtils.isPermissionGranted(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !AppUtils.isPermissionGranted(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
             requestLocationPermission()
         } else {
             Log.d("checkLocationPermission", "Permission already granted.")
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+                Log.d("checkLocationPermission", "Permission granted, sdk = ${Build.VERSION.SDK_INT}")
+                onReceiveSSID = getConnectedSSIDName(this)
+                return
+            }
+
             if (AppUtils.isLocationServiceEnabled(this)) {
-                connectedSSID = getConnectedSSIDName(this)
-                Log.d("checkLocationPermission", "connectedSSID \$connectedSSID")
+                onReceiveSSID = getConnectedSSIDName(this)
+                Log.d("checkLocationPermission", "onReceiveSSID \$onReceiveSSID")
             } else
                 showLocationMustBeEnabledDialog()
         }
     }
 
-    open fun storagePermissionAvailable(){}
+    open fun storagePermissionAvailable() {}
 
-    fun checkReadStoragePermission():Boolean {
+    fun checkReadStoragePermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
                 && !AppUtils.isPermissionGranted(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Log.d("checkStoragePermission", "Not granted")
@@ -312,6 +372,28 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         return true
     }
 
+    fun buildSnackBar(message: String) {
+        if (getContext() != null) {
+            val builder = CafeBar.builder(this@CTDeviceDiscoveryActivity)
+            builder.autoDismiss(false)
+            builder.customView(R.layout.custom_snackbar_layout)
+
+            cafeBar = builder.build()
+
+            val tvMessage: AppCompatTextView = cafeBar!!.cafeBarView.findViewById(R.id.tv_message)
+            val btnOk: AppCompatButton = cafeBar!!.cafeBarView.findViewById(R.id.btn_ok)
+
+            tvMessage.text = message
+
+            btnOk.setOnClickListener {
+                AppUtils.requestPermission(this@CTDeviceDiscoveryActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_REQUEST_CODE)
+                cafeBar?.dismiss()
+            }
+            cafeBar?.show()
+        }
+    }
+
     private fun requestLocationPermission() {
         Log.i("requestLocPerm", "Location permission has NOT been granted. Requesting permission.")
         if (AppUtils.shouldShowPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -319,9 +401,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             // and the user would benefit from additional context for the use of the permission.
             // For example if the user has previously denied the permission.
             Log.i("requestLocPerm", "Displaying location permission rationale to provide additional context.")
-            Snackbar.make(parentView!!, R.string.permission_location_rationale, Snackbar.LENGTH_INDEFINITE)
-                    .setAction(R.string.ok) { AppUtils.requestPermission(this@CTDeviceDiscoveryActivity, Manifest.permission.ACCESS_FINE_LOCATION, LOCATION_PERMISSION_REQUEST_CODE) }
-                    .show()
+
+            buildSnackBar(resources.getString(R.string.permission_location_rationale))
+
         } else {
             if (!sharedPreferenceHelper.isFirstTimeAskingPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 sharedPreferenceHelper.firstTimeAskedPermission(Manifest.permission.ACCESS_FINE_LOCATION, true)
@@ -442,10 +524,10 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     private fun stopDmrForegroundService() {
-        /* Stopping ForeGRound Service Whenwe are Restarting the APP */
+        /* Stopping ForeGRound Service When we are Restarting the APP */
         stopService(Intent(this, DMRDeviceListenerForegroundService::class.java)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .setAction(Constants.ACTION.STOPFOREGROUND_ACTION))
+                .setAction(ACTION.STOPFOREGROUND_ACTION))
         Log.e("stopDmrService", "done")
     }
 
@@ -472,7 +554,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 val messageView = alertDialog1!!.findViewById<TextView>(android.R.id.message)
                 messageView?.gravity = Gravity.CENTER
             }
+
             alertDialog1!!.show()
+
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -492,6 +576,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
     @SuppressLint("ClickableViewAccessibility")
     fun setMusicPlayerWidget(musicPlayerWidget: ViewGroup, musicPlayerIp: String) {
+        LibreLogger.d(this, "setMusicPlayerWidget, class = ${this::class.java.simpleName}")
         this.musicPlayerWidget = musicPlayerWidget
         this.musicPlayerIp = musicPlayerIp
 
@@ -511,47 +596,59 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
         setMusicPlayerListeners()
 
-        val sceneObject = ScanningHandler.getInstance().sceneObjectFromCentralRepo[musicPlayerIp]
+
+        val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(musicPlayerIp)
         updateMusicPlayViews(sceneObject)
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    private fun setMusicPlayerListeners(){
+    private fun setMusicPlayerListeners() {
         val musicSceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(musicPlayerIp)
         val mNodeWeGotForControl = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(musicPlayerIp)
         val control = LUCIControl(musicPlayerIp)
 
+
+
         playPauseView?.setOnClickListener(object : View.OnClickListener {
             override fun onClick(view: View) {
-                if (musicSceneObject!!.currentSource == Constants.AUX_SOURCE
-                        || musicSceneObject!!.currentSource == Constants.EXTERNAL_SOURCE
-                        || musicSceneObject.currentSource == Constants.GCAST_SOURCE
-                        || musicSceneObject.currentSource == Constants.VTUNER_SOURCE
-                        || musicSceneObject.currentSource == Constants.TUNEIN_SOURCE
-                        || musicSceneObject.currentSource == Constants.BT_SOURCE && (mNodeWeGotForControl!!.getgCastVerision() == null && (mNodeWeGotForControl.bT_CONTROLLER == SceneObject.CURRENTLY_NOTPLAYING || mNodeWeGotForControl.bT_CONTROLLER == SceneObject.CURRENTLY_PLAYING) || mNodeWeGotForControl.getgCastVerision() != null && mNodeWeGotForControl.bT_CONTROLLER < SceneObject.CURRENTLY_PAUSED)) {
+                if (musicSceneObject?.currentSource == AUX_SOURCE
+                        /*|| musicSceneObject?.currentSource == EXTERNAL_SOURCE*/
+                        || musicSceneObject.currentSource == GCAST_SOURCE
+                        || musicSceneObject.currentSource == VTUNER_SOURCE
+                        || musicSceneObject.currentSource == TUNEIN_SOURCE
+                        || musicSceneObject.currentSource == BT_SOURCE
+                        &&
+                        ((mNodeWeGotForControl?.getgCastVerision() == null
+                                && (mNodeWeGotForControl?.bT_CONTROLLER == SceneObject.CURRENTLY_NOTPLAYING
+                                || mNodeWeGotForControl?.bT_CONTROLLER == SceneObject.CURRENTLY_PLAYING))
+                                || (mNodeWeGotForControl.getgCastVerision() != null
+                                && mNodeWeGotForControl.bT_CONTROLLER < SceneObject.CURRENTLY_PAUSED))) {
 
                     val error = LibreError("", resources.getString(R.string.PLAY_PAUSE_NOT_ALLOWED), 1)
                     BusProvider.getInstance().post(error)
                     return
 
                 }
-                if (musicSceneObject.currentSource == Constants.NO_SOURCE || musicSceneObject.currentSource == Constants.DMR_SOURCE && (musicSceneObject.playstatus == SceneObject.CURRENTLY_STOPPED || musicSceneObject.playstatus == SceneObject.CURRENTLY_NOTPLAYING)) {
+                if (musicSceneObject.currentSource == NO_SOURCE
+                        || (musicSceneObject.currentSource == DMR_SOURCE
+                                && (musicSceneObject.playstatus == SceneObject.CURRENTLY_STOPPED
+                                || musicSceneObject.playstatus == SceneObject.CURRENTLY_NOTPLAYING))) {
                     LibreLogger.d(this, "currently not playing, so take user to sources option activity")
                     gotoSourcesOption(musicSceneObject.ipAddress, musicSceneObject.currentSource)
                     return
                 }
 
                 if (musicSceneObject.playstatus == SceneObject.CURRENTLY_PLAYING) {
-                    control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, LSSDPCONST.LUCI_SET)
-                    playPauseView?.setImageResource(R.drawable.play_orange)
+                    LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PAUSE, LSSDPCONST.LUCI_SET, musicSceneObject.ipAddress)
+                    playPauseView?.setImageResource(R.drawable.play_white)
                 } else {
-                    if (musicSceneObject.currentSource == Constants.BT_SOURCE) {
-                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, LSSDPCONST.LUCI_SET)
+                    if (musicSceneObject.currentSource == BT_SOURCE) {
+                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.PLAY, LSSDPCONST.LUCI_SET, musicSceneObject.ipAddress)
                     } else {
-                        control.SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET)
+                        LUCIControl.SendCommandWithIp(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.RESUME, LSSDPCONST.LUCI_SET, musicSceneObject.ipAddress)
                     }
                     // musicSceneObject.setPlaystatus(SceneObject.CURRENTLY_PLAYING);
-                    playPauseView?.setImageResource(R.drawable.pause_orange)
+                    playPauseView?.setImageResource(R.drawable.pause_white)
                 }
             }
         })
@@ -562,7 +659,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 return@OnLongClickListener true
             }
 
-            if (mNodeWeGotForControl == null || mNodeWeGotForControl?.alexaRefreshToken?.isNullOrEmpty()!!) {
+            if (mNodeWeGotForControl == null || mNodeWeGotForControl.alexaRefreshToken?.isNullOrEmpty()!!) {
                 musicSceneObject!!.isAlexaBtnLongPressed = false
                 toggleAVSViews(false)
                 showLoginWithAmazonAlert(musicSceneObject.ipAddress)
@@ -601,9 +698,15 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
 
         musicPlayerWidget?.setOnClickListener {
+            if (trackNameView?.text?.toString()?.contains(getString(R.string.app_name))!!
+                    || trackNameView?.text?.toString()?.contains(getString(R.string.login_to_enable_cmds))!!
+                    || playPauseView?.visibility == View.GONE) {
+                return@setOnClickListener
+            }
+
             if (!musicSceneObject?.trackName.isNullOrEmpty()
                     || !musicSceneObject?.album_art.isNullOrEmpty()
-                    || musicSceneObject?.playstatus == SceneObject.CURRENTLY_PLAYING){
+                    || musicSceneObject?.playstatus == SceneObject.CURRENTLY_PLAYING) {
                 startActivity(Intent(this, CTNowPlayingActivity::class.java).apply {
                     putExtra(Constants.CURRENT_DEVICE_IP, musicPlayerIp)
                 })
@@ -622,16 +725,29 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     private fun updateMusicPlayViews(sceneObject: SceneObject?) {
-        if (musicPlayerWidget?.id == R.id.fl_alexa_widget){
-            handleAlexaViews(sceneObject!!)
+
+        if (sceneObject == null) {
+            LibreLogger.d(this, "updateMusicPlayViews, sceneObject null")
             return
         }
+        val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject.ipAddress)
 
-//        toggleAVSViews(sceneObject?.isAlexaBtnLongPressed!!)
+        if (musicPlayerWidget?.id == R.id.fl_alexa_widget || AppUtils.isActivePlaylistNotAvailable(sceneObject)) {
+            handleAlexaViews(sceneObject!!)
+            return
+        }else{
+            //just check whether ie hide alexa record button
+            //for gcast devices.
+            if (lssdpNodes.getgCastVerision() != null) {
+                alexaButton?.visibility = View.INVISIBLE
+            }else{
+                alexaButton?.visibility = View.VISIBLE
+            }
+        }
+
 
         if (!sceneObject?.trackName.isNullOrEmpty() && !sceneObject!!.trackName.equals("NULL", ignoreCase = true)) {
             var trackname = sceneObject!!.trackName
-
             /* This change is done to handle the case of deezer where the song name is appended by radio or skip enabled */
             if (trackname.contains(Constants.DEZER_RADIO))
                 trackname = trackname.replace(Constants.DEZER_RADIO, "")
@@ -640,20 +756,22 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 trackname = trackname.replace(Constants.DEZER_SONGSKIP, "")
 
             trackNameView?.text = trackname
-        }
 
-        if (!sceneObject?.artist_name.isNullOrEmpty() && !sceneObject!!.album_name.equals("null", ignoreCase = true)) {
-            albumNameView?.text = sceneObject!!.artist_name
-        } else if (!sceneObject?.album_name.isNullOrEmpty() && !sceneObject!!.album_name.equals("null", ignoreCase = true)) {
-            albumNameView?.text = sceneObject!!.album_name
+            if (!sceneObject?.album_name.isNullOrEmpty() && !sceneObject!!.album_name.equals("null", ignoreCase = true)) {
+                albumNameView?.text = sceneObject!!.album_name
+            } else if (!sceneObject?.artist_name.isNullOrEmpty() && !sceneObject!!.artist_name.equals("null", ignoreCase = true)) {
+                albumNameView?.text = sceneObject!!.artist_name
+            }
+        } else {
+            handleAlexaViews(sceneObject)
         }
 
         /*Handling album art*/
         /*this is to show loading dialog while we are preparing to play*/
-        if (sceneObject!!.currentSource != Constants.AUX_SOURCE
-                && sceneObject!!.currentSource != Constants.EXTERNAL_SOURCE
-                && sceneObject!!.currentSource != Constants.BT_SOURCE
-                && sceneObject!!.currentSource != Constants.GCAST_SOURCE) {
+        if (sceneObject!!.currentSource != AUX_SOURCE
+                /*&& sceneObject!!.currentSource != EXTERNAL_SOURCE*/
+                && sceneObject!!.currentSource != BT_SOURCE
+                && sceneObject!!.currentSource != GCAST_SOURCE) {
 
             /*Album Art For All other Sources Except */
             if (!sceneObject!!.album_art.isNullOrEmpty() && sceneObject!!.album_art.equals("coverart.jpg", ignoreCase = true)) {
@@ -677,10 +795,16 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 }
             } else {
                 when {
-                    !sceneObject.album_art.isNullOrEmpty() -> {
+                    !sceneObject.album_art.isNullOrEmpty() && !sceneObject?.album_art.equals("null", ignoreCase = true) -> {
+                        if (sceneObject!!.trackName != null
+                                && !currentTrackName.equals(sceneObject!!.trackName, ignoreCase = true)) {
+                            currentTrackName = sceneObject?.trackName!!
+                            val mInvalidated = mInvalidateTheAlbumArt(sceneObject!!, sceneObject.album_art)
+                            LibreLogger.d(this, "Invalidated the URL $sceneObject.album_art Status $mInvalidated")
+                        }
+
                         if (albumArtView != null) {
-                            /*PicassoTrustCertificates.getInstance(this)*/
-                            Picasso.with(this)
+                            PicassoTrustCertificates.getInstance(this)
                                     .load(sceneObject!!.album_art)
                                     /*   .memoryPolicy(MemoryPolicy.NO_CACHE).networkPolicy(NetworkPolicy.NO_CACHE)*/
                                     .placeholder(R.mipmap.album_art)
@@ -696,20 +820,19 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             }
         }
 
-        val context = this
         currentSourceView?.visibility = View.GONE
         when (sceneObject?.currentSource) {
 
-            Constants.NO_SOURCE,
+            NO_SOURCE,
             Constants.DDMSSLAVE_SOURCE -> {
                 playPauseView?.isClickable = false
-                if (sceneObject?.currentSource == Constants.NO_SOURCE){
+                if (sceneObject?.currentSource == NO_SOURCE) {
                     handleAlexaViews(sceneObject)
                 }
             }
 
-            Constants.VTUNER_SOURCE,
-            Constants.TUNEIN_SOURCE -> {
+            VTUNER_SOURCE,
+            TUNEIN_SOURCE -> {
                 playPauseView?.setImageResource(R.drawable.play_white)
                 songSeekBar?.visibility = View.VISIBLE
                 songSeekBar?.progress = 0
@@ -717,92 +840,121 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             }
 
             /*For Riva Tunneling, When switched to Aux, its External Source*/
-            Constants.AUX_SOURCE,Constants.EXTERNAL_SOURCE -> {
-                /*playPauseView?.setImageResource(R.drawable.play_white)
-                songSeekBar?.visibility = View.VISIBLE
-                songSeekBar?.progress = 0
-                songSeekBar?.isEnabled = false
-
-                trackNameView?.text = context.getText(R.string.aux)
-                albumNameView?.visibility = View.GONE
-                albumArtView?.visibility = View.GONE*/
+            AUX_SOURCE/*, EXTERNAL_SOURCE */ -> {
                 handleAlexaViews(sceneObject)
             }
 
-            Constants.BT_SOURCE -> {
-                /*trackNameView?.text = context.getText(R.string.bluetooth)
-                songSeekBar?.progress = 0
-                songSeekBar?.isEnabled = false
-                albumNameView?.visibility = View.GONE
-                albumArtView?.visibility = View.GONE
-
-                val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject.ipAddress)
-                        ?: return
-                LibreLogger.d(this, "BT controller value in sceneobject " + mNode.bT_CONTROLLER)
-                if (mNode.bT_CONTROLLER != SceneObject.CURRENTLY_STOPPED && mNode.bT_CONTROLLER != SceneObject.CURRENTLY_PAUSED && mNode.bT_CONTROLLER != 3) {
-                    playPauseView?.setImageResource(R.drawable.play_white)
-                }*/
+            BT_SOURCE -> {
                 handleAlexaViews(sceneObject)
             }
-            Constants.GCAST_SOURCE -> {
+
+            GCAST_SOURCE -> {
                 //gCast is Playing
-                playPauseView?.setImageResource(R.drawable.play_orange)
+                playPauseView?.setImageResource(R.drawable.play_white)
                 trackNameView?.text = "Casting"
 
                 songSeekBar?.progress = 0
                 songSeekBar?.isEnabled = false
+
+
             }
 
-            Constants.ALEXA_SOURCE,
-            Constants.DMR_SOURCE,
-            Constants.DMP_SOURCE,
-            Constants.SPOTIFY_SOURCE,
-            Constants.USB_SOURCE -> {
-                if (!sceneObject?.trackName.isNullOrEmpty()){
+            ALEXA_SOURCE,
+            DMR_SOURCE,
+            DMP_SOURCE,
+            SPOTIFY_SOURCE,
+            USB_SOURCE -> {
+                if (!sceneObject?.trackName.isNullOrEmpty() && !sceneObject?.trackName.equals("null", ignoreCase = true)) {
                     playPauseView?.visibility = View.VISIBLE
                     trackNameView?.visibility = View.VISIBLE
-                    if (!sceneObject?.album_name?.isEmpty()!! || !sceneObject?.artist_name?.isEmpty()!!){
+
+                    if ((!sceneObject?.album_name?.isNullOrEmpty()!!
+                                    && !sceneObject?.album_name.equals("null", ignoreCase = true))
+                            || (!sceneObject?.artist_name?.isNullOrEmpty()!!
+                                    && !sceneObject?.artist_name.equals("null", ignoreCase = true))) {
                         albumNameView?.visibility = View.VISIBLE
                     }
 
-                    if (!sceneObject?.album_art?.isEmpty()!!){
+                    if (!sceneObject?.album_art?.isNullOrEmpty()!! && !sceneObject?.album_art.equals("null", ignoreCase = true)) {
                         albumArtView?.visibility = View.VISIBLE
                     }
 
-                    if (sceneObject?.totalTimeOfTheTrack>0 && sceneObject.currentPlaybackSeekPosition>=0){
+                    if (sceneObject?.totalTimeOfTheTrack > 0 && sceneObject.currentPlaybackSeekPosition >= 0) {
                         songSeekBar?.visibility = View.VISIBLE
                         songSeekBar?.isEnabled = true
                     }
+                } else {
+                    handleAlexaViews(sceneObject)
                 }
 
-                if (sceneObject?.currentSource == Constants.SPOTIFY_SOURCE)
+                if (sceneObject?.currentSource == SPOTIFY_SOURCE) {
                     currentSourceView?.visibility = View.VISIBLE
+                    currentSourceView?.setImageResource(R.mipmap.spotify)
+                }
+
+                if (sceneObject.currentSource == ALEXA_SOURCE) {
+                    currentSourceView?.visibility = View.VISIBLE
+                    when {
+                        sceneObject?.playUrl?.contains("Spotify", true)!! -> currentSourceView?.setImageResource(R.mipmap.spotify)
+                        sceneObject?.playUrl?.contains("Deezer", true)!! -> currentSourceView?.setImageResource(R.mipmap.riva_deezer_icon)
+                        sceneObject?.playUrl?.contains("Pandora", true)!! -> currentSourceView?.setImageResource(R.mipmap.riva_pandora_icon)
+                        else -> currentSourceView?.visibility = View.GONE
+                    }
+                }
             }
 
             else -> handleAlexaViews(sceneObject)
         }
 
-        if (sceneObject != null && (sceneObject.currentSource == Constants.VTUNER_SOURCE
-                        || sceneObject.currentSource == Constants.TUNEIN_SOURCE
-                        || sceneObject.currentSource == Constants.BT_SOURCE
-                        || sceneObject.currentSource == Constants.AUX_SOURCE
-                        || sceneObject.currentSource == Constants.EXTERNAL_SOURCE
-                        || sceneObject.currentSource == Constants.NO_SOURCE
-                        || sceneObject.currentSource == Constants.GCAST_SOURCE)) {
-            playPauseView?.isEnabled = false
+        if (sceneObject?.playstatus == SceneObject.CURRENTLY_PLAYING) {
+            if (playPauseNextPrevAllowed(sceneObject)) {
+                playPauseView?.setImageResource(R.drawable.pause_white)
+            }
+        } else {
+            if (playPauseNextPrevAllowed(sceneObject)) {
+                playPauseView?.setImageResource(R.drawable.play_white)
+            }
+        }
+
+        if (sceneObject != null && (sceneObject.currentSource == VTUNER_SOURCE
+                        || sceneObject.currentSource == TUNEIN_SOURCE
+                        || sceneObject.currentSource == BT_SOURCE
+                        || sceneObject.currentSource == AUX_SOURCE
+                        /*|| sceneObject.currentSource == EXTERNAL_SOURCE*/
+                        || sceneObject.currentSource == NO_SOURCE
+                        || sceneObject.currentSource == GCAST_SOURCE)) {
+//            playPauseView?.isEnabled = false
             songSeekBar?.progress = 0
             songSeekBar?.secondaryProgress = 0
             songSeekBar?.max = 100
             songSeekBar?.isEnabled = false
         }
 
-        if (playPauseView!=null && !playPauseView?.isEnabled!!) {
+        if (sceneObject?.currentSource != MIDCONST.GCAST_SOURCE) {
+            if (!playPauseView!!.isEnabled) {
+                playPauseView!!.setImageResource(R.drawable.play_white)
+            } else if (sceneObject?.playstatus == SceneObject.CURRENTLY_PLAYING) {
+                playPauseView!!.setImageResource(R.drawable.pause_white)
+            } else {
+                playPauseView!!.setImageResource(R.drawable.play_white)
+            }
+        }
+
+        if (sceneObject?.currentSource == VTUNER_SOURCE
+                || sceneObject?.currentSource == TUNEIN_SOURCE
+                || sceneObject?.currentSource == BT_SOURCE
+                || sceneObject?.currentSource == AUX_SOURCE
+                || sceneObject?.currentSource == NO_SOURCE) {
+            playPauseView?.setImageResource(R.drawable.play_white)
+        }
+
+        /*if (playPauseView!=null && !playPauseView?.isEnabled!!) {
             playPauseView?.setImageResource(R.drawable.play_white)
         } else if (sceneObject?.playstatus == SceneObject.CURRENTLY_PLAYING) {
-            playPauseView?.setImageResource(R.drawable.pause_orange)
+            playPauseView?.setImageResource(R.drawable.pause_white)
         } else {
             playPauseView?.setImageResource(R.drawable.play_orange)
-        }
+        }*/
 
         /* Setting the current seekbar progress -Start*/
         val duration = sceneObject.currentPlaybackSeekPosition
@@ -810,6 +962,39 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         songSeekBar?.secondaryProgress = sceneObject.totalTimeOfTheTrack.toInt() / 1000
         Log.d("seek_bar_song", "Duration = " + duration / 1000)
         songSeekBar?.progress = duration.toInt() / 1000
+
+        toggleAlexaBtnForSAMode()
+
+        if (AppUtils.isActivePlaylistNotAvailable(sceneObject)) {
+            LibreLogger.d(this, "isActivePlaylistNotAvailable true")
+            handleAlexaViews(sceneObject)
+        }
+
+        if (AppUtils.isDMRPlayingFromOtherPhone(sceneObject)) {
+            LibreLogger.d(this, "isDMRPlayingFromOtherPhone true")
+            playPauseView?.visibility = View.GONE
+        }
+
+        if (AppUtils.isLocalDMRPlaying(sceneObject)) {
+            playPauseView?.visibility = View.VISIBLE
+        }
+
+    }
+
+    private fun playPauseNextPrevAllowed(currentSceneObject: SceneObject?): Boolean {
+        val mNodeWeGotForControl = ScanningHandler.getInstance().getLSSDPNodeFromCentralDB(currentSceneObject?.ipAddress)
+        return (currentSceneObject!!.currentSource != AUX_SOURCE
+                /*&& currentSceneObject!!.currentSource != EXTERNAL_SOURCE*/
+                && currentSceneObject!!.currentSource != GCAST_SOURCE
+                && currentSceneObject!!.currentSource != VTUNER_SOURCE
+                && currentSceneObject!!.currentSource != TUNEIN_SOURCE
+                && currentSceneObject!!.currentSource != NO_SOURCE
+                && (currentSceneObject!!.currentSource != BT_SOURCE
+                || (mNodeWeGotForControl.getgCastVerision() != null
+                && mNodeWeGotForControl.bT_CONTROLLER != SceneObject.CURRENTLY_NOTPLAYING
+                && mNodeWeGotForControl.bT_CONTROLLER != SceneObject.CURRENTLY_PLAYING)
+                || (mNodeWeGotForControl.getgCastVerision() == null
+                && mNodeWeGotForControl.bT_CONTROLLER >= SceneObject.CURRENTLY_PAUSED)))
     }
 
     private fun handleAlexaViews(sceneObject: SceneObject) {
@@ -819,16 +1004,44 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         trackNameView?.text = getText(R.string.libre_voice)
 
         val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject?.ipAddress)
-        if (node?.alexaRefreshToken.isNullOrEmpty()){
-            trackNameView?.visibility = View.VISIBLE
-            trackNameView?.text = getText(R.string.login_to_enable_cmds)
-            albumNameView?.visibility = View.GONE
-        } else {
+
+        //gcast != null -> hide alexa
+        //hide alexa record button
+        if (node.getgCastVerision() != null) {
+            alexaButton?.visibility = View.INVISIBLE
+            if (albumNameView?.text.toString() == getString(R.string.speaker_ready_cmds)) {
+                //hide speaker is ready for commands
+                albumNameView?.visibility = View.INVISIBLE
+            } else {
+                albumNameView?.visibility = View.VISIBLE
+            }
+        }else{
+            alexaButton?.visibility = View.VISIBLE
             albumNameView?.visibility = View.VISIBLE
-            trackNameView?.visibility = View.VISIBLE
-            trackNameView?.text = getText(R.string.app_name)
-            albumNameView?.text = getText(R.string.speaker_ready_for_cmds)
+
+            if (node?.alexaRefreshToken.isNullOrEmpty()) {
+                trackNameView?.visibility = View.VISIBLE
+                trackNameView?.text = getText(R.string.login_to_enable_cmds)
+                albumNameView?.visibility = View.GONE
+            } else {
+                albumNameView?.visibility = View.VISIBLE
+                trackNameView?.visibility = View.VISIBLE
+                trackNameView?.text = getText(R.string.app_name)
+                albumNameView?.text = getText(R.string.speaker_ready_for_cmds)
+            }
+            toggleAlexaBtnForSAMode()
+
         }
+
+
+    }
+
+    private fun toggleAlexaBtnForSAMode() {
+        val ssid = AppUtils.getConnectedSSID(this)
+        alexaButton?.isEnabled = ssid != null && !isConnectedToSAMode(ssid)
+        if (alexaButton?.isEnabled!!) {
+            alexaButton?.alpha = 1f
+        } else alexaButton?.alpha = .5f
     }
 
     fun mInvalidateTheAlbumArt(sceneObject: SceneObject, album_url: String): Boolean {
@@ -851,36 +1064,36 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         startActivity(mActiveScenesList)
     }
 
-    private fun parseMessageForMusicPlayer(nettyData: NettyData) {
-        Log.e("parseForMusicPlayer", "musicIp = $musicPlayerIp, nettyData Ip = ${nettyData.remotedeviceIp}")
+    private fun parseMessageForMusicPlayer(nettyData: NettyData?) {
+        Log.e("parseForMusicPlayer", "musicIp = $musicPlayerIp, nettyData Ip = ${nettyData?.remotedeviceIp}")
         if (musicPlayerIp == null || !musicPlayerIp?.equals(nettyData?.remotedeviceIp)!!) {
-            Log.e("parseForMusicPlayer","musicPlayerIp $musicPlayerIp")
+            Log.e("parseForMusicPlayer", "returning musicPlayerIp $musicPlayerIp, remotedeviceIp ${nettyData?.remotedeviceIp}")
             return
         }
 
         if (musicPlayerWidget == null) {
-            Log.e("parseForMusicPlayer","musicPlayerWidget null")
+            Log.e("parseForMusicPlayer", "musicPlayerWidget null")
             return
         }
 
-        val luciPacket = LUCIPacket(nettyData.message)
+        val luciPacket = LUCIPacket(nettyData?.message)
         val msg = String(luciPacket.payload)
-        val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(nettyData.remotedeviceIp)
+        val sceneObject = ScanningHandler.getInstance().getSceneObjectFromCentralRepo(nettyData?.remotedeviceIp)
         if (sceneObject == null) {
-            Log.e("MessageForMusicPlayer", "sceneObject null for " + nettyData.remotedeviceIp)
+            Log.e("MessageForMusicPlayer", "sceneObject null for " + nettyData?.remotedeviceIp)
             return
         }
 
-        when(luciPacket.command){
+        when (luciPacket.command) {
             MIDCONST.SET_UI -> {
                 try {
-                    LibreLogger.d(this, "MB : 42, msg = \$msg")
+//                    LibreLogger.d(this, "MB : 42, msg = \$msg")
                     val root = JSONObject(msg)
                     val cmdId = root.getInt(LUCIMESSAGES.TAG_CMD_ID)
                     val window = root.getJSONObject(LUCIMESSAGES.ALEXA_KEY_WINDOW_CONTENT)
                     LibreLogger.d(this, "PLAY JSON is \n= \$msg")
                     if (cmdId == 3) {
-                        handlePlayJsonUi(window,sceneObject)
+                        handlePlayJsonUi(window, sceneObject)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -888,12 +1101,12 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             }
 
             MIDCONST.MID_MIC -> {
-                if (msg.contains("BLOCKED",true)) {
+                if (msg.contains("BLOCKED", true)) {
                     audioRecordUtil?.stopRecording()
                     showToast(getString(R.string.deviceMicOn))
                     sceneObject?.isAlexaBtnLongPressed = false
                     /*updating boolean status to repo as well*/
-                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject?.ipAddress,sceneObject)
+                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(sceneObject?.ipAddress, sceneObject)
                     toggleAVSViews(sceneObject?.isAlexaBtnLongPressed)
                 }
             }
@@ -902,11 +1115,9 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 LibreLogger.d(this, "MB : 51, msg = $msg")
                 if (msg.isNotEmpty()) {
                     val playstatus = Integer.parseInt(msg)
-                    if (sceneObject?.playstatus != playstatus) {
-                        sceneObject?.playstatus = playstatus
-                        ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
-                        updateMusicPlayViews(sceneObject)
-                    }
+                    sceneObject?.playstatus = playstatus
+                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData?.getRemotedeviceIp(), sceneObject)
+                    updateMusicPlayViews(sceneObject)
                 }
             }
 
@@ -916,7 +1127,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                     LibreLogger.d(this, "Recieved the current source as  " + sceneObject?.currentSource)
                     val mSource = Integer.parseInt(msg)
                     sceneObject?.currentSource = mSource
-                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
+                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData?.getRemotedeviceIp(), sceneObject)
                     updateMusicPlayViews(sceneObject)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -926,7 +1137,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             MIDCONST.MID_ENV_READ -> {
                 if (msg.contains("AlexaRefreshToken")) {
                     val token = msg.substring(msg.indexOf(":") + 1)
-                    val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
+                    val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData?.getRemotedeviceIp())
                     if (mNode != null) {
                         mNode.alexaRefreshToken = token
                     }
@@ -939,7 +1150,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 if (msg.isNotEmpty()) {
                     val longDuration = java.lang.Long.parseLong(msg)
                     sceneObject?.currentPlaybackSeekPosition = longDuration.toFloat()
-                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData.getRemotedeviceIp(), sceneObject)
+                    ScanningHandler.getInstance().putSceneObjectToCentralRepo(nettyData?.getRemotedeviceIp(), sceneObject)
                     updateMusicPlayViews(sceneObject)
                 }
             }
@@ -958,26 +1169,27 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             return
         }
         val controlsArr = currentSceneObject.controlsValue ?: return
+        LibreLogger.d(this, "setControlIconsForAlexa controls $controlsArr")
         play.isEnabled = controlsArr[0]
         play.isClickable = controlsArr[0]
-        if (!controlsArr[0]) {
+        if (!play.isEnabled) {
             play.setImageResource(R.drawable.play_white)
         }
 
         next.isEnabled = controlsArr[1]
         next.isClickable = controlsArr[1]
-        if (controlsArr[1]) {
-            next.setImageResource(R.drawable.prev_enabled)
+        if (next.isEnabled) {
+            next.setImageResource(R.drawable.next_enabled)
         } else {
-            next.setImageResource(R.drawable.prev_disabled)
+            next.setImageResource(R.drawable.next_disabled)
         }
 
         previous.isEnabled = controlsArr[2]
         previous.isClickable = controlsArr[2]
-        if (controlsArr[2]) {
-            next.setImageResource(R.drawable.next_enabled)
+        if (previous.isEnabled) {
+            previous.setImageResource(R.drawable.prev_enabled)
         } else {
-            next.setImageResource(R.drawable.next_disabled)
+            previous.setImageResource(R.drawable.prev_disabled)
         }
     }
 
@@ -987,12 +1199,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         val msg = String(packet.getpayload())
         val mNode = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(nettyData.getRemotedeviceIp())
 
-        LibreLogger.d(this, "handleGCastMessage MB = "
-                + packet.command
-                + ", Ip = " + nettyData.remotedeviceIp
-                +" msg = "+msg)
-
-        when(packet.command){
+        when (packet.command) {
             MIDCONST.FW_UPGRADE_PROGRESS.toInt() -> {
                 if (mNode == null)
                     return
@@ -1011,7 +1218,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
                 /*if Gcast COmplete State or For SAC Device then we are showing Device will reboot
                  * because after firmwareupgraade COmpleted we are giving ok and coming back to PlayNEwScreen */
-                if (msg.equals(Constants.GCAST_COMPLETE, ignoreCase = true)
+                if (msg.equals(GCAST_COMPLETE, ignoreCase = true)
                         && !mNode.friendlyname.equals(LibreApplication.sacDeviceNameSetFromTheApp, ignoreCase = true)) {
                     fwUpgradeData.setmProgressValue(100)
                     fwUpgradeData.updateMsg = getString(R.string.gcast_update_done)
@@ -1069,7 +1276,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                         msg.equals(Constants.UPDATE_IMAGE_AVAILABLE, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.mb223_update_image_available)
                         msg.equals(Constants.NO_UPDATE, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.noupdateAvailable)
                         msg.equals(Constants.DOWNLOAD_FAIL, ignoreCase = true)
-                                || msg.equals(Constants.CRC_CHECK_ERROR, ignoreCase = true)-> fwUpgradeData.updateMsg = getString(R.string.mb223_download_fail)
+                                || msg.equals(Constants.CRC_CHECK_ERROR, ignoreCase = true) -> fwUpgradeData.updateMsg = getString(R.string.mb223_download_fail)
                         else -> try {
                             val mProgressValue = Integer.valueOf(msg)
                             fwUpgradeData.updateMsg = getString(R.string.downloadingtheFirmare)
@@ -1086,72 +1293,17 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         }
     }
 
-
-    /*overriding this method to hide Volume bar in all over app except now playing screen*/
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-
-        val action = event.action
-        val keyCode = event.keyCode
-
-
-        when (keyCode) {
-            KeyEvent.KEYCODE_VOLUME_UP -> {
-                if (action == KeyEvent.ACTION_DOWN) {
-                    /*    LibreError error = new LibreError("Sorry!", Constants.VOLUME_PRESSED_MESSAGE);
-                    showErrorMessage(error);*/
-                }
-                return true
-            }
-            KeyEvent.KEYCODE_VOLUME_DOWN -> {
-                if (action == KeyEvent.ACTION_DOWN) {
-                    /*   LibreError error = new LibreError("Sorry!", Constants.VOLUME_PRESSED_MESSAGE);
-                    showErrorMessage(error);*/
-                }
-                return true
-            }
-            else -> return super.dispatchKeyEvent(event)
-        }
-    }
-
     /*this method is to show error in whole application*/
     fun showErrorMessage(message: LibreError?) {
-        try {
+        if (LibreApplication.hideErrorMessage)
+            return
+        if (isActivityPaused || isFinishing)
+            return
 
-            if (LibreApplication.hideErrorMessage)
-                return
-            if (isActivityPaused || isFinishing)
-                return
-
-            runOnUiThread {
-
-                LibreLogger.d(this, "Showing the super toast " + System.currentTimeMillis() + message!!.errorMessage)
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    Toast.makeText(this@CTDeviceDiscoveryActivity, "" + message.errorMessage, Toast.LENGTH_SHORT).show()
-                    return@runOnUiThread
-                }
-                val superToast = SuperToast(this@CTDeviceDiscoveryActivity)
-
-                if (message != null && message.errorMessage.contains("is no longer available")) {
-                    LibreLogger.d(this, "Device go removed showing error in Device Discovery")
-                    superToast.setGravity(Gravity.CENTER, 0, 0)
-                }
-                if (message.getmTimeout() == 0) {//TimeoutDefault
-                    superToast.duration = SuperToast.Duration.LONG
-                } else {
-                    superToast.duration = SuperToast.Duration.VERY_SHORT
-                }
-                superToast.text = "" + message
-                superToast.animations = SuperToast.Animations.FLYIN
-                superToast.setIcon(SuperToast.Icon.Dark.INFO, SuperToast.IconPosition.LEFT)
-                superToast.show()
-                if (message != null && message.errorMessage.contains(""))
-                    superToast.setGravity(Gravity.CENTER, 0, 0)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
+        LibreLogger.d(this, "showErrorMessage ${System.currentTimeMillis()} ${message!!.errorMessage}")
+        runOnUiThread {
+            showToast(message.errorMessage)
         }
-
     }
 
 
@@ -1164,19 +1316,19 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     fun intentToHome(context: Context) {
-        Log.d("intentToHome","called by "+context::class.java.simpleName)
+        Log.d("intentToHome", "called by " + context::class.java.simpleName)
         val newIntent: Intent
         if (LSSDPNodeDB.getInstance().GetDB().size > 0) {
             //            newIntent = new Intent(context, ActiveScenesListActivity.class);
             newIntent = Intent(context, CTHomeTabsActivity::class.java)
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK)
+            newIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK
             newIntent.putExtra(AppConstants.LOAD_FRAGMENT, CTActiveDevicesFragment::class.java.simpleName)
             startActivity(newIntent)
             finish()
         } else {
             //            newIntent = new Intent(context, ConfigureActivity.class);
             newIntent = Intent(context, CTHomeTabsActivity::class.java)
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK)
+            newIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP and Intent.FLAG_ACTIVITY_NEW_TASK
             newIntent.putExtra(AppConstants.LOAD_FRAGMENT, CTNoDeviceFragment::class.java.simpleName)
             startActivity(newIntent)
             finish()
@@ -1189,7 +1341,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         isActivityPaused = false
     }
 
-    private fun initEventsAndServers() {
+    private fun initBusEvent() {
         try {
             BusProvider.getInstance().register(busEventListener)
         } catch (e: Exception) {
@@ -1200,29 +1352,25 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             LibreApplication.mCleanUpIsDoneButNotRestarted = false
 //            restartApp(this@CTDeviceDiscoveryActivity)
         }
+    }
 
+    private fun initDMRForegroundService() {
         try {
-            startService(Intent(this@CTDeviceDiscoveryActivity, DMRDeviceListenerForegroundService::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                action = Constants.ACTION.STARTFOREGROUND_ACTION
-            })
-        } catch (e:java.lang.Exception){
-            e.printStackTrace()
-        }
-
-        val connManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
-
-        if (mWifi != null && mWifi.isConnected && MicTcpServer.MIC_TCP_SERVER_PORT == 0
-                && getConnectedSSIDName(this) != null
-                && !getConnectedSSIDName(this)?.contains(Constants.RIVAA_WAC_SSID)) {
-            try {
-                libreApplication.restart()
-                libreApplication.micTcpStart()
-            } catch (e: SocketException) {
-                e.printStackTrace()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(Intent(this@CTDeviceDiscoveryActivity, DMRDeviceListenerForegroundService::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    action = ACTION.STARTFOREGROUND_ACTION
+                })
+            } else {
+                startService(Intent(this@CTDeviceDiscoveryActivity, DMRDeviceListenerForegroundService::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    action = ACTION.STARTFOREGROUND_ACTION
+                })
             }
 
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            LibreLogger.d(this, "initDMRForegroundService exception = ${e.message}")
         }
     }
 
@@ -1252,7 +1400,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         super.onDestroy()
         Log.d(TAG, "onDestroy")
         try {
-            this.unregisterReceiver(localNetworkStateReceiver)
+            unregisterReceiver(localNetworkStateReceiver)
         } catch (e: Exception) {
             LibreLogger.d(this, "Exception happened while unregistering the reciever!! " + e.message)
 
@@ -1268,85 +1416,82 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     private inner class LocalNetworkStateReceiver : BroadcastReceiver() {
 
         override fun onReceive(context: Context, intent: Intent) {
-            Log.d(TAG, "onReceive called")
-            Log.d(TAG, "action = " + intent.action + ", listenToNetworkChanges = " + isNetworkChangesCallBackEnabled)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive called")
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive action = " + intent.action + ", listenToNetworkChanges = " + isNetworkChangesCallBackEnabled)
+
+            val networkInfo = intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
+            val wifiManager = applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+            val wifiInfo = wifiManager.connectionInfo
+
+            onReceiveSSID = getConnectedSSIDName(this@CTDeviceDiscoveryActivity)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive onReceiveSSID $onReceiveSSID")
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive wifiInfo ssid " + wifiInfo.ssid)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive networkInfo type, State " + networkInfo.typeName + ", " + networkInfo.state)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive networkInfo isConnected " + networkInfo.isConnected)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive networkInfo Detailed State " + networkInfo.detailedState)
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive wifiInfo Supplicant State " + wifiInfo.supplicantState)
 
             connectivityOnReceiveCalled(context, intent)
 
+            if (!intent.action?.equals(ConnectivityManager.CONNECTIVITY_ACTION)!!
+                    && !intent.action?.equals(WifiManager.NETWORK_STATE_CHANGED_ACTION)!!) {
+                LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive, action return")
+                return
+            }
+
             val wifiUtil = WifiUtil(this@CTDeviceDiscoveryActivity)
-            val supplicantState = wifiUtil.getWifiSupplicantState()
-            if (!wifiUtil.isWifiOn() /*&& isNetworkOffCallBackEnabled*/) {
+            val isConnected = wifiUtil.isWifiOn()
+            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive, isWifiOn $isConnected")
+
+//            val isFullyConnected = isConnected && networkInfo.type == ConnectivityManager.TYPE_WIFI
+//                    && networkInfo.detailedState == NetworkInfo.DetailedState.CONNECTED
+//            wifiConnected(isFullyConnected)
+
+            if (!isConnected) {
                 if (activeSSID != null && activeSSID != "") {
                     LibreApplication.mActiveSSIDBeforeWifiOff = activeSSID
                 }
                 activeSSID = ""
-                //                showWifiNetworkOffAlert();
+//                showWifiNetworkOffAlert()
                 wifiConnected(false)
-//                return
             }
 
-            if (intent.action != "android.net.conn.TETHER_STATE_CHANGED" && intent.action != ConnectivityManager.CONNECTIVITY_ACTION)
-                return
-
-            if (intent.action != null && intent.action == ConnectivityManager.CONNECTIVITY_ACTION) {
-                val networkInfo = intent.getParcelableExtra<NetworkInfo>(ConnectivityManager.EXTRA_NETWORK_INFO)
-
-                Log.e("onReceive", "type = " + networkInfo.typeName
-                        + ", isConnected = " + networkInfo.isConnected
-                        + ", supplicantState = $supplicantState")
-
-                if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
-                    connectedSSID = AppUtils.getConnectedSSID(this@CTDeviceDiscoveryActivity)
-                    Log.e("onReceive", "wifiInfo, connectedSSID = " + connectedSSID!!)
-
-                    if (connectedSSID == null || connectedSSID == "<unknown ssid>") {
-                        if (networkInfo.extraInfo == null) {
-                            Log.e("onReceive", "getExtraInfo null")
-                        } else {
-                            connectedSSID = networkInfo.extraInfo.replace("\"", "")
-                            if (connectedSSID == null || connectedSSID == "<unknown ssid>") {
-                                Log.e("onReceive", "networkInfo connectedSSID =" + connectedSSID!!)
-                            }
+            if (networkInfo.type == ConnectivityManager.TYPE_WIFI) {
+                if (onReceiveSSID == null || onReceiveSSID == "<unknown ssid>") {
+                    if (networkInfo.extraInfo == null) {
+                        LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive getExtraInfo null")
+                    } else {
+                        onReceiveSSID = networkInfo.extraInfo.replace("\"", "")
+                        if (onReceiveSSID == null || onReceiveSSID == "<unknown ssid>") {
+                            LibreLogger.d(this@CTDeviceDiscoveryActivity, "onReceive networkInfo onReceiveSSID =" + onReceiveSSID!!)
                         }
                     }
-
-                    if (networkInfo.isConnected) {
-                        if (!isFinishing
-                                && !activeSSID.isNullOrEmpty()
-                                && activeSSID != connectedSSID
-                                && context.javaClass.simpleName != CTConnectToWifiActivity::class.java.simpleName
-                                && !connectedSSID!!.contains(Constants.RIVAA_WAC_SSID)) {
-                            showNetworkChangeRestartAppAlert()
-                        } else
-                            wifiConnected(true)
-                    } else wifiConnected(false)
-                } else if (networkInfo.type == ConnectivityManager.TYPE_MOBILE || networkInfo.type == ConnectivityManager.TYPE_MOBILE_HIPRI) {
-                    Log.e("onReceive","TYPE_MOBILE networkInfo.isConnected = ${networkInfo.isConnected}, "
-                            + "wifi Supplicant name = ${supplicantState.name}")
-
-                    if (networkInfo.isConnected) {
-                        /*if (wifiUtil.isWifiOn())
-                            wifiConnected(connected = true)*/
-                        wifiConnected(connected = false)
-                    } else wifiConnected(wifiUtil.isWifiOn())
                 }
+                wifiConnected(networkInfo.isConnected)
+            } else if (networkInfo.type == ConnectivityManager.TYPE_MOBILE || networkInfo.type == ConnectivityManager.TYPE_MOBILE_HIPRI) {
+                wifiConnected(isConnected)
             }
         }
-    }//m_nwStateListener = nwStateListener;
+    }
 
     open fun wifiConnected(connected: Boolean) {
-        LibreLogger.d(this,"wifiConnected $connected")
-        if (!connected){
+        LibreLogger.d(this, "wifiConnected $connected")
+//        LibreLogger.d(this,"wifiConnected, libreDeviceInteractionListner is $libreDeviceInteractionListner")
+        if (libreDeviceInteractionListner != null && libreDeviceInteractionListner is CTConnectingToMainNetwork) {
+            return
+        }
+
+        if (!connected) {
 //            clearing data
             cleanUpCode(false)
         } else {
-            restartAllSockets()
+            val restarted = restartAllSockets()
+            LibreLogger.d(this, "wifiConnected, restartAllSockets $restarted")
         }
-//        if (!connected) libreApplication?.clearApplicationCollections()
     }
 
-    fun showNetworkChangeRestartAppAlert() {
-        LibreLogger.d(this,"showNetworkChangeRestartAppAlert isNetworkChangesCallBackEnabled = $isNetworkChangesCallBackEnabled")
+    private fun showNetworkChangeRestartAppAlert() {
+        LibreLogger.d(this, "showNetworkChangeRestartAppAlert isNetworkChangesCallBackEnabled = $isNetworkChangesCallBackEnabled")
 
         if (!isNetworkChangesCallBackEnabled) return
 
@@ -1387,8 +1532,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                         // if this button is clicked, close
                         // current activity
                         dialog.cancel()
-                        //                            LibreApplication.prevConnectedSSID = LibreApplication.connectedSSID;
-                        //                            LibreApplication.connectedSSID = null;
+                        //                            LibreApplication.prevConnectedSSID = LibreApplication.onReceiveSSID;
+                        //                            LibreApplication.onReceiveSSID = null;
                         LibreApplication.mCleanUpIsDoneButNotRestarted = false
                         /*  startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));*/
                         val intent = Intent(Settings.ACTION_WIFI_SETTINGS)
@@ -1404,44 +1549,48 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
     open fun removeTheDeviceFromRepo(ipadddress: String?) {
         if (ipadddress != null) {
-            if (libreDeviceInteractionListner != null)
-                libreDeviceInteractionListner!!.deviceGotRemoved(ipadddress)
-
             val mNodeDB = LSSDPNodeDB.getInstance()
-            try {
-                if (ScanningHandler.getInstance().isIpAvailableInCentralSceneRepo(ipadddress)) {
-                    val status = ScanningHandler.getInstance().removeSceneMapFromCentralRepo(ipadddress)
-                    LibreLogger.d(this, "Active Scene Adapter For the Master $status")
-                }
+            val nodes = mNodeDB.getTheNodeBasedOnTheIpAddress(ipadddress)
+
+            if (nodes != null) {
+                if (libreDeviceInteractionListner != null)
+                    libreDeviceInteractionListner!!.deviceGotRemoved(ipadddress)
+
                 try {
-                    val renderingDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(ipadddress)
-                    val renderingUDN = renderingDevice!!.identity.udn.toString()
-                    val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
-
-                    val mScanHandler = ScanningHandler.getInstance()
-                    val currentSceneObject = mScanHandler.getSceneObjectFromCentralRepo(ipadddress)
-
+                    if (ScanningHandler.getInstance().isIpAvailableInCentralSceneRepo(ipadddress)) {
+                        val status = ScanningHandler.getInstance().removeSceneMapFromCentralRepo(ipadddress)
+                        LibreLogger.d(this, "Active Scene Adapter For the Master $status")
+                    }
                     try {
-                        if (playbackHelper != null
-                                && renderingDevice != null
-                                && currentSceneObject != null
-                                && currentSceneObject.playUrl != null
-                                && !currentSceneObject.playUrl.equals("", ignoreCase = true)
-                                && currentSceneObject.playUrl.contains(LibreApplication.LOCAL_IP)
-                                && currentSceneObject.playUrl.contains(ContentTree.AUDIO_PREFIX)) {
-                            playbackHelper.StopPlayback()
-                        }
-                    } catch (e: Exception) {
+                        val renderingDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(ipadddress)
+                        val renderingUDN = renderingDevice!!.identity.udn.toString()
+                        val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
 
-                        LibreLogger.d(this, "Handling the exception while sending the stopMediaServer command ")
+                        val mScanHandler = ScanningHandler.getInstance()
+                        val currentSceneObject = mScanHandler.getSceneObjectFromCentralRepo(ipadddress)
+
+                        try {
+                            if (playbackHelper != null
+                                    && renderingDevice != null
+                                    && currentSceneObject != null
+                                    && currentSceneObject.playUrl != null
+                                    && !currentSceneObject.playUrl.equals("", ignoreCase = true)
+                                    && currentSceneObject.playUrl.contains(LibreApplication.LOCAL_IP)
+                                    && currentSceneObject.playUrl.contains(ContentTree.AUDIO_PREFIX)) {
+                                playbackHelper.StopPlayback()
+                            }
+                        } catch (e: Exception) {
+
+                            LibreLogger.d(this, "Handling the exception while sending the stopMediaServer command ")
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
 
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    LibreLogger.d(this, "Active Scene Adapter" + "Removal Exception ")
                 }
-
-            } catch (e: Exception) {
-                LibreLogger.d(this, "Active Scene Adapter" + "Removal Exception ")
             }
 
             mNodeDB.clearNode(ipadddress)
@@ -1450,37 +1599,31 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     fun alertDialogForDeviceNotAvailable(mNode: LSSDPNodes?) {
-        run {
-            if (!this@CTDeviceDiscoveryActivity.isFinishing) {
-                if (mNode == null)
-                    return
-                alertDialog1 = null
-                val alertDialogBuilder = AlertDialog.Builder(
-                        this@CTDeviceDiscoveryActivity)
+        if (!this@CTDeviceDiscoveryActivity.isFinishing) {
+            if (mNode == null)
+                return
+            alertDialog1 = null
+            val alertDialogBuilder = AlertDialog.Builder(this@CTDeviceDiscoveryActivity)
+            // set title
+            alertDialogBuilder.setTitle(getString(R.string.deviceNotAvailable))
 
-                // set title
-                alertDialogBuilder.setTitle(getString(R.string.deviceNotAvailable))
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage(getString(R.string.removeDeviceMsg) + " " + mNode.friendlyname + " " + getString(R.string.removeDeviceMsg2))
+                    .setCancelable(false)
+                    .setPositiveButton(getString(R.string.ok)) { dialog, id ->
+                        // if this button is clicked, close
+                        // current activity
+                        alertDialog1!!.dismiss()
+                        removeTheDeviceFromRepo(mNode.ip)
+                        libreDeviceInteractionListner?.deviceGotRemoved(mNode.ip)
+                    }
 
-                // set dialog message
-                alertDialogBuilder
-                        .setMessage(getString(R.string.removeDeviceMsg) + " " + mNode.friendlyname + " " + getString(R.string.removeDeviceMsg2))
-                        .setCancelable(false)
-                        .setPositiveButton(getString(R.string.ok)) { dialog, id ->
-                            // if this button is clicked, close
-                            // current activity
-                            alertDialog1!!.dismiss()
-                            removeTheDeviceFromRepo(mNode.ip)
-                            if (libreDeviceInteractionListner != null) {
-                                libreDeviceInteractionListner!!.deviceGotRemoved(mNode.ip)
-                            }
-                        }
+            // create alertDialog1 dialog
+            if (alertDialog1 == null)
+                alertDialog1 = alertDialogBuilder.create()
 
-                // create alertDialog1 dialog
-                if (alertDialog1 == null)
-                    alertDialog1 = alertDialogBuilder.create()
-
-                alertDialog1!!.show()
-            }
+            alertDialog1!!.show()
         }
     }
 
@@ -1503,7 +1646,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     /* Whenever we are going to Do app Restarting,its not restarting the app properly and We are doing Cleanup and then We are restarting the APP
      * Till i HAave to Analyse more on this code */
     fun cleanUpCode(mCompleteCleanup: Boolean) {
-        LibreLogger.d(this, "Cleanup is going To Call")
+        LibreLogger.d(this, "cleanUpCode complete $mCompleteCleanup")
         LibreApplication.mCleanUpIsDoneButNotRestarted = true
         val application = application as LibreApplication
         try {
@@ -1517,55 +1660,40 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                 mAndroidChannelHandlerContext?.channel?.close()
             }
 
-            ensureDMRPlaybackStopped()
-
-            application.scanThread.mRunning = false
-            application.scanThread.close()
-            application.scanThread.mAliveNotifyListenerSocket = null
-            application.scanThread.mDatagramSocketForSendingMSearch = null
-
-            if (mCompleteCleanup) {
-                this.libreDeviceInteractionListner = null
-                try {
-                    BusProvider.getInstance().unregister(busEventListener)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-            }
-
-            if (application.scanThread.nettyServer.mServerChannel != null && application.scanThread.nettyServer.mServerChannel.isBound) {
-                application.scanThread.nettyServer.mServerChannel.unbind()
-                val serverClose = application.scanThread.nettyServer.mServerChannel.close()
-                serverClose.awaitUninterruptibly()
-
-                /*to resolve hang issue*/
-                //                application.getScanThread().nettyServer.serverBootstrap.releaseExternalResources();
+            if (application.scanThread?.nettyServer?.mServerChannel != null && application.scanThread?.nettyServer?.mServerChannel?.isBound!!) {
+                application.scanThread?.nettyServer?.mServerChannel?.unbind()
+                val serverClose = application.scanThread?.nettyServer?.mServerChannel?.close()
+                serverClose?.awaitUninterruptibly()
             }
 
             LUCIControl.channelHandlerContextMap.clear()
             application.clearApplicationCollections()
-            LibreLogger.d(this, "Cleanup GOintFor Binder ")
+            ensureDMRPlaybackStopped()
+            application.micTcpClose()
+            application.scanThread?.close()
+
+            if (mCompleteCleanup) {
+                this.libreDeviceInteractionListner = null
+                BusProvider.getInstance().unregister(busEventListener)
+            }
+
             if (upnpBinder == null)
                 return
-            try {
-                if (upnpProcessor != null) {
-                    upnpProcessor!!.removeListener(this)
-                    upnpProcessor!!.removeListener(UpnpDeviceManager.getInstance())
-                    upnpProcessor!!.unbindUpnpService()
 
-                    LibreLogger.d(this, "Cleanup UnBinded THe Service ")
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            if (upnpProcessor != null) {
+                upnpProcessor!!.removeListener(this)
+                upnpProcessor!!.removeListener(UpnpDeviceManager.getInstance())
+                upnpProcessor!!.unbindUpnpService()
+
+                LibreLogger.d(this, "Cleanup unbindUpnpService")
             }
 
         } catch (e: Exception) {
             e.printStackTrace()
+            LibreLogger.d(this, "Cleanup exception ${e.message}")
         }
 
         LibreLogger.d(this, "Cleanup is done Successfully")
-        Log.d("NetworkChanged", "BroadcastReceiver Intent")
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -1581,7 +1709,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
 
     private fun restartSplashScreen() {
         Log.e("restartSplashScreen", "starting")
-        val mStartActivity = Intent(this, CTSplashScreenActivity::class.java)
+        val mStartActivity = Intent(this, CTSplashScreenActivityV2::class.java)
         /*sending to let user know that app is restarting*/
         val mPendingIntentId = 123456
         val mPendingIntent = PendingIntent.getActivity(this, mPendingIntentId, mStartActivity, PendingIntent.FLAG_CANCEL_CURRENT)
@@ -1590,18 +1718,11 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     fun restartAllSockets(): Boolean {
-        libreApplication?.initLUCIServices()
-        return true
+        return libreApplication?.initLUCIServices()
     }
 
-    fun phoneIpAddress(): String {
-        val mUtil = Utils()
-        return mUtil.getIPAddress(true)
-    }
-
-    fun restartApplicationForNetworkChanges(context: Context, ssid: String) {
-        cleanUpCode(true)
-        restartApp(context)
+    private fun phoneIpAddress(): String {
+        return Utils().getIPAddress(true)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -1776,6 +1897,14 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
         mProgressDialog!!.show()
     }
 
+//    private fun closeLoader() {
+//        if (m_progressDlg != null) {
+//            if (m_progressDlg.isShowing()) {
+//                m_progressDlg.dismiss()
+//            }
+//        }
+//    }
+
     fun dismissDialog() {
         if (isFinishing)
             return
@@ -1793,7 +1922,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     fun ensureDMRPlaybackStopped() {
 
         val mScanningHandler = ScanningHandler.getInstance()
-        val centralSceneObjectRepo = mScanningHandler.sceneObjectFromCentralRepo
+        val centralSceneObjectRepo = mScanningHandler.sceneObjectMapFromRepo
 
         /*which means no master present hence all devices are free so need to do anything*/
         if (centralSceneObjectRepo == null || centralSceneObjectRepo.size == 0) {
@@ -1814,9 +1943,12 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
                         && !currentSceneObject.playUrl.equals("", ignoreCase = true)
                         && currentSceneObject.playUrl.contains(LibreApplication.LOCAL_IP)
                         && currentSceneObject.playUrl.contains(ContentTree.AUDIO_PREFIX)) {
+                    LUCIControl(masterIPAddress).SendCommand(MIDCONST.MID_PLAYCONTROL.toInt(), LUCIMESSAGES.STOP, LSSDPCONST.LUCI_SET)
+
                     val renderingUDN = renderingDevice.identity.udn.toString()
                     val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
                     playbackHelper?.StopPlayback()
+
                 }
 
             }
@@ -1839,9 +1971,15 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             val getUIPacket = LUCIPacket(LUCIMESSAGES.GET_PLAY.toByteArray(), LUCIMESSAGES.GET_PLAY.length.toShort(),
                     MIDCONST.MID_REMOTE_UI, LSSDPCONST.LUCI_SET.toByte())
             val currentPlayTime = LUCIPacket(null, 0.toShort(), MIDCONST.MID_PLAYTIME, LSSDPCONST.LUCI_GET.toByte())
+            val alexaRefreshTokenPacket = LUCIPacket(
+                    LUCIMESSAGES.READ_ALEXA_REFRESH_TOKEN_MSG.toByteArray(),
+                    LUCIMESSAGES.READ_ALEXA_REFRESH_TOKEN_MSG.length.toShort(),
+                    MIDCONST.MID_ENV_READ.toShort(),
+                    LSSDPCONST.LUCI_GET.toByte())
 
 //            luciControl.SendCommand(MIDCONST.MID_REMOTE_UI.toInt(),LUCIMESSAGES.GET_PLAY,LSSDPCONST.LUCI_SET)
             luciPackets.add(getUIPacket)
+            luciPackets.add(alexaRefreshTokenPacket)
             luciPackets.add(volumePacket)
             luciPackets.add(mSceneNamePacket)
             luciPackets.add(currentSourcePacket)
@@ -1849,7 +1987,7 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
             luciPackets.add(currentPlayTime)
 
             luciControl.SendCommand(luciPackets)
-            AlexaUtils.sendAlexaRefreshTokenRequest(devicIp)
+//            AlexaUtils.sendAlexaRefreshTokenRequest(devicIp)
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -1877,7 +2015,8 @@ open class CTDeviceDiscoveryActivity : UpnpListenerActivity(), AudioRecordCallba
     }
 
     private fun checkMicrophonePermission() {
-        if (!AppUtils.isPermissionGranted(this, Manifest.permission.RECORD_AUDIO)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
+                && !AppUtils.isPermissionGranted(this, Manifest.permission.RECORD_AUDIO)) {
             requestRecordPermission()
         } else {
             Log.d("checkMicrophonePerm", "Permission already granted.")

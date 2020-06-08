@@ -15,7 +15,7 @@
         android:background="@color/appbar_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <android.support.v7.widget.AppCompatTextView
+        <androidx.appcompat.widget.AppCompatTextView
             android:layout_centerVertical="true"
             android:textSize="16sp"
             android:layout_alignParentLeft="true"
@@ -26,7 +26,7 @@
             app:fontFamily="sans-serif-medium"
             android:textColor="@color/white"/>
 
-        <android.support.v7.widget.AppCompatImageView
+        <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_refresh"
             tools:visibility="invisible"
             android:layout_width="48dp"
@@ -46,6 +46,7 @@
             android:layout_height="48dp"
             android:indeterminate="true"
             android:visibility="gone"
+            android:theme="@style/WhiteProgressBar"
             tools:visibility="visible" />
     </RelativeLayout>
 

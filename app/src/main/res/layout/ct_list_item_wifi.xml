@@ -11,7 +11,7 @@
     android:foreground="?attr/selectableItemBackground"
     tools:background="@color/screen_bg">
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_ssid_name"
         android:padding="16dp"
         app:fontFamily="sans-serif-light"
@@ -20,7 +20,7 @@
         android:textColor="@color/white"
         tools:text="Cumulations3" />
 
-    <android.support.v7.widget.AppCompatTextView
+    <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tv_ssid_security"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"

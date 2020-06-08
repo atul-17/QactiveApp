@@ -7,11 +7,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/riva_logo_bg">
 
-    <android.support.v7.widget.AppCompatImageView
+    <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/iv_libre_logo"
         android:layout_centerInParent="true"
         android:scaleType="fitCenter"
-        app:srcCompat="@drawable/riva_logo_opaque_bg"
+        app:srcCompat="@mipmap/app_icon_circle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -26,7 +26,7 @@
         android:visibility="gone"
         android:layout_centerInParent="true" />
 
-    <android.support.v7.widget.AppCompatButton
+    <androidx.appcompat.widget.AppCompatButton
         style="@style/GradientAppButtonStyleRotated"
         android:id="@+id/btn_get_started"
         android:layout_marginBottom="36dp"

@@ -7,24 +7,24 @@ import android.media.AudioManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.support.v7.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.util.Log
 import com.cumulations.libreV2.adapter.CTDIDLObjectListAdapter
 import com.cumulations.libreV2.closeKeyboard
-import com.libre.LErrorHandeling.LibreError
-import com.libre.LibreApplication
-import com.libre.R
-import com.libre.Scanning.Constants
-import com.libre.Scanning.Constants.*
-import com.libre.Scanning.ScanningHandler
-import com.libre.app.dlna.dmc.processor.impl.DMSProcessorImpl
-import com.libre.app.dlna.dmc.processor.interfaces.DMSProcessor
-import com.libre.app.dlna.dmc.server.MusicServer
-import com.libre.app.dlna.dmc.utility.DMRControlHelper
-import com.libre.app.dlna.dmc.utility.DMSBrowseHelper
-import com.libre.app.dlna.dmc.utility.PlaybackHelper
-import com.libre.app.dlna.dmc.utility.UpnpDeviceManager
-import com.libre.util.LibreLogger
+import com.libre.qactive.LErrorHandeling.LibreError
+import com.libre.qactive.LibreApplication
+import com.libre.qactive.R
+import com.libre.qactive.Scanning.Constants.*
+import com.libre.qactive.Scanning.ScanningHandler
+import com.libre.qactive.app.dlna.dmc.processor.impl.DMSProcessorImpl
+import com.libre.qactive.app.dlna.dmc.processor.interfaces.DMSProcessor
+import com.libre.qactive.app.dlna.dmc.server.MusicServer
+import com.libre.qactive.app.dlna.dmc.utility.DMRControlHelper
+import com.libre.qactive.app.dlna.dmc.utility.DMSBrowseHelper
+import com.libre.qactive.app.dlna.dmc.utility.PlaybackHelper
+import com.libre.qactive.app.dlna.dmc.utility.UpnpDeviceManager
+
+import com.libre.qactive.util.LibreLogger
 import kotlinx.android.synthetic.main.ct_activity_file_browser.*
 import kotlinx.android.synthetic.main.music_playing_widget.*
 import org.fourthline.cling.model.meta.RemoteDevice
@@ -132,45 +132,44 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         setViews()
     }
 
-    override fun onStart() {
-        super.onStart()
-        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
-    }
-
     override fun onStartComplete() {
-        super.onStartComplete()
-        if (LibreApplication.LOCAL_UDN.trim().isEmpty())
-            return
 
-        deviceUDN = intent?.getStringExtra(DEVICE_UDN)
+        val remoteDeviceUDN = intent?.getStringExtra(DEVICE_UDN)
+        if (remoteDeviceUDN == null){
+            LibreLogger.d(this,"onStartComplete deviceUDN null")
+            finish()
+            return
+        }
+
+        val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[remoteDeviceUDN]
+        if (playbackHelper == null){
+            LibreLogger.d(this,"onStartComplete playbackHelper null")
+            finish()
+            return
+        }
 
         if (dmsBrowseHelper == null) {
             LibreLogger.d(this,"dmsBrowseHelper null")
-            dmsBrowseHelper = if (LibreApplication.LOCAL_UDN.equals(deviceUDN!!, ignoreCase = true))
-                DMSBrowseHelper(true, deviceUDN)
-            else
-                DMSBrowseHelper(false, deviceUDN)
+            dmsBrowseHelper = playbackHelper.dmsHelper?.clone()
         }
 
-        val dmsDevice = dmsBrowseHelper!!.getDevice(UpnpDeviceManager.getInstance())
-
-        didlObjectStack = dmsBrowseHelper!!.browseObjectStack.clone() as Stack<DIDLObject>
+        val dmsDevice = dmsBrowseHelper?.getDevice(UpnpDeviceManager.getInstance())
         Log.d("onStartComplete", "didlObjectStack = $didlObjectStack")
-
         if (dmsDevice == null) {
             LibreLogger.d(this,"dmsDevice null")
         } else {
-            dmsProcessor = DMSProcessorImpl(dmsDevice, upnpProcessor!!.controlPoint)
+            didlObjectStack = dmsBrowseHelper?.browseObjectStack?.clone() as Stack<DIDLObject>
+            dmsProcessor = DMSProcessorImpl(dmsDevice, upnpProcessor?.controlPoint)
             if (dmsProcessor == null) {
                 showToast(R.string.cannotCreateDMS)
                 finish()
             } else if (intent.hasExtra(FROM_ACTIVITY)) {
-                val renderingDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpAddress)
-                if (renderingDevice != null) {
-                    val renderingUDN = renderingDevice.identity.udn.toString()
-                    val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
-                    if (playbackHelper != null && playbackHelper.dmsHelper != null) {
-                        didlObjectStack = playbackHelper.dmsHelper.browseObjectStack
+                val remoteDmrDevice = UpnpDeviceManager.getInstance().getRemoteDMRDeviceByIp(currentIpAddress)
+                if (remoteDmrDevice != null) {
+                    val renderingUDN = remoteDmrDevice.identity.udn.toString()
+                    val remotePlaybackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
+                    if (remotePlaybackHelper != null && remotePlaybackHelper.dmsHelper != null) {
+                        didlObjectStack = remotePlaybackHelper.dmsHelper.browseObjectStack
                         Log.d("onStartComplete", "FROM_ACTIVITY, didlObjectStack = $didlObjectStack")
                         if (didlObjectStack != null) {
                             dmsProcessor?.addListener(this)
@@ -223,6 +222,7 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
     override fun onResume() {
         Log.d("UpnpSplashScreen", "DMS Resume")
         super.onResume()
+        setMusicPlayerWidget(fl_music_play_widget,currentIpAddress!!)
         upnpProcessor?.addListener(this)
     }
 
@@ -236,6 +236,7 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         try {
             dmsProcessor?.browse(didlObjectId)
         } catch (t: Throwable) {
+            LibreLogger.d(this,"exception dms browse"+t.toString())
             dismissDialog()
             showToast(R.string.browseFailed)
         }
@@ -325,8 +326,6 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
             val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
             playbackHelper?.dmsHelper = dmsBrowseHelper?.clone()
             playbackHelper?.playSong()
-
-            libreApplication.deviceIpAddress = currentIpAddress
             openNowPlaying(true)
         } catch (e: Exception) {
             //handling the excetion when the device is rebooted
@@ -405,9 +404,9 @@ class CTUpnpFileBrowserActivity : CTDeviceDiscoveryActivity(), DMSProcessor.DMSP
         }
     }
 
-    override fun onRemoteDeviceAdded(device: RemoteDevice) {
-        super.onRemoteDeviceAdded(device)
-        val ip = device.identity.descriptorURL.host
+    override fun onRemoteDeviceAdded(remoteDevice: RemoteDevice?) {
+        super.onRemoteDeviceAdded(remoteDevice)
+        val ip = remoteDevice?.identity?.descriptorURL?.host
         LibreLogger.d(this, "Remote device with added with ip $ip")
         if (ip.equals(currentIpAddress!!, ignoreCase = true)) {
             if (selectedDIDLObject != null) {

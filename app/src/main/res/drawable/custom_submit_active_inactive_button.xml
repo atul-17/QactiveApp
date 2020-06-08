@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/submit_active" android:state_enabled="true"/>
+    <item android:drawable="@drawable/submit_inactive" android:state_enabled="false"/>
+
+
+</selector>

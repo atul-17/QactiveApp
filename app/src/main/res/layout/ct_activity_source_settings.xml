@@ -1,0 +1,764 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:background="@color/screen_bg"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/brand_light_grey">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:paddingRight="8dp">
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/iv_back"
+                    android:layout_width="?attr/actionBarSize"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="16dp"
+                    app:srcCompat="@drawable/ic_arrow_back_white" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_device_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="marquee"
+                    android:marqueeRepeatLimit="marquee_forever"
+                    android:scrollHorizontally="true"
+                    android:singleLine="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/study"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    app:fontFamily="sans-serif-medium" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/iv_alexa_settings"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"
+                    android:scaleType="centerInside"
+                    app:srcCompat="@drawable/alexa_account" />
+
+                <androidx.appcompat.widget.AppCompatImageButton
+                    android:id="@+id/iv_device_settings"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    app:srcCompat="@drawable/settings_selected" />
+            </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+
+    <include
+        android:id="@+id/ll_vol_changes"
+        layout="@layout/custom_vol_changes_layout"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/appbarLayout"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="100dp"
+        android:layout_below="@+id/ll_vol_changes"
+
+        android:id="@+id/scrollView">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical">
+
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:textSize="18sp"
+        android:textColor="@color/white"
+        android:text="@string/source_settings"
+        android:layout_gravity="center"
+        android:gravity="center"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:layout_marginTop="15dp"
+        />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:text="Network"
+            android:layout_centerVertical="true"
+            />
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/sb_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            app:sb_checked_color="@color/white"
+            app:sb_button_color="@color/black"
+            app:sb_checked="true"
+            app:sb_show_indicator="false"
+            android:layout_marginLeft="20dp"
+            app:sb_background="@color/black"
+            app:sb_uncheck_color="@color/black"
+            app:sb_checkline_color="@android:color/black"
+            app:sb_checkline_width="0dp"
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:text="Turn on volume"
+            android:layout_centerVertical="true"
+            />
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/sb_turn_on_vol_network"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            app:sb_checked_color="@color/white"
+            app:sb_button_color="@color/black"
+            app:sb_checked="false"
+            app:sb_show_indicator="false"
+            android:layout_marginLeft="20dp"
+            app:sb_background="@color/black"
+            app:sb_uncheck_color="@color/black"
+            app:sb_checkline_color="@android:color/black"
+            app:sb_checkline_width="0dp"
+            />
+
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/network_vol_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:maxHeight="3dp"
+        android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+        android:thumb="@drawable/thumb_drawable"
+        tools:progress="30" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:layout_marginTop="25dp"
+        />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:text="HDMI"
+            android:layout_centerVertical="true"
+            />
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/sb_hdmi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            app:sb_checked_color="@color/white"
+            app:sb_button_color="@color/black"
+            app:sb_checked="true"
+            app:sb_show_indicator="false"
+            android:layout_marginLeft="20dp"
+            app:sb_background="@color/black"
+            app:sb_uncheck_color="@color/black"
+            app:sb_checkline_color="@android:color/black"
+            app:sb_checkline_width="0dp"
+            />
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="15dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="15dp"
+        >
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:text="Turn on volume"
+            android:layout_centerVertical="true"
+            />
+
+        <com.suke.widget.SwitchButton
+            android:id="@+id/sb_turn_on_vol_optical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            app:sb_checked_color="@color/white"
+            app:sb_button_color="@color/black"
+            app:sb_checked="false"
+            app:sb_show_indicator="false"
+            android:layout_marginLeft="20dp"
+            app:sb_background="@color/black"
+            app:sb_uncheck_color="@color/black"
+            app:sb_checkline_color="@android:color/black"
+            app:sb_checkline_width="0dp"
+            />
+
+
+    </RelativeLayout>
+
+    <androidx.appcompat.widget.AppCompatSeekBar
+        android:id="@+id/optical_vol_seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="15dp"
+        android:maxHeight="3dp"
+        android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+        android:thumb="@drawable/thumb_drawable"
+        tools:progress="30" />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_gray"
+        android:layout_marginTop="25dp"
+        />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:text="Optical"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_optical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:text="Turn on volume"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_turn_on_vol_bluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="false"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/bluetooth_vol_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+                android:thumb="@drawable/thumb_drawable"
+                tools:progress="30" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="25dp"
+                />
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:text="Bluetooth"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_bluetooth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:text="Turn on volume"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_turn_on_vol_hdmi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="false"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/hdmi_vol_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+                android:thumb="@drawable/thumb_drawable"
+                tools:progress="30" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="25dp"
+                />
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:text="Analogue"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_analogue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:text="Turn on volume"
+                    android:layout_centerVertical="true"
+                    />
+
+                <com.suke.widget.SwitchButton
+                    android:id="@+id/sb_turn_on_vol_analogue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="false"
+                    app:sb_show_indicator="false"
+                    android:layout_marginLeft="20dp"
+                    app:sb_background="@color/black"
+                    app:sb_uncheck_color="@color/black"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    />
+
+
+            </RelativeLayout>
+
+            <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/analogue_vol_seekbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:maxHeight="3dp"
+                android:progressDrawable="@drawable/gradient_progress_drawble_white_grey"
+                android:thumb="@drawable/thumb_drawable"
+                tools:progress="30" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="15dp"
+                />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1.65"
+                    android:text="Auto ON"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <com.suke.widget.SwitchButton
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight=".35"
+                    app:sb_background="@color/black"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    app:sb_show_indicator="false"
+                    app:sb_uncheck_color="@color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1.65"
+                    android:text="Auto OFF"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <com.suke.widget.SwitchButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight=".35"
+                    app:sb_background="@color/black"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    app:sb_show_indicator="false"
+                    app:sb_uncheck_color="@color/black" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1.65"
+                    android:text="Line / MM Auto ON"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <com.suke.widget.SwitchButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight=".35"
+                    app:sb_background="@color/black"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="false"
+                    app:sb_checked_color="@color/white"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    app:sb_show_indicator="false"
+                    app:sb_uncheck_color="@color/black" />
+
+            </LinearLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/light_gray"
+                android:layout_marginTop="15dp"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1.65"
+                    android:text="20 mins OFF"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <com.suke.widget.SwitchButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight=".35"
+                    app:sb_background="@color/black"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    app:sb_show_indicator="false"
+                    app:sb_uncheck_color="@color/black" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginRight="15dp"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_weight="1.65"
+                    android:text="Auto Source Switch"
+                    android:textColor="@color/white"
+                    android:textSize="20sp" />
+
+                <com.suke.widget.SwitchButton
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight=".35"
+                    app:sb_background="@color/black"
+                    app:sb_button_color="@color/black"
+                    app:sb_checked="true"
+                    app:sb_checked_color="@color/white"
+                    app:sb_checkline_color="@android:color/black"
+                    app:sb_checkline_width="0dp"
+                    app:sb_show_indicator="false"
+                    app:sb_uncheck_color="@color/black" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+    <include
+        android:id="@+id/qactive_custom_speaker_ready_commands"
+        layout="@layout/qactive_custom_speaker_ready_commands"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        />
+</RelativeLayout>

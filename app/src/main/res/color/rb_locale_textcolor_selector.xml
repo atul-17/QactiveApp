@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--item android:state_activated="true" android:color="@color/vpi__bright_foreground_holo_dark"/-->
-    <item android:color="@color/app_text_color_enabled" android:state_checked="true" />
+    <item android:color="@color/brand_orange" android:state_checked="true" />
     <item android:color="@color/black" android:state_checked="false"/>
     <item android:color="@color/black"/>
     <!-- not selected -->
