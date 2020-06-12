@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/top_margin"
                 android:paddingBottom="@dimen/top_margin"
-                app:srcCompat="@drawable/ic_white_right_arrow" />
+                app:srcCompat="@drawable/ic_white_next_arrow" />
         </LinearLayout>
 
         <include layout="@layout/music_playing_widget"

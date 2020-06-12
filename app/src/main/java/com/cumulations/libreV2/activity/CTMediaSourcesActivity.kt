@@ -298,7 +298,7 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
 
         if (lssdpNodes.getgCastVerision() != null) {
             //gcast != null -> hide alexa
-            iv_alexa_settings.visibility = View.GONE
+            iv_alexa_settings.visibility = View.INVISIBLE
         }else{
             iv_alexa_settings.visibility = View.VISIBLE
         }
@@ -408,8 +408,13 @@ class CTMediaSourcesActivity : CTDeviceDiscoveryActivity(), LibreDeviceInteracti
         val ssid = AppUtils.getConnectedSSID(this)
         if (ssid != null && !isConnectedToSAMode(ssid)) {
             iv_alexa_settings?.visibility = View.VISIBLE
-            if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty() && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked(currentIpAddress!!)) {
-                showAlexaLoginAlert()
+            if (lssdpNodes?.alexaRefreshToken.isNullOrEmpty()
+                    && !SharedPreferenceHelper(this).isAlexaLoginAlertDontAskChecked(currentIpAddress!!)) {
+                //do not show the dialog for gcast devices
+                if(lssdpNodes.getgCastVerision()==null){
+                    //it is not a  gcast device
+                    showAlexaLoginAlert()
+                }
             }
         } else {
             iv_alexa_settings?.visibility = View.GONE

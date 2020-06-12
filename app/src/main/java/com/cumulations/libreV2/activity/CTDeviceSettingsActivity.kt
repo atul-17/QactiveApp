@@ -86,6 +86,7 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
             val bundle = Bundle()
             val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentDeviceIp)
             bundle.putString("deviceFriendlyName",lssdpNodes.friendlyname)
+            bundle.putString(Constants.CURRENT_DEVICE_IP,currentDeviceIp)
             intent.putExtras(bundle)
             startActivity(intent)
         }
@@ -95,6 +96,7 @@ class CTDeviceSettingsActivity : CTDeviceDiscoveryActivity(), LibreDeviceInterac
             val bundle = Bundle()
             val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentDeviceIp)
             bundle.putString("deviceFriendlyName",lssdpNodes.friendlyname)
+            bundle.putString(Constants.CURRENT_DEVICE_IP,currentDeviceIp)
             intent.putExtras(bundle)
             startActivity(intent)
         }

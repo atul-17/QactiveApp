@@ -207,13 +207,23 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
         iv_back?.setOnClickListener {
             onBackPressed()
         }
+
+
+
         val lssdpNodes = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(currentIpAddress)
 
         if (lssdpNodes.getgCastVerision() != null) {
             //gcast != null -> hide alexa
-            iv_alexa_settings.visibility = View.GONE
-        }else{
+            iv_alexa_settings.visibility = View.INVISIBLE
+        } else {
             iv_alexa_settings.visibility = View.VISIBLE
+        }
+
+        iv_source_selection.setOnClickListener {
+            startActivity(Intent(this@CTNowPlayingActivity, CTSourceSelectionActivity::class.java).apply {
+                putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
+                putExtra(Constants.CURRENT_SOURCE, "" + lssdpNodes.currentSource)
+            })
         }
 
         iv_alexa_settings?.setOnClickListener {
@@ -303,7 +313,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
         when (currentSrc) {
 
             NO_SOURCE,
-            DDMSSLAVE_SOURCE-> {
+            DDMSSLAVE_SOURCE -> {
                 /*setting seek to zero*/
                 seek_bar_song!!.progress = 0
                 seek_bar_song!!.isEnabled = false
@@ -317,7 +327,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 //                artistName!!.text = ""
                 tv_album_name!!.text = ""
                 tv_track_name!!.text = ""
-      
+
             }
 
             AUX_SOURCE ->
@@ -413,7 +423,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
     }
 
-    private fun enableViews(enable:Boolean) {
+    private fun enableViews(enable: Boolean) {
         seek_bar_song!!.isEnabled = enable
         seek_bar_song!!.isClickable = enable
         iv_play_pause!!.isClickable = enable
@@ -498,9 +508,9 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 }
 
                 R.id.iv_previous -> {
-                    LibreLogger.d(this, "currently not playing, so take user to sources option activity"+currentSceneObject!!.previousControl)
+                    LibreLogger.d(this, "currently not playing, so take user to sources option activity" + currentSceneObject!!.previousControl)
 
-                    if( currentSceneObject!!.previousControl==true&& currentSceneObject!!.currentSource== SPOTIFY_SOURCE) {
+                    if (currentSceneObject!!.previousControl == true && currentSceneObject!!.currentSource == SPOTIFY_SOURCE) {
                         if (!playPauseNextPrevAllowed()) {
                             val error = LibreError("", resources.getString(R.string.NEXT_PREVIOUS_NOT_ALLOWED), 1)
                             BusProvider.getInstance().post(error)
@@ -518,8 +528,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                             val error = LibreError(currentIpAddress, getString(R.string.requestTimeout))
                             BusProvider.getInstance().post(error)
                         }
-                    }
-                    else {
+                    } else {
                         if (currentSceneObject!!.currentSource != SPOTIFY_SOURCE) {
                             if (!playPauseNextPrevAllowed()) {
                                 val error = LibreError("", resources.getString(R.string.NEXT_PREVIOUS_NOT_ALLOWED), 1)
@@ -565,7 +574,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                         }
                     }
                 }
-                R.id.media_btn_skip_prev->{
+                R.id.media_btn_skip_prev -> {
                     var duration = currentSceneObject!!.getCurrentPlaybackSeekPosition()
                     LibreLogger.d(this, "suma in podcast previous")
                     durationInSeeconds = duration / 1000
@@ -584,7 +593,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                     val control = LUCIControl(currentSceneObject!!.getIpAddress())
                     control.SendCommand(40, "SEEK:$duration", LSSDPCONST.LUCI_SET)
                 }
-                R.id.media_btn_skip_next->{
+                R.id.media_btn_skip_next -> {
                     var duration1 = currentSceneObject!!.getCurrentPlaybackSeekPosition()
                     LibreLogger.d(this, "suma in podcast next")
                     durationInSeeconds1 = duration1 / 1000
@@ -593,8 +602,8 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                     val control = LUCIControl(currentSceneObject!!.getIpAddress())
                     control.SendCommand(40, "SEEK:$duration1", LSSDPCONST.LUCI_SET)
                 }
-                R.id.iv_album_art->{
-                    if(currentSceneObject!!.currentSource==Constants.SPOTIFY_SOURCE){
+                R.id.iv_album_art -> {
+                    if (currentSceneObject!!.currentSource == Constants.SPOTIFY_SOURCE) {
                         val appPackageName = "com.spotify.music"
                         launchTheApp(appPackageName)
                     }
@@ -693,7 +702,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
     override fun onResume() {
         super.onResume()
         registerForDeviceEvents(this)
-        setMusicPlayerWidget(fl_alexa_widget,currentIpAddress!!)
+        setMusicPlayerWidget(fl_alexa_widget, currentIpAddress!!)
         if (currentSceneObject == null)
             return
         isLocalDMRPlayback = AppUtils.isLocalDMRPlaying(currentSceneObject)
@@ -722,7 +731,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
     override fun deviceGotRemoved(mIpAddress: String) {
         if (currentIpAddress != null)
             if (currentIpAddress!! == mIpAddress) {
-                val intent = Intent(this@CTNowPlayingActivity,CTHomeTabsActivity::class.java)
+                val intent = Intent(this@CTNowPlayingActivity, CTHomeTabsActivity::class.java)
                 startActivity(intent)
             }
     }
@@ -906,7 +915,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                         if (mScanHandler!!.isIpAvailableInCentralSceneRepo(currentIpAddress)) {
                             mScanHandler!!.putSceneObjectToCentralRepo(currentIpAddress, currentSceneObject)
                             seek_bar_volume!!.progress = LibreApplication.INDIVIDUAL_VOLUME_MAP[currentSceneObject?.ipAddress!!]!!
-                            if (seek_bar_volume.progress==0){
+                            if (seek_bar_volume.progress == 0) {
                                 iv_volume_down?.setImageResource(R.drawable.ic_volume_mute)
                             } else iv_volume_down?.setImageResource(R.drawable.volume_low_enabled)
                         }
@@ -932,18 +941,18 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
                             currentSceneObject = AppUtils.updateSceneObjectWithPlayJsonWindow(window, currentSceneObject!!)
 
-                            if(currentSceneObject!!.getCurrentSource()== SPOTIFY_SOURCE) {
+                            if (currentSceneObject!!.getCurrentSource() == SPOTIFY_SOURCE) {
                                 currentSceneObject!!.setSeekEnabled(window.getBoolean("Seek"));
                                 currentSceneObject!!.setPreviousControl(window.getBoolean("Prev"));
                                 currentSceneObject!!.setNextControl(window.getBoolean("Next"));
                             }
-                            LibreLogger.d(this,"suma in 42 MB get ui control seekenabled,previouscontrol,nextControl"+ currentSceneObject!!.getPreviousControl())
+                            LibreLogger.d(this, "suma in 42 MB get ui control seekenabled,previouscontrol,nextControl" + currentSceneObject!!.getPreviousControl())
                             /*if (LibreApplication.LOCAL_IP.isNotEmpty() && currentSceneObject!!.playUrl.contains(LibreApplication.LOCAL_IP))
                                 isLocalDMRPlayback = true
                             else if (currentSceneObject!!.currentSource == DMR_SOURCE)
                                 isLocalDMRPlayback = true*/
 
-                            if (AppUtils.isLocalDMRPlaying(currentSceneObject)){
+                            if (AppUtils.isLocalDMRPlaying(currentSceneObject)) {
                                 isLocalDMRPlayback = true
                             }
 
@@ -956,7 +965,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                                     val renderingUDN = renderingDevice.identity.udn.toString()
                                     val playbackHelper = LibreApplication.PLAYBACK_HELPER_MAP[renderingUDN]
                                     if (playbackHelper != null) {
-                                        LibreLogger.d(this,"SET_UI, playbackHelper shuffle, repeat")
+                                        LibreLogger.d(this, "SET_UI, playbackHelper shuffle, repeat")
                                         /**shuffle is on */
                                         if (playbackHelper.isShuffleOn) {
                                             currentSceneObject!!.shuffleState = 1
@@ -979,7 +988,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                             } else {
                                 /**this check made as we will not get shuffle and repeat state in 42, case of DMR
                                  * so we are updating it locally */
-                                LibreLogger.d(this,"SET_UI, set 42 MB shuffle, repeat")
+                                LibreLogger.d(this, "SET_UI, set 42 MB shuffle, repeat")
                                 currentSceneObject!!.shuffleState = window.getInt("Shuffle")
                                 currentSceneObject!!.repeatState = window.getInt("Repeat")
                             }
@@ -1037,8 +1046,6 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                             // error = new LibreError("", getResources().getString(R.string.SPOTIFY_ADS_PLAYING));
                             Toast.makeText(applicationContext, resources.getString(R.string.SPOTIFY_ADS_PLAYING), Toast.LENGTH_SHORT).show()
                         }
-
-
                         else if (message.contains(LUCIMESSAGES.NEXTMESSAGE)) {
                             handleNextPrevForMB(true)
                         } else if (message.contains(LUCIMESSAGES.PREVMESSAGE)) {
@@ -1079,7 +1086,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 seek_bar_volume!!.progress = currentSceneObject!!.volumeValueInPercentage
         }
 
-        if (seek_bar_volume.progress==0){
+        if (seek_bar_volume.progress == 0) {
             iv_volume_down?.setImageResource(R.drawable.ic_volume_mute)
         } else iv_volume_down?.setImageResource(R.drawable.volume_low_enabled)
 
@@ -1129,8 +1136,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 iv_next.setEnabled(true);
                 iv_next.setClickable(true);
                 iv_next.setFocusable(true);
-            } else
-            {
+            } else {
                 iv_next.setAlpha(0.5f);
                 iv_next.setEnabled(false);
                 iv_next.setClickable(false);
@@ -1149,37 +1155,35 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 iv_previous.setClickable(false);
                 iv_previous.setFocusable(false);
             }
-            if(!currentSceneObject!!.getSeekEnabled()){
+            if (!currentSceneObject!!.getSeekEnabled()) {
                 seek_bar_song.setFocusable(false);
                 seek_bar_song.setEnabled(false);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     seek_bar_song.setSplitTrack(false);
-                    LibreLogger.d(this,"spotify seek split suma in seekbar thumb9");
+                    LibreLogger.d(this, "spotify seek split suma in seekbar thumb9");
 
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     seek_bar_song.getThumb().mutate().setAlpha(0);
-                    LibreLogger.d(this,"spotify seek split suma in seekbar thumb11");
+                    LibreLogger.d(this, "spotify seek split suma in seekbar thumb11");
 
                 }
-            }
-            else{
+            } else {
                 seek_bar_song.setFocusable(true);
                 seek_bar_song.setEnabled(true);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     seek_bar_song.setSplitTrack(true);
-                    LibreLogger.d(this,"spotify seek split suma in seekbar thumb9");
+                    LibreLogger.d(this, "spotify seek split suma in seekbar thumb9");
 
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     seek_bar_song.getThumb().mutate().setAlpha(255);
-                    LibreLogger.d(this,"spotify seek split suma in seekbar thumb11");
+                    LibreLogger.d(this, "spotify seek split suma in seekbar thumb11");
 
                 }
             }
 
-        }
-        else{
+        } else {
             iv_next.setAlpha(1f);
             iv_next.setEnabled(true);
             iv_next.setClickable(true);
@@ -1192,12 +1196,12 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             seek_bar_song.setEnabled(true);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 seek_bar_song.setSplitTrack(true);
-                LibreLogger.d(this,"spotify seek split suma in seekbar thumb9");
+                LibreLogger.d(this, "spotify seek split suma in seekbar thumb9");
 
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 seek_bar_song.getThumb().mutate().setAlpha(255);
-                LibreLogger.d(this,"spotify seek split suma in seekbar thumb11");
+                LibreLogger.d(this, "spotify seek split suma in seekbar thumb11");
 
             }
         }
@@ -1285,7 +1289,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
     }
 
     private fun setSourceIconsForAlexaSource(currentSceneObject: SceneObject?) {
-        LibreLogger.d(this,"setSourceIconsForAlexaSource playUrl = ${currentSceneObject?.playUrl}")
+        LibreLogger.d(this, "setSourceIconsForAlexaSource playUrl = ${currentSceneObject?.playUrl}")
         iv_source_icon.visibility = View.VISIBLE
 
         setControlIconsForAlexa(currentSceneObject, iv_play_pause, iv_next, iv_previous)
@@ -1297,12 +1301,12 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
         iv_source_icon?.visibility = View.VISIBLE
         when {
-            currentSceneObject?.playUrl?.contains("tunein",true)!! -> iv_source_icon.setImageResource(R.drawable.tunein_image2)
-            currentSceneObject.playUrl?.contains("iheartradio",true)!! -> iv_source_icon.setImageResource(R.drawable.iheartradio_image2)
-            currentSceneObject.playUrl?.contains("amazon music",true)!! -> iv_source_icon.setImageResource(R.drawable.amazon_image2)
-            currentSceneObject.playUrl?.contains("siriusxm",true)!! -> iv_source_icon.setImageResource(R.drawable.sirius_image2)
-            currentSceneObject.playUrl?.contains("Deezer",true)!! -> iv_source_icon.setImageResource(R.mipmap.riva_deezer_icon)
-            currentSceneObject.playUrl?.contains("Pandora",true)!! -> iv_source_icon.setImageResource(R.mipmap.riva_pandora_icon)
+            currentSceneObject?.playUrl?.contains("tunein", true)!! -> iv_source_icon.setImageResource(R.drawable.tunein_image2)
+            currentSceneObject.playUrl?.contains("iheartradio", true)!! -> iv_source_icon.setImageResource(R.drawable.iheartradio_image2)
+            currentSceneObject.playUrl?.contains("amazon music", true)!! -> iv_source_icon.setImageResource(R.drawable.amazon_image2)
+            currentSceneObject.playUrl?.contains("siriusxm", true)!! -> iv_source_icon.setImageResource(R.drawable.sirius_image2)
+            currentSceneObject.playUrl?.contains("Deezer", true)!! -> iv_source_icon.setImageResource(R.mipmap.riva_deezer_icon)
+            currentSceneObject.playUrl?.contains("Pandora", true)!! -> iv_source_icon.setImageResource(R.mipmap.riva_pandora_icon)
             else -> iv_source_icon?.visibility = View.GONE
         }
     }
@@ -1381,101 +1385,125 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
         /* Enabling the views by default which gets updated to disabled based on the need */
         enableViews(enable = true)
 
-//        tv_source_type?.visibility = View.VISIBLE
-//        var imgResId = R.drawable.songs_borderless
-//
-//        when(currentSceneObject?.currentSource){
-//            DMR_SOURCE -> {
-//                imgResId = R.drawable.my_device_enabled
-//                tv_source_type.text = getText(R.string.my_device)
-//            }
-//            DMP_SOURCE -> {
-//                imgResId = /*R.mipmap.network*/R.drawable.media_servers_enabled
-//                tv_source_type.text = getText(R.string.mediaserver)
-//            }
-//            SPOTIFY_SOURCE -> {
-//                imgResId = R.mipmap.spotify
-//                tv_source_type.text = getText(R.string.spotify)
-//            }
-//            USB_SOURCE -> {
-//                imgResId = /*R.mipmap.usb*/R.drawable.usb_storage_enabled
-//                tv_source_type.text = getText(R.string.usb_storage)
-//            }
-//            SDCARD_SOURCE -> {
-//                imgResId = R.mipmap.sdcard
-//                tv_source_type.text = getText(R.string.sdcard)
-//            }
-//            VTUNER_SOURCE -> {
-//                imgResId = R.mipmap.vtuner_logo
-//                tv_source_type.text = "VTUNER"
-//                /*disabling views for VTUNER*/
-//                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.album_name)
-//            }
-//
-//            TUNEIN_SOURCE -> {
-//                imgResId = R.mipmap.tunein_logo1
-//                tv_source_type.text = "TuneIn"
-//                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.album_name)
-//            }
-//
-//            AUX_SOURCE -> {
-//                imgResId = R.drawable.ic_aux_in
-//                tv_source_type.text = getText(R.string.aux)
-//                /* added to make sure we dont show the album art during aux */
-//                disableViews(currentSceneObject!!.currentSource, getString(R.string.aux))
-//            }
-//
-//            BT_SOURCE -> {
-//                imgResId = R.drawable.ic_bt_on
-//                tv_source_type.text = getText(R.string.btOn)
-//                when {
-//                    currentSceneObject!!.playstatus == SceneObject.CURRENTLY_STOPPED -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
-//                    currentSceneObject!!.playstatus == SceneObject.CURRENTLY_PAUSED -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
-//                    else -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
-//                }
-//                /* added to make sure we dont show the album art during aux */
-//                disableViews(currentSceneObject!!.currentSource, getString(R.string.aux))
-//            }
-//
-//            DEEZER_SOURCE -> {
-//                imgResId = R.mipmap.deezer_logo
-//                tv_source_type.text = "Deezer"
-//                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.trackName)
-//            }
-//
-//            TIDAL_SOURCE -> {
-//                imgResId = R.mipmap.tidal_white_logo
-//                tv_source_type.text = "Tidal"
-//            }
-//
-//            FAVOURITES_SOURCE -> {
-//                imgResId = R.mipmap.ic_remote_favorite
-//                tv_source_type.text = getText(R.string.favorite_button)
-//            }
-//
-//            ALEXA_SOURCE -> {
-//                imgResId = R.drawable.alexa_blue_white_100px
-//                tv_source_type.text = getText(R.string.alexaText)
-//            }
-//            GCAST_SOURCE -> {
-//                imgResId = R.mipmap.ic_cast_white_24dp_2x
-//                tv_source_type.text = getText(R.string.casting)
-//            }
-//        }
-//
-//        iv_source_icon!!.setImageResource(imgResId)
 
+        tv_source_type?.visibility = View.VISIBLE
+        iv_source_icon?.visibility = View.VISIBLE
+        var imgResId = R.drawable.songs_borderless
+
+        when (currentSceneObject?.currentSource) {
+
+            NO_SOURCE ->{
+                tv_source_type?.visibility = View.INVISIBLE
+                iv_source_icon?.visibility = View.INVISIBLE
+            }
+
+            DMR_SOURCE -> {
+                imgResId = R.drawable.ic_white_dlna
+                tv_source_type.text = getText(R.string.my_device)
+            }
+            DMP_SOURCE -> {
+                imgResId = /*R.mipmap.network*/R.drawable.media_servers_enabled
+                tv_source_type.text = getText(R.string.mediaserver)
+            }
+
+            SPOTIFY_SOURCE -> {
+                imgResId = R.mipmap.spotify
+                tv_source_type.text = getText(R.string.spotify)
+            }
+
+            USB_SOURCE -> {
+                imgResId = /*R.mipmap.usb*/R.drawable.usb_storage_enabled
+                tv_source_type.text = getText(R.string.usb_storage)
+            }
+            SDCARD_SOURCE -> {
+                imgResId = R.mipmap.sdcard
+                tv_source_type.text = getText(R.string.sdcard)
+            }
+            VTUNER_SOURCE -> {
+                imgResId = R.mipmap.vtuner_logo
+                tv_source_type.text = "VTUNER"
+                /*disabling views for VTUNER*/
+                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.album_name)
+            }
+
+            TUNEIN_SOURCE -> {
+                imgResId = R.mipmap.tunein_logo1
+                tv_source_type.text = "TuneIn"
+                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.album_name)
+            }
+
+            AUX_SOURCE -> {
+                imgResId = R.drawable.ic_aux_in
+                tv_source_type.text = getText(R.string.aux)
+                /* added to make sure we dont show the album art during aux */
+                disableViews(currentSceneObject!!.currentSource, getString(R.string.aux))
+            }
+
+            BT_SOURCE -> {
+                imgResId = R.drawable.ic_bt_on
+                tv_source_type.text = getText(R.string.btOn)
+                when {
+                    currentSceneObject!!.playstatus == SceneObject.CURRENTLY_STOPPED -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
+                    currentSceneObject!!.playstatus == SceneObject.CURRENTLY_PAUSED -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
+                    else -> disableViews(currentSceneObject!!.currentSource, getString(R.string.btOn))
+                }
+                /* added to make sure we dont show the album art during aux */
+                disableViews(currentSceneObject!!.currentSource, getString(R.string.aux))
+            }
+
+            DEEZER_SOURCE -> {
+                imgResId = R.mipmap.deezer_logo
+                tv_source_type.text = "Deezer"
+                disableViews(currentSceneObject!!.currentSource, currentSceneObject!!.trackName)
+            }
+
+            TIDAL_SOURCE -> {
+                imgResId = R.mipmap.tidal_white_logo
+                tv_source_type.text = "Tidal"
+            }
+
+            FAVOURITES_SOURCE -> {
+                imgResId = R.mipmap.ic_remote_favorite
+                tv_source_type.text = getText(R.string.favorite_button)
+            }
+
+            ALEXA_SOURCE -> {
+                imgResId = R.drawable.alexa_blue_white_100px
+                tv_source_type.text = getText(R.string.alexaText)
+            }
+            GCAST_SOURCE -> {
+                imgResId = R.mipmap.ic_cast_white_24dp_2x
+                tv_source_type.text = getText(R.string.casting)
+            }
+
+            AIRPLAY_SOURCE -> {
+                imgResId = R.drawable.ic_white_airplay
+                tv_source_type.text = getText(R.string.airplay)
+            }
+
+            ROON_SOURCE -> {
+                imgResId = R.drawable.ic_roon_white
+                tv_source_type.text = getText(R.string.airplay)
+            }
+
+
+        }
+
+
+        iv_source_icon.setImageResource(imgResId)
         handleThePlayIconsForGrayoutOption()
 
-        iv_source_icon?.visibility = View.GONE
-        if (currentSceneObject?.currentSource == ALEXA_SOURCE) {
-            setSourceIconsForAlexaSource(currentSceneObject)
-        }
+//
+//        if (currentSceneObject?.currentSource == ALEXA_SOURCE) {
+//            setSourceIconsForAlexaSource(currentSceneObject)
+//        }
+//
+//        if (currentSceneObject?.currentSource == SPOTIFY_SOURCE) {
+//            iv_source_icon?.visibility = View.VISIBLE
+//            iv_source_icon.setImageResource(R.drawable.spotify_image2)
+        //iv_source_icon.setImageResource( R.mipmap.spotify)
+//        }
 
-        if (currentSceneObject?.currentSource == SPOTIFY_SOURCE) {
-            iv_source_icon?.visibility = View.VISIBLE
-            iv_source_icon.setImageResource(R.drawable.spotify_image2)
-        }
     }
 
     private fun handleThePlayIconsForGrayoutOption() {
@@ -1503,10 +1531,10 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
 
     private fun updatePlayPauseNextPrevForCurrentSource(sceneObject: SceneObject?) {
         if (sceneObject?.currentSource == VTUNER_SOURCE
-                        || sceneObject?.currentSource == TUNEIN_SOURCE
-                        || sceneObject?.currentSource == BT_SOURCE
-                        || sceneObject?.currentSource == AUX_SOURCE
-                        || sceneObject?.currentSource == NO_SOURCE) {
+                || sceneObject?.currentSource == TUNEIN_SOURCE
+                || sceneObject?.currentSource == BT_SOURCE
+                || sceneObject?.currentSource == AUX_SOURCE
+                || sceneObject?.currentSource == NO_SOURCE) {
             iv_play_pause!!.setImageResource(R.drawable.play_white)
             iv_next!!.setImageResource(R.drawable.next_disabled)
             iv_previous!!.setImageResource(R.drawable.prev_disabled)
@@ -1600,14 +1628,14 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
                 }
 
                 if ((currentSceneObject?.shuffleState == 0) && (currentSceneObject?.repeatState == REPEAT_OFF)) {
-                    if (isNextPressed){
-                        if (playbackHelper.isThisTheLastSong || playbackHelper.isThisOnlySong){
+                    if (isNextPressed) {
+                        if (playbackHelper.isThisTheLastSong || playbackHelper.isThisOnlySong) {
                             showToast(R.string.lastSongPlayed)
                             showLoaderHandler.sendEmptyMessage(PREPARATION_COMPLETED)
                             return
                         }
                     } else {
-                        if (playbackHelper.isThisFirstSong || playbackHelper.isThisOnlySong){
+                        if (playbackHelper.isThisFirstSong || playbackHelper.isThisOnlySong) {
                             showToast(R.string.onlyOneSong)
                             showLoaderHandler.sendEmptyMessage(PREPARATION_COMPLETED)
                             return
@@ -1780,6 +1808,7 @@ class CTNowPlayingActivity : CTDeviceDiscoveryActivity(), View.OnClickListener,
             else -> return super.onKeyDown(keyCode, event)
         }
     }
+
     fun launchTheApp(appPackageName: String) {
 
         val intent = applicationContext.getPackageManager().getLaunchIntentForPackage(appPackageName)

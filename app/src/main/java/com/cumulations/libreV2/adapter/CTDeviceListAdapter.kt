@@ -384,6 +384,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
             }
 
             itemView?.iv_album_art?.setOnClickListener {
+
                 if (itemView.tv_track_name?.text?.toString()?.contains(context.getString(R.string.app_name))!!
                         || itemView.tv_track_name?.text?.toString()?.contains(context.getString(R.string.login_to_enable_cmds))!!
                         || itemView.iv_play_pause?.visibility == View.GONE) {
@@ -645,6 +646,9 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 }
                 Constants.GCAST_SOURCE -> {
                     //gCast is Playing
+                    itemView?.iv_current_source?.visibility = View.VISIBLE
+                    itemView?.iv_current_source?.setImageResource(R.drawable.cast_icon)
+
                     itemView.iv_play_pause.setImageResource(R.drawable.play_white)
                     itemView.tv_track_name.text = "Casting"
                     itemView.seek_bar_volume.isEnabled = false
@@ -654,6 +658,18 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                     itemView.seek_bar_song.progress = 0
                     itemView.seek_bar_song.isEnabled = false
                 }
+
+                Constants.AIRPLAY_SOURCE ->{
+                    itemView?.iv_current_source?.visibility = View.VISIBLE
+                    itemView?.iv_current_source?.setImageResource(R.drawable.ic_white_airplay)
+                }
+
+                Constants.ROON_SOURCE ->{
+                    itemView?.iv_current_source?.visibility = View.VISIBLE
+                    itemView?.iv_current_source?.setImageResource(R.drawable.ic_roon_white)
+                }
+
+
 
                 Constants.ALEXA_SOURCE,
                 Constants.DMR_SOURCE,
@@ -703,6 +719,13 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                         itemView?.iv_aux_bt?.visibility = View.VISIBLE
                         itemView?.iv_aux_bt?.setImageResource(R.drawable.usb_storage_enabled)
                     }
+
+                    if (sceneObject.currentSource == Constants.DMR_SOURCE) {
+                        itemView?.iv_current_source?.visibility = View.VISIBLE
+                        itemView?.iv_current_source?.setImageResource(R.drawable.ic_white_dlna)
+                    }
+
+
                 }
 
                 else -> handleAlexaViews(sceneObject)
@@ -772,7 +795,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
             val node = LSSDPNodeDB.getInstance().getTheNodeBasedOnTheIpAddress(sceneObject?.ipAddress)
 
             if (node.getgCastVerision() != null) {
-                itemView.ib_alexa_avs_btn.visibility = View.GONE
+                itemView.ib_alexa_avs_btn.visibility = View.INVISIBLE
             }else{
                 itemView.ib_alexa_avs_btn.visibility = View.VISIBLE
                 if (node?.alexaRefreshToken.isNullOrEmpty()) {

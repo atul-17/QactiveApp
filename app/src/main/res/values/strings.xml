@@ -121,6 +121,8 @@
     <string name="closingTheApp">Closing the Grundig App</string>
     <string name="btOn">BT On</string>
     <string name="casting">Casting</string>
+    <string name="roon"> Roon </string>
+    <string name="airplay"> AirPlay</string>
     <string name="actionFailed">Action Failed</string>
     <string name="NoRenderer">No Renderer</string>
     <string name="Devicenotplaying">Speaker not playing</string>

@@ -194,6 +194,12 @@ public class Constants {
     public static final int QPLAY_SOURCE = 18;
     public static final int OPTICAL_SOURCE = 29;
 
+    public static final int ROON_SOURCE =27;
+
+
+
+
+
     public static final String ERROR_FAIL = FAIL_ALERT_TEXT;
     public static final String ERROR_NOURL = NO_URL_ALERT_TEXT;
     public static final String ERROR_LASTSONG = NO_NEXT_SONG_ALERT_TEXT;

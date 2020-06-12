@@ -67,13 +67,13 @@ class CTQactiveRegDetailsActivity : CTDeviceDiscoveryActivity() {
                     startActivity(Intent(this@CTQactiveRegDetailsActivity, CTAmazonLoginActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
-                        putExtra(Constants.FROM_ACTIVITY, CTMediaSourcesActivity::class.java.simpleName)
+                        putExtra(Constants.FROM_ACTIVITY, CTQactiveRegDetailsActivity::class.java.simpleName)
                     })
                 } else {
                     startActivity(Intent(this@CTQactiveRegDetailsActivity, CTAlexaThingsToTryActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_NEW_TASK
                         putExtra(Constants.CURRENT_DEVICE_IP, currentIpAddress)
-                        putExtra(Constants.FROM_ACTIVITY, CTMediaSourcesActivity::class.java.simpleName)
+                        putExtra(Constants.FROM_ACTIVITY, CTQactiveRegDetailsActivity::class.java.simpleName)
                     })
                 }
             }
