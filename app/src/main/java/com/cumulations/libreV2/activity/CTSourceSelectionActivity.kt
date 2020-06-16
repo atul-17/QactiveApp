@@ -82,19 +82,20 @@ class CTSourceSelectionActivity : AppCompatActivity() {
             }
         }
 
+        setTheSourceIconFromCurrentSceneObject()
 
-        tv_net.setOnClickListener {
-            if (!tv_net.isSelected) {
-                tv_net.isSelected = true
-//                tv_device.visibility = View.VISIBLE
-
-                setTheSourceIconFromCurrentSceneObject()
-
-            } else {
-                tv_net.isSelected = false
-//                ivSourceType.visibility = View.GONE
-            }
-        }
+//        tv_net.setOnClickListener {
+//            if (!tv_net.isSelected) {
+//
+////                tv_device.visibility = View.VISIBLE
+//
+//
+//
+//            } else {
+//                tv_net.isSelected = false
+////                ivSourceType.visibility = View.GONE
+//            }
+//        }
 
 
 
@@ -135,68 +136,85 @@ class CTSourceSelectionActivity : AppCompatActivity() {
         when (node?.currentSource) {
 
             Constants.NO_SOURCE -> {
-                iv_source_icon?.visibility = View.INVISIBLE
+                tv_net.isSelected = false
+                ivSourceType?.visibility = View.INVISIBLE
             }
 
             Constants.DMR_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.ic_white_dlna
             }
             Constants.DMP_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = /*R.mipmap.network*/R.drawable.media_servers_enabled
             }
 
             Constants.SPOTIFY_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.spotify
             }
 
             Constants.USB_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = /*R.mipmap.usb*/R.drawable.usb_storage_enabled
 
             }
             Constants.SDCARD_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.sdcard
 
             }
             Constants.VTUNER_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.vtuner_logo
             }
 
             Constants.TUNEIN_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.tunein_logo1
             }
 
             Constants.AUX_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.ic_aux_in
             }
 
             Constants.BT_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.ic_bt_on
             }
 
             Constants.DEEZER_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.deezer_logo
             }
 
             Constants.TIDAL_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.tidal_white_logo
             }
 
             Constants.FAVOURITES_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.ic_remote_favorite
             }
 
             Constants.ALEXA_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.alexa_blue_white_100px
             }
             Constants.GCAST_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.mipmap.ic_cast_white_24dp_2x
             }
 
             Constants.AIRPLAY_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.ic_white_airplay
             }
 
             Constants.ROON_SOURCE -> {
+                tv_net.isSelected = true
                 imgResId = R.drawable.ic_roon_white
             }
 

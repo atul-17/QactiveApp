@@ -142,7 +142,6 @@
             android:layout_toRightOf="@+id/sb_network"
             android:layout_marginLeft="-105dp"
             android:layout_marginStart="-105dp"
-
             android:layout_centerInParent="true"
             />
 

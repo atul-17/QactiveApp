@@ -647,7 +647,7 @@ class CTDeviceListAdapter(val context: Context) : RecyclerView.Adapter<RecyclerV
                 Constants.GCAST_SOURCE -> {
                     //gCast is Playing
                     itemView?.iv_current_source?.visibility = View.VISIBLE
-                    itemView?.iv_current_source?.setImageResource(R.drawable.cast_icon)
+                    itemView?.iv_current_source?.setImageResource(R.drawable.ic_white_cast)
 
                     itemView.iv_play_pause.setImageResource(R.drawable.play_white)
                     itemView.tv_track_name.text = "Casting"

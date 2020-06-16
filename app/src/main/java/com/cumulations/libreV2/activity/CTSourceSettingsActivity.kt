@@ -82,12 +82,13 @@ class CTSourceSettingsActivity : CTDeviceDiscoveryActivity() {
             return
 
         ivSourceType?.visibility = View.VISIBLE
+
         var imgResId = R.drawable.songs_borderless
 
         when (node?.currentSource) {
 
             Constants.NO_SOURCE -> {
-                iv_source_icon?.visibility = View.INVISIBLE
+                ivSourceType?.visibility = View.INVISIBLE
             }
 
             Constants.DMR_SOURCE -> {
@@ -153,6 +154,7 @@ class CTSourceSettingsActivity : CTDeviceDiscoveryActivity() {
             }
 
         }
+
         ivSourceType.setImageResource(imgResId)
     }
 
